@@ -44,7 +44,6 @@ public class LoadingScreen extends ScreenAdapter {
         loadingAnimation = createLoadingAnimation();
         elapsedTime = 0;
         this.nextScreen = nextScreen;
-        Gdx.input.setInputProcessor(stage);
     }
 
     private Animation createLoadingAnimation() {
@@ -65,9 +64,9 @@ public class LoadingScreen extends ScreenAdapter {
     public void render(float delta) {
         if (elapsedTime >= 5) {
             MankomaniaGame.getInstance().setScreen(nextScreen);
+            this.dispose();
         } else {
             super.render(delta);
-            System.out.println(elapsedTime);
             ScreenUtils.clear(1, 1, 1, 1);
             elapsedTime += delta;
             stage.act(delta);
