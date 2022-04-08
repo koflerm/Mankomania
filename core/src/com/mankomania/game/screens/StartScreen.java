@@ -4,11 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -38,6 +40,7 @@ public class StartScreen extends ScreenAdapter {
         TextButton settingsButton = new TextButton("SETTINGS", skin, "default");
         startButton.getLabel().setFontScale(Gdx.graphics.getHeight() / 400f);
         settingsButton.getLabel().setFontScale(Gdx.graphics.getHeight() / 400f);
+        startButton.addListener(startListener());
 
         stage.addActor(buildTable(startButton, settingsButton, logoImage));
     }
@@ -55,6 +58,15 @@ public class StartScreen extends ScreenAdapter {
         tab.add(settingsButton).padBottom(50).width(Gdx.graphics.getWidth() / 2f).height(Gdx.graphics.getHeight() / 5f);
         tab.row();
         return tab;
+    }
+
+    public ClickListener startListener() {
+        return new ClickListener() {
+            @Override
+            public void clicked(InputEvent inputEvent, float x, float y) {
+                System.out.println("CLICKED START!");
+            }
+        };
     }
 
     @Override
