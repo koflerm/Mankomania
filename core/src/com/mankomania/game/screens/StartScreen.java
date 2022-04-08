@@ -1,7 +1,6 @@
 package com.mankomania.game.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,11 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
-
-import org.w3c.dom.Text;
 
 public class StartScreen extends ScreenAdapter {
     private final Stage stage;
@@ -22,7 +18,6 @@ public class StartScreen extends ScreenAdapter {
     private final SpriteBatch batch;
 
     public StartScreen() {
-        Table table;
         stage = new Stage();
         batch = new SpriteBatch();
         background = new Texture("background.jpg");
