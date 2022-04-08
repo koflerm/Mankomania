@@ -1,6 +1,7 @@
 package com.mankomania.game.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -15,21 +16,34 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mankomania.game.MankomaniaGame;
 
 import sun.awt.image.GifImageDecoder;
 
 public class LoadingScreen extends ScreenAdapter {
-    private final Stage stage;
+    private Stage stage;
     private Animation<Texture> loadingAnimation;
-    private final SpriteBatch batch;
+    private SpriteBatch batch;
     private float elapsedTime;
+    private Screen nextScreen;
+    private float duration;
 
-    public LoadingScreen() {
+    public LoadingScreen(Screen nextScreen) {
+        this.duration = 3;
+        initVariables(nextScreen);
+    }
+
+    public LoadingScreen(Screen nextScreen, int duration) {
+        this.duration = duration;
+        initVariables(nextScreen);
+    }
+
+    private void initVariables(Screen nextScreen) {
         stage = new Stage();
         batch = new SpriteBatch();
         loadingAnimation = createLoadingAnimation();
         elapsedTime = 0;
-
+        this.nextScreen = nextScreen;
         Gdx.input.setInputProcessor(stage);
     }
 
@@ -49,15 +63,19 @@ public class LoadingScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
-        super.render(delta);
-        System.out.println(elapsedTime);
-        ScreenUtils.clear(1, 1, 1, 1);
-        elapsedTime += delta;
-        stage.act(delta);
-        batch.begin();
-        batch.draw(loadingAnimation.getKeyFrame(elapsedTime, true),Gdx.graphics.getWidth() / 2f - (Gdx.graphics.getWidth() / 5f / 2),Gdx.graphics.getHeight() / 2f - (Gdx.graphics.getHeight() / 5f / 2), Gdx.graphics.getWidth() / 5f, Gdx.graphics.getHeight() / 5f);
-        batch.end();
-        stage.draw();
+        if (elapsedTime >= 5) {
+            MankomaniaGame.getInstance().setScreen(nextScreen);
+        } else {
+            super.render(delta);
+            System.out.println(elapsedTime);
+            ScreenUtils.clear(1, 1, 1, 1);
+            elapsedTime += delta;
+            stage.act(delta);
+            batch.begin();
+            batch.draw(loadingAnimation.getKeyFrame(elapsedTime, true),Gdx.graphics.getWidth() / 2f - (Gdx.graphics.getWidth() / 5f / 2),Gdx.graphics.getHeight() / 2f - (Gdx.graphics.getHeight() / 5f / 2), Gdx.graphics.getWidth() / 5f, Gdx.graphics.getHeight() / 5f);
+            batch.end();
+            stage.draw();
+        }
     }
 
     @Override
