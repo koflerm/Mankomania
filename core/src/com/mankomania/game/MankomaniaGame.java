@@ -9,7 +9,17 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mankomania.game.screens.LoadingScreen;
 import com.mankomania.game.screens.StartScreen;
 
+import jdk.javadoc.internal.tool.Start;
+
 public class MankomaniaGame extends Game {
+	private static MankomaniaGame game;
+
+	public static MankomaniaGame getInstance() {
+		if (game == null) {
+			game = new MankomaniaGame();
+		}
+		return game;
+	}
 
 	@Override
 	public void create () {
@@ -17,8 +27,8 @@ public class MankomaniaGame extends Game {
 		com.badlogic.gdx.Screen currentScreen = this.getScreen();
 
 		//Set new Screen
-		ScreenAdapter newScreen = new LoadingScreen();
-		this.setScreen(newScreen);
+		ScreenAdapter loadingScreen = new LoadingScreen(new StartScreen());
+		this.setScreen(loadingScreen);
 
 		//dispose old Screen
 		if (currentScreen != null) {
