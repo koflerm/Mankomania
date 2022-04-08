@@ -1,31 +1,32 @@
 package com.mankomania.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mankomania.game.screens.StartScreen;
 
-public class MankomaniaGame extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
-	
+public class MankomaniaGame extends Game {
+
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
-	}
+		//Get current Screen to dispose later
+		com.badlogic.gdx.Screen currentScreen = this.getScreen();
 
-	@Override
-	public void render () {
-		ScreenUtils.clear(0, 1, 0, 1);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
+		//Set new Screen
+		ScreenAdapter newScreen = new StartScreen();
+		this.setScreen(newScreen);
+
+		//dispose old Screen
+		if (currentScreen != null) {
+			currentScreen.dispose();
+		}
 	}
 	
 	@Override
 	public void dispose () {
-		batch.dispose();
-		img.dispose();
+		this.dispose();
 	}
 }
