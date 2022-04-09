@@ -60,7 +60,7 @@ public class StartScreen extends ScreenAdapter {
         return tab;
     }
 
-    public ClickListener startListener() {
+    private ClickListener startListener() {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
