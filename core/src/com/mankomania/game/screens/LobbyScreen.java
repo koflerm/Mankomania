@@ -22,7 +22,6 @@ public class LobbyScreen extends ScreenAdapter {
     private final Texture background;
     private final SpriteBatch batch;
     private final Table tab;
-
     private final Table innerTab;
     private InputMultiplexer inputMultiplexer;
 
@@ -118,5 +117,6 @@ public class LobbyScreen extends ScreenAdapter {
     public void dispose() {
         inputMultiplexer.removeProcessor(stage);
         stage.dispose();
+
     }
 }
