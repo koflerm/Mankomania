@@ -8,10 +8,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -20,6 +22,7 @@ public class LobbyScreen extends ScreenAdapter {
     private final Texture background;
     private final SpriteBatch batch;
     private final Table tab;
+    private final Table innerTab;
 
 
     public LobbyScreen(){
@@ -31,6 +34,10 @@ public class LobbyScreen extends ScreenAdapter {
         tab.setFillParent(true);
         tab.setWidth(stage.getWidth());
         tab.align(Align.center | Align.top);
+
+        innerTab = new Table();
+        innerTab.setWidth(stage.getWidth());
+        innerTab.align(Align.center | Align.top);
 
         Gdx.input.setInputProcessor(stage);
     }
@@ -53,12 +60,22 @@ public class LobbyScreen extends ScreenAdapter {
         Image lobbyImage = new Image(lobbyText);
 
         Texture lobbyBackgroundTexture = new Texture(Gdx.files.internal("lobby-background.png"));
-        Image lobbyBackground = new Image(lobbyBackgroundTexture);
+        TextureRegionDrawable lobbyBackground = new TextureRegionDrawable(lobbyBackgroundTexture);
+
+        innerTab.setBackground(lobbyBackground);
+        innerTab.add().expandY();
+        innerTab.row();
+        innerTab.add(new Label("Player1",skin)).pad(20f).align(Align.center);
+        innerTab.row();
+        innerTab.add(new Label("Player2",skin)).pad(20f).align(Align.center);
+        innerTab.row();
+        innerTab.add(new Label("Player3",skin)).pad(20f).align(Align.center);
+        innerTab.row();
+        innerTab.add().expandY();
 
         tab.add(lobbyImage).size(Gdx.graphics.getWidth() / 4f,Gdx.graphics.getHeight() / 5f).padTop(50).colspan(2).center();
         tab.row();
-
-        tab.add(lobbyBackground).width(0.7f * Gdx.graphics.getWidth()).height(0.5f * Gdx.graphics.getHeight()).colspan(2).padTop(50).center();
+        tab.add(innerTab).colspan(2).expandY();
         tab.row();
 
         tab.add(backButton).expand().bottom().left().padLeft(20).padBottom(20).width(Gdx.graphics.getWidth() / 5f).height(Gdx.graphics.getHeight() / 6f);
@@ -101,5 +118,6 @@ public class LobbyScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         stage.dispose();
+
     }
 }
