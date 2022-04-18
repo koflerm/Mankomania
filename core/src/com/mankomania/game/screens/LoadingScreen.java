@@ -47,7 +47,7 @@ public class LoadingScreen extends ScreenAdapter {
             }
         }
 
-        return new Animation(1f/25f, frames);
+        return new Animation(1f/80f, frames);
     }
 
     @Override
