@@ -45,7 +45,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	default: {
 		up: button
 		down: button-pressed
-		over: button-highlighted
+		over: button-highlighted,
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
@@ -81,11 +81,10 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	}
 	big: {
 		font: button
-		fontColor: black
 	}
 	title: {
 		font: title
-		fontColor: white
+		fontColor: white,
 	}
 	alt: {
 		font: font

@@ -6,19 +6,9 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mankomania.game.MankomaniaGame;
-
-import sun.awt.image.GifImageDecoder;
 
 public class LoadingScreen extends ScreenAdapter {
     private Stage stage;
@@ -26,10 +16,10 @@ public class LoadingScreen extends ScreenAdapter {
     private SpriteBatch batch;
     private float elapsedTime;
     private Screen nextScreen;
-    private float duration;
+    private final float duration;
 
     public LoadingScreen(Screen nextScreen) {
-        this.duration = 3;
+        duration = 3;
         initVariables(nextScreen);
     }
 
@@ -46,7 +36,7 @@ public class LoadingScreen extends ScreenAdapter {
         this.nextScreen = nextScreen;
     }
 
-    private Animation createLoadingAnimation() {
+    private Animation<Texture> createLoadingAnimation() {
         Texture[] frames = new Texture[75];
 
         for (int i = 0; i < 75; i++) {
@@ -57,12 +47,12 @@ public class LoadingScreen extends ScreenAdapter {
             }
         }
 
-        return new Animation(1f/25f, frames);
+        return new Animation<>(1f / 80f, frames);
     }
 
     @Override
     public void render(float delta) {
-        if (elapsedTime >= 5) {
+        if (elapsedTime >= duration) {
             MankomaniaGame.getInstance().setScreen(nextScreen);
             this.dispose();
         } else {

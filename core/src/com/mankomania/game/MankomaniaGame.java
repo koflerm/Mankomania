@@ -1,15 +1,12 @@
 package com.mankomania.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.mankomania.game.screens.LoadingScreen;
 import com.mankomania.game.screens.StartScreen;
-
-import jdk.javadoc.internal.tool.Start;
 
 public class MankomaniaGame extends Game {
 	private static MankomaniaGame game;
@@ -24,7 +21,8 @@ public class MankomaniaGame extends Game {
 	@Override
 	public void create () {
 		//Get current Screen to dispose later
-		com.badlogic.gdx.Screen currentScreen = this.getScreen();
+		Gdx.input.setInputProcessor(new InputMultiplexer());
+		Screen currentScreen = this.getScreen();
 
 		//Set new Screen
 		ScreenAdapter loadingScreen = new LoadingScreen(new StartScreen());
@@ -35,7 +33,13 @@ public class MankomaniaGame extends Game {
 			currentScreen.dispose();
 		}
 	}
-	
+
+	public void disposeCurrentScreen() {
+		Screen currentScreen = this.getScreen();
+		currentScreen.dispose();
+
+	}
+
 	@Override
 	public void dispose () {
 		this.dispose();
