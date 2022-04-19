@@ -22,7 +22,7 @@ public class GameScreen extends ScreenAdapter {
     private final Skin skin;
     private final float boxWidth;
     private final float boxHeight;
-    private Dialog turnDialog;
+    private final Dialog turnDialog;
 
     private boolean turnDialogIsShown;
     private boolean turnDialogNeeded;
@@ -34,7 +34,7 @@ public class GameScreen extends ScreenAdapter {
     private static final float BOARD_PLAYER_BOX_WIDTH_FACTOR = 4.5f;
     private static final float BOARD_PLAYER_BOX_HEIGHT_FACTOR = 4f;
     private static final float BOARD_PLAYER_MONEY_FACTOR = 4.5f;
-    private static final String BOARD_TURN_DIALOG_STYLE = "title";
+    private static final String BOARD_TEXT_STYLE = "title";
 
     public GameScreen() {
         gameBoard = new Texture("board.jpg");
@@ -116,7 +116,7 @@ public class GameScreen extends ScreenAdapter {
 
     private void drawPlayerMetadata(int money) {
         float labelHeight = calcHeightFactor(BOARD_PLAYER_MONEY_FACTOR);
-        Label label = new Label("$ " + money, skin, "title");
+        Label label = new Label("$ " + money, skin, BOARD_TEXT_STYLE);
         label.setFontScale(labelHeight / 200f);
         label.setSize(Gdx.graphics.getWidth(), labelHeight);
         label.setColor(Color.GREEN);
@@ -130,9 +130,9 @@ public class GameScreen extends ScreenAdapter {
 
         Table tab = new Table();
         tab.align(Align.center);
-        Label nextTurnLabel = new Label("Next Turn:", skin, BOARD_TURN_DIALOG_STYLE);
-        Label playerNameLabel = new Label(turnDialogPlayerName, skin, BOARD_TURN_DIALOG_STYLE);
-        Label moneyLabel = new Label("Current money: $" + turnDialogPlayerMoney, skin, BOARD_TURN_DIALOG_STYLE);
+        Label nextTurnLabel = new Label("Next Turn:", skin, BOARD_TEXT_STYLE);
+        Label playerNameLabel = new Label(turnDialogPlayerName, skin, BOARD_TEXT_STYLE);
+        Label moneyLabel = new Label("Current money: $" + turnDialogPlayerMoney, skin, BOARD_TEXT_STYLE);
 
         tab.add(nextTurnLabel).row();
         tab.add(playerNameLabel).row();
