@@ -161,7 +161,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private float calcBoardPosition(int base) {
-        return base / 2 - (Gdx.graphics.getHeight() / BOARD_SIZING_FACTOR / 2);
+        return base / 2f - (Gdx.graphics.getHeight() / BOARD_SIZING_FACTOR / 2);
     }
 
     private float calcBoardSize() {
