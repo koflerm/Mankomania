@@ -16,10 +16,10 @@ public class LoadingScreen extends ScreenAdapter {
     private SpriteBatch batch;
     private float elapsedTime;
     private Screen nextScreen;
-    private float duration;
+    private final float duration;
 
     public LoadingScreen(Screen nextScreen) {
-        this.duration = 3;
+        duration = 3;
         initVariables(nextScreen);
     }
 
@@ -36,7 +36,7 @@ public class LoadingScreen extends ScreenAdapter {
         this.nextScreen = nextScreen;
     }
 
-    private Animation createLoadingAnimation() {
+    private Animation<Texture> createLoadingAnimation() {
         Texture[] frames = new Texture[75];
 
         for (int i = 0; i < 75; i++) {
@@ -47,12 +47,12 @@ public class LoadingScreen extends ScreenAdapter {
             }
         }
 
-        return new Animation(1f/80f, frames);
+        return new Animation<>(1f / 80f, frames);
     }
 
     @Override
     public void render(float delta) {
-        if (elapsedTime >= 5) {
+        if (elapsedTime >= duration) {
             MankomaniaGame.getInstance().setScreen(nextScreen);
             this.dispose();
         } else {
