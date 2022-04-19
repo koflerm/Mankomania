@@ -131,22 +131,24 @@ public class GameScreen extends ScreenAdapter {
 
     private void drawTurnDialog() {
         float scale = Gdx.graphics.getWidth() / 1000f;
+        float dialogXPosition = (Gdx.graphics.getWidth() / 2f) - ((turnDialog.getWidth() * scale) / 2f);
+        float dialogYPosition = (Gdx.graphics.getHeight() / 2f) - ((turnDialog.getHeight() * scale) / 2f);
 
         Table tab = new Table();
         tab.align(Align.center);
-        Label l1 = new Label("Next Turn:", skin, "title");
-        Label l2 = new Label(turnDialogPlayerName, skin, "title");
-        Label l3 = new Label("Current money: $" + turnDialogPlayerMoney, skin, "title");
+        Label nextTurnLabel = new Label("Next Turn:", skin, "title");
+        Label playerNameLabel = new Label(turnDialogPlayerName, skin, "title");
+        Label moneyLabel = new Label("Current money: $" + turnDialogPlayerMoney, skin, "title");
 
-        tab.add(l1).row();
-        tab.add(l2).row();
-        tab.add(l3).row();
+        tab.add(nextTurnLabel).row();
+        tab.add(playerNameLabel).row();
+        tab.add(moneyLabel).row();
         tab.pad(20);
 
         if (turnDialogIsCurrentPlayer) {
-            TextButton b1 = new TextButton("START TURN", skin, "default");
-            b1.setTransform(true);
-            turnDialog.button(b1, true).padBottom(20);
+            TextButton startTurnButton = new TextButton("START TURN", skin, "default");
+            startTurnButton.setTransform(true);
+            turnDialog.button(startTurnButton, true).padBottom(20);
         } else {
             Label l4 = new Label("Waiting for player...", skin, "default");
             tab.add(l4).row();
@@ -155,7 +157,7 @@ public class GameScreen extends ScreenAdapter {
         turnDialog.getContentTable().add(tab);
         turnDialog.setScale(scale);
         turnDialog.show(stage);
-        turnDialog.setPosition(Gdx.graphics.getWidth() / 2 - ((turnDialog.getWidth() * scale) / 2), Gdx.graphics.getHeight() / 2 - ((turnDialog.getHeight() * scale) / 2));
+        turnDialog.setPosition(dialogXPosition, dialogYPosition);
     }
 
     private float calcBoardPosition(int base) {
