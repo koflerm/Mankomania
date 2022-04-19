@@ -1,11 +1,15 @@
 package com.mankomania.game.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -13,19 +17,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mankomania.game.MankomaniaGame;
 
 public class StartScreen extends ScreenAdapter {
     private final Stage stage;
     private final Texture background;
     private final SpriteBatch batch;
+    private InputMultiplexer inputMultiplexer;
 
     public StartScreen() {
         stage = new Stage();
         batch = new SpriteBatch();
         background = new Texture("background.jpg");
 
-        Gdx.input.setInputProcessor(stage);
-
+        inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
+        if (!inputMultiplexer.getProcessors().contains(stage, true)) {
+            inputMultiplexer.addProcessor(stage);
+        }
         initTableAndAddActor(stage);
     }
 
@@ -64,7 +72,8 @@ public class StartScreen extends ScreenAdapter {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
-                System.out.println("CLICKED START!");
+                MankomaniaGame.getInstance().disposeCurrentScreen();
+                MankomaniaGame.getInstance().setScreen(new LoadingScreen(new GameScreen(), 2));
             }
         };
     }
@@ -82,6 +91,7 @@ public class StartScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
+        inputMultiplexer.removeProcessor(stage);
         stage.dispose();
     }
 }
