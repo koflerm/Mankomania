@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
-import com.mankomania.game.screens.GameScreen;
 import com.mankomania.game.screens.LoadingScreen;
 import com.mankomania.game.screens.StartScreen;
 
