@@ -1,5 +1,6 @@
 package com.mankomania.game.screens;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
@@ -70,7 +71,7 @@ public class StartScreen extends ScreenAdapter {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
-                MankomaniaGame.getInstance().setScreen(new LoadingScreen(new GameScreen(), 2));
+                MankomaniaGame.getInstance().setScreen(new LobbyScreen());
             }
         };
     }
