@@ -117,6 +117,5 @@ public class LobbyScreen extends ScreenAdapter {
     public void dispose() {
         inputMultiplexer.removeProcessor(stage);
         stage.dispose();
-
     }
 }
