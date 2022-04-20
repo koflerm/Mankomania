@@ -47,7 +47,6 @@ public class LobbyScreen extends ScreenAdapter {
         }
     }
 
-
     @Override
     public void show(){
         Skin skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
@@ -113,12 +112,7 @@ public class LobbyScreen extends ScreenAdapter {
     @Override
     public void render(float delta) {
         super.render(delta);
-        ScreenUtils.clear(1, 1, 1, 1);
-        stage.act(delta);
-        batch.begin();
-        batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batch.end();
-        stage.draw();
+        MankomaniaGame.renderMenu(stage, batch, delta, background);
     }
 
     @Override
