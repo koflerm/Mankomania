@@ -5,6 +5,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.mankomania.game.screens.LoadingScreen;
 import com.mankomania.game.screens.StartScreen;
 
@@ -37,7 +41,15 @@ public class MankomaniaGame extends Game {
 	public void disposeCurrentScreen() {
 		Screen currentScreen = this.getScreen();
 		currentScreen.dispose();
+	}
 
+	public static void renderMenu(Stage stage, SpriteBatch batch, float delta, Texture background) {
+		ScreenUtils.clear(1, 1, 1, 1);
+		stage.act(delta);
+		batch.begin();
+		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		batch.end();
+		stage.draw();
 	}
 
 	@Override
