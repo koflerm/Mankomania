@@ -102,7 +102,8 @@ public class LobbyScreen extends ScreenAdapter {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
-               //Gamescreen
+                MankomaniaGame.getInstance().disposeCurrentScreen();
+                MankomaniaGame.getInstance().setScreen(new GameScreen());
             }
         };
     }
