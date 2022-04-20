@@ -23,6 +23,7 @@ public class GameScreen extends ScreenAdapter {
     private final float boxWidth;
     private final float boxHeight;
     private final Dialog turnDialog;
+    private InputMultiplexer inputMultiplexer;
 
     private boolean turnDialogIsShown;
     private boolean turnDialogNeeded;
@@ -47,7 +48,7 @@ public class GameScreen extends ScreenAdapter {
         turnDialog = new Dialog("INFO", skin, "alt") {};
         turnDialogNeeded = false;
 
-        InputMultiplexer inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
+        inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
         if (!inputMultiplexer.getProcessors().contains(stage, true)) {
             inputMultiplexer.addProcessor(stage);
         }
@@ -168,6 +169,7 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
+        inputMultiplexer.removeProcessor(stage);
         this.dispose();
     }
 }
