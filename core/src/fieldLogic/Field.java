@@ -1,14 +1,14 @@
 package fieldLogic;
 
 public class Field {
-    private final int nextField;
-    private final int optionalNextField;
-    private final int previousField;
+    private final Field nextField;
+    private final Field optionalNextField;
+    private final Field previousField;
     private final String fieldDescription;
     private final FieldColor color;
     private final int fieldIndex;
 
-    public Field(int fieldIndex, int nextField, int optionalNextField, int previousField, String fieldDescription, FieldColor color){
+    public Field(int fieldIndex, Field nextField, Field optionalNextField, Field previousField, String fieldDescription, FieldColor color){
         this.fieldIndex = fieldIndex;
         this.nextField = nextField;
         this.optionalNextField = optionalNextField;
@@ -18,12 +18,13 @@ public class Field {
     }
 
 
-    public boolean isIntersection(){return nextField > -1 && optionalNextField > -1; }
+    public boolean isIntersection(){return nextField != null && optionalNextField != null; }
+
     //-------GETTERS---------
     public int getFieldIndex(){return fieldIndex;}
-    public int getNextField(){return nextField;}
-    public int getOptionalNextField(){return optionalNextField;}
-    public int getPreviousField(){return previousField;}
+    public Field getNextField(){return nextField;}
+    public Field getOptionalNextField(){return optionalNextField;}
+    public Field getPreviousField(){return previousField;}
     public String getFieldDescription(){return fieldDescription;}
     public FieldColor getColor(){return color;}
     //-----------------------
