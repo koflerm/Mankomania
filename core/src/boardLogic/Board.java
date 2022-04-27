@@ -26,7 +26,7 @@ public class Board {
     //-------GETTERS---------
     public int getCurrentPlayerIndex(){return currentPlayerIndex;}
     public StockExchange getStockExchangeData(){return stockExchangeData;}
-    public Field getCurrentPlayerField(){return fields[players.get(currentPlayerIndex).getCurrentFieldPosition()];}
+    public Field getCurrentPlayerField(){return players.get(currentPlayerIndex).getCurrentPosition();}
     public int[] getStartingFieldIndexes(){return startingFieldIndexes;}
     public Player getCurrentPlayer(){return players.get(currentPlayerIndex);}
     public Field getFieldByIndex(int fieldIndex){return fields[fieldIndex];}
