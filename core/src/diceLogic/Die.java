@@ -2,7 +2,7 @@ package diceLogic;
 
 import java.util.ArrayList;
 import java.security.SecureRandom;
-public class Dice {
+public class Die {
     private SecureRandom secRand = new SecureRandom();
     public ArrayList<Integer> dice;
     public ArrayList<Integer> throwDice (int numberOfFaces, int numberOfDice){
