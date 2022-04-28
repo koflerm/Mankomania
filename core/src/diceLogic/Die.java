@@ -2,18 +2,20 @@ package diceLogic;
 
 import java.util.ArrayList;
 import java.security.SecureRandom;
+import java.util.List;
+
 public class Die {
     private SecureRandom secRand = new SecureRandom();
-    private  ArrayList<Integer> dice;
+    private List<Integer> dice;
 
     /*public Die() {
         this.dice = new ArrayList<>();
     }*/
 
-    public ArrayList<Integer> throwDice (int numberOfFaces, int numberOfDice){
+    public List<Integer> throwDice (int numberOfFaces, int numberOfDice){
         dice = new ArrayList<>();
         for(int i = 0; i < numberOfDice; i++){
-         dice.add((int)(secRand.nextInt() * numberOfFaces + 1));
+         dice.add((secRand.nextInt() * numberOfFaces + 1));
         }
         return dice;
     }
@@ -27,7 +29,7 @@ public class Die {
         return sum;
     }
     //-----------GETTER-----------------
-    public ArrayList<Integer> getDice(){ return dice; }
+    public List<Integer> getDice(){ return dice; }
    // public void setDice(){this.dice = new ArrayList<>(); }
     //---------------------------------
 }
