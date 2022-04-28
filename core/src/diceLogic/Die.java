@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.security.SecureRandom;
 public class Die {
     private SecureRandom secRand = new SecureRandom();
-    public final ArrayList<Integer> dice;
+    private  ArrayList<Integer> dice;
 
-    public Die() {
+    /*public Die() {
         this.dice = new ArrayList<>();
-    }
+    }*/
 
     public ArrayList<Integer> throwDice (int numberOfFaces, int numberOfDice){
+        dice = new ArrayList<>();
         for(int i = 0; i < numberOfDice; i++){
          dice.add((int)(secRand.nextInt() * numberOfFaces + 1));
         }
@@ -27,5 +28,6 @@ public class Die {
     }
     //-----------GETTER-----------------
     public ArrayList<Integer> getDice(){ return dice; }
+   // public void setDice(){this.dice = new ArrayList<>(); }
     //---------------------------------
 }
