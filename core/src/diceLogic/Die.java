@@ -8,9 +8,6 @@ public class Die {
     private SecureRandom secRand = new SecureRandom();
     private List<Integer> dice;
 
-    /*public Die() {
-        this.dice = new ArrayList<>();
-    }*/
 
     public List<Integer> throwDice (int numberOfFaces, int numberOfDice){
         dice = new ArrayList<>();
@@ -30,6 +27,5 @@ public class Die {
     }
     //-----------GETTER-----------------
     public List<Integer> getDice(){ return dice; }
-   // public void setDice(){this.dice = new ArrayList<>(); }
     //---------------------------------
 }
