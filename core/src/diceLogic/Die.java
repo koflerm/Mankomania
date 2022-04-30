@@ -27,5 +27,6 @@ public class Die {
     }
     //-----------GETTER-----------------
     public List<Integer> getDice(){ return dice; }
+    public int getValueAtIndex(int index){ return dice.get(index); }
     //---------------------------------
 }
