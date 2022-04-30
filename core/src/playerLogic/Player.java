@@ -58,7 +58,7 @@ public class Player {
     public void addMoney(int amount){money += amount;}
     public void loseMoney(int amount){money -= amount;}
     //--------------------------
-
+    //TODO Write check method if field is already occupied
     public void payToPlayer(Player player, int amount){
         money -= amount;
         player.addMoney(amount);
