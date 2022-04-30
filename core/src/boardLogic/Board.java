@@ -2,9 +2,10 @@ package boardLogic;
 
 import java.util.ArrayList;
 
+import boardLogic.minigames.Lottery;
 import fieldLogic.Field;
 import playerLogic.Player;
-import shareLogic.StockExchange;
+import boardLogic.minigames.StockExchange;
 
 public class Board {
     private Field[] fields;
