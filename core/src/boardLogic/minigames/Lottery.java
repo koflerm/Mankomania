@@ -1,4 +1,4 @@
-package boardLogic;
+package boardLogic.minigames;
 
 import java.util.ArrayList;
 

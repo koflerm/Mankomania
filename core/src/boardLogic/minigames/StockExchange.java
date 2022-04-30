@@ -1,4 +1,6 @@
-package shareLogic;
+package boardLogic.minigames;
+
+import shareLogic.Share;
 
 public class StockExchange {
     private Share share;
@@ -15,4 +17,5 @@ public class StockExchange {
     public void setShare(Share share){this.share = share;}
     public void setNeedUpdate(boolean needUpdate){this.needUpdate = needUpdate;}
     //-----------------------------
+    //TODO add roulette method to check if the stock are rising or not (random logic)
 }
