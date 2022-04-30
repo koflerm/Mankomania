@@ -15,9 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
 
-public class LobbyScreen extends ScreenAdapter {
+
+public class LobbyScreen extends ScreenAdapter{
     private final Stage stage;
     private final Texture background;
     private final SpriteBatch batch;
@@ -25,7 +27,8 @@ public class LobbyScreen extends ScreenAdapter {
     private final Table innerTab;
     private InputMultiplexer inputMultiplexer;
 
-    public LobbyScreen(){
+    public LobbyScreen() {
+
         stage = new Stage();
         batch = new SpriteBatch();
         background = new Texture("background.jpg");
@@ -46,7 +49,7 @@ public class LobbyScreen extends ScreenAdapter {
     }
 
     @Override
-    public void show(){
+    public void show() {
         Skin skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
         skin.getFont("font").getData().setScale(5, 5);
 
@@ -67,15 +70,15 @@ public class LobbyScreen extends ScreenAdapter {
         innerTab.setBackground(lobbyBackground);
         innerTab.add().expandY();
         innerTab.row();
-        innerTab.add(new Label("Player1",skin)).pad(20f).align(Align.center);
+        innerTab.add(new Label("Player1", skin)).pad(20f).align(Align.center);
         innerTab.row();
-        innerTab.add(new Label("Player2",skin)).pad(20f).align(Align.center);
+        innerTab.add(new Label("Player2", skin)).pad(20f).align(Align.center);
         innerTab.row();
-        innerTab.add(new Label("Player3",skin)).pad(20f).align(Align.center);
+        innerTab.add(new Label("Player3", skin)).pad(20f).align(Align.center);
         innerTab.row();
         innerTab.add().expandY();
 
-        tab.add(lobbyImage).size(Gdx.graphics.getWidth() / 4f,Gdx.graphics.getHeight() / 5f).padTop(50).colspan(2).center();
+        tab.add(lobbyImage).size(Gdx.graphics.getWidth() / 4f, Gdx.graphics.getHeight() / 5f).padTop(50).colspan(2).center();
         tab.row();
         tab.add(innerTab).colspan(2).expandY();
         tab.row();
@@ -85,25 +88,33 @@ public class LobbyScreen extends ScreenAdapter {
         backButton.addListener(backListener());
 
         stage.addActor(tab);
+
     }
 
 
-    public ClickListener backListener(){
+    public ClickListener backListener() {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new StartScreen());
+
+                Connection.closeConnection();
+
             }
         };
     }
 
-    public ClickListener startListener(){
+    public ClickListener startListener() {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
-                MankomaniaGame.getInstance().disposeCurrentScreen();
-                MankomaniaGame.getInstance().setScreen(new GameScreen());
+
+                if(Connection.getStart()){
+                    MankomaniaGame.getInstance().disposeCurrentScreen();
+                    MankomaniaGame.getInstance().setScreen(new GameScreen());
+                }
+
             }
         };
     }
@@ -112,6 +123,17 @@ public class LobbyScreen extends ScreenAdapter {
     public void render(float delta) {
         super.render(delta);
         MankomaniaGame.renderMenu(stage, batch, delta, background);
+
+        if(Connection.getStart()){
+            MankomaniaGame.getInstance().disposeCurrentScreen();
+            MankomaniaGame.getInstance().setScreen(new GameScreen());
+        }
+
+    }
+
+    public void doDispose(){
+        MankomaniaGame.getInstance().disposeCurrentScreen();
+        MankomaniaGame.getInstance().setScreen(new GameScreen());
     }
 
     @Override
@@ -119,4 +141,5 @@ public class LobbyScreen extends ScreenAdapter {
         inputMultiplexer.removeProcessor(stage);
         stage.dispose();
     }
+
 }

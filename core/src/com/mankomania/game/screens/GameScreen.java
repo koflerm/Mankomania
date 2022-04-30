@@ -6,14 +6,17 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mankomania.game.DiceAnimation;
 
 public class GameScreen extends ScreenAdapter {
     private final Texture gameBoard;
@@ -37,6 +40,10 @@ public class GameScreen extends ScreenAdapter {
     private static final float BOARD_PLAYER_MONEY_FACTOR = 4.5f;
     private static final String BOARD_TEXT_STYLE = "title";
 
+    private DiceAnimation diceAnimation;
+    private static final float duration = 3;
+    private float elapsed;
+
     public GameScreen() {
         gameBoard = new Texture("board.jpg");
         stage = new Stage();
@@ -47,6 +54,8 @@ public class GameScreen extends ScreenAdapter {
         turnDialogIsShown = false;
         turnDialog = new Dialog("INFO", skin, "alt") {};
         turnDialogNeeded = false;
+        diceAnimation = new DiceAnimation();
+        elapsed = 0;
 
         inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
         if (!inputMultiplexer.getProcessors().contains(stage, true)) {
@@ -56,7 +65,14 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        if (elapsed >= duration){
+            diceAnimation.removeDice();
+        diceAnimation.setDiceShown(false);
+        }
         super.render(delta);
+        if(diceAnimation.getDiceShown()){
+            elapsed+=delta;
+        }
         stage.act(delta);
         ScreenUtils.clear(0.9f, 0.9f, 0.9f, 1);
         drawGameBoard();
@@ -144,6 +160,7 @@ public class GameScreen extends ScreenAdapter {
             TextButton startTurnButton = new TextButton("START TURN", skin, "default");
             startTurnButton.setTransform(true);
             turnDialog.button(startTurnButton, true).padBottom(20);
+            startTurnButton.addListener(startTurnListener());
         } else {
             Label l4 = new Label("Waiting for player...", skin, "default");
             tab.add(l4).row();
@@ -165,6 +182,17 @@ public class GameScreen extends ScreenAdapter {
 
     private float calcBoardSize() {
         return Gdx.graphics.getHeight() / BOARD_SIZING_FACTOR;
+    }
+
+
+    public ClickListener startTurnListener(){
+        return new ClickListener() {
+            @Override
+            public void clicked(InputEvent inputEvent, float x, float y) {
+                hideTurnDialog();
+                diceAnimation.showDice(stage);
+            }
+        };
     }
 
     @Override

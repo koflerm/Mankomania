@@ -13,13 +13,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
+
+import io.socket.emitter.Emitter;
 
 public class StartScreen extends ScreenAdapter {
     private final Stage stage;
     private final Texture background;
     private final SpriteBatch batch;
     private InputMultiplexer inputMultiplexer;
+
 
     public StartScreen() {
         stage = new Stage();
@@ -31,6 +35,7 @@ public class StartScreen extends ScreenAdapter {
             inputMultiplexer.addProcessor(stage);
         }
         initTableAndAddActor(stage);
+
     }
 
     private void initTableAndAddActor(Stage stage) {
@@ -70,6 +75,37 @@ public class StartScreen extends ScreenAdapter {
             public void clicked(InputEvent inputEvent, float x, float y) {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new LobbyScreen());
+
+                Connection.createConnection();
+
+                Emitter.Listener startGameListener = new Emitter.Listener() {
+
+                    @Override
+                    public void call(Object... args) {
+                        Connection.setStart(true);
+
+                        Connection.setLobbyID(args[0].toString());
+
+                    }
+                };
+
+                Connection.readyForGame(startGameListener);
+
+                Emitter.Listener joinRoomListener = new Emitter.Listener() {
+
+                    @Override
+                    public void call(Object... args) {
+                        Connection.setLobbyID(args[0].toString());
+
+                        String temp = args[1].toString().substring(1, args[1].toString().length() - 1);
+
+                        String temp1 = temp.replaceAll("[\"]", "");
+
+                        Connection.setPlayers(temp1.split(","));
+
+                    }
+                };
+                Connection.joinRoom(joinRoomListener);
             }
         };
     }
@@ -85,4 +121,5 @@ public class StartScreen extends ScreenAdapter {
         inputMultiplexer.removeProcessor(stage);
         stage.dispose();
     }
+
 }
