@@ -2,31 +2,29 @@ package boardLogic;
 
 import java.util.ArrayList;
 
-import boardLogic.minigames.Lottery;
 import fieldLogic.Field;
 import playerLogic.Player;
-import boardLogic.minigames.StockExchange;
 
 public class Board {
     private Field[] fields;
     private int[] startingFieldIndexes;
-    private Lottery lottery;
+  //  private Lottery lottery;
     private ArrayList<Player> players;
     private int currentPlayerIndex;
-    private StockExchange stockExchangeData;
+    //private StockExchange stockExchangeData;
 
     public Board(){
         players = new ArrayList<>();
-        stockExchangeData = new StockExchange();
-        lottery = new Lottery();
-        lottery.setLotteryAmount(0);
+       // stockExchangeData = new StockExchange();
+     //   lottery = new Lottery();
+     //   lottery.setLotteryAmount(0);
         currentPlayerIndex = 0;
 
     }
 
     //-------GETTERS---------
     public int getCurrentPlayerIndex(){return currentPlayerIndex;}
-    public StockExchange getStockExchangeData(){return stockExchangeData;}
+    //public StockExchange getStockExchangeData(){return stockExchangeData;}
     public Field getCurrentPlayerField(){return players.get(currentPlayerIndex).getCurrentPosition();}
     public int[] getStartingFieldIndexes(){return startingFieldIndexes;}
     public Player getCurrentPlayer(){return players.get(currentPlayerIndex);}
