@@ -12,21 +12,18 @@ public class Die {
     public List<Integer> throwDice (int numberOfFaces, int numberOfDice){
         dice = new ArrayList<>();
         for(int i = 0; i < numberOfDice; i++){
-         dice.add((secRand.nextInt() * numberOfFaces + 1));
+         dice.add((secRand.nextInt(numberOfFaces - 1) + 1));
         }
         return dice;
     }
-    public int getSumOfDice (){
+    public int getSumOfDice (List<Integer> diceToSum){
         int sum = 0;
-
-        for(Integer die: dice){
+        for(Integer die: diceToSum){
             sum += die;
         }
-
         return sum;
     }
     //-----------GETTER-----------------
     public List<Integer> getDice(){ return dice; }
-    public int getValueAtIndex(int index){ return dice.get(index); }
     //---------------------------------
 }
