@@ -2,6 +2,7 @@ package playerLogic;
 
 import com.badlogic.gdx.utils.IntArray;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 
 import fieldLogic.Field;
@@ -11,7 +12,7 @@ public class Player {
     private int playerIndex;
     private int money;
     private Field currentPosition;
-
+    private SecureRandom secRand = new SecureRandom();
    // private IntArray movePath;
     private HashMap<Share,Integer> shares;
 
@@ -21,8 +22,8 @@ public class Player {
     public Player(Field startingField, int playerIndex){
         money = 1000000;
        // movePath = new IntArray();
-        // TODO add choosing method for Shares
         shares = new HashMap<>();
+        setInitialRandomShares(secRand.nextInt(3 - 1) + 1);
         shares.put(Share.DRY_OIL_PLC,0);
         shares.put(Share.SHORT_CIRCUIT_PLC,0);
         shares.put(Share.HARD_STEEL_PLC,0);
@@ -52,15 +53,27 @@ public class Player {
     public void setMoney(int money) {
         this.money = money;
     }
+    public void setInitialRandomShares(int share_Index){
+        switch(share_Index){
+            case 1: shares.put(Share.DRY_OIL_PLC,0);
+                    shares.put(Share.SHORT_CIRCUIT_PLC,0);
+
+            case 2:shares.put(Share.DRY_OIL_PLC,0);
+                   shares.put(Share.HARD_STEEL_PLC,0);
+
+            case 3:shares.put(Share.HARD_STEEL_PLC,0);
+                   shares.put(Share.SHORT_CIRCUIT_PLC,0);
+        }
+    }
     //--------------------------
 
     //-----MONEY UPDATING-------
     public void addMoney(int amount){money += amount;}
     public void loseMoney(int amount){money -= amount;}
     //--------------------------
-    //TODO Write check method if field is already occupied
     public void payToPlayer(Player player, int amount){
         money -= amount;
         player.addMoney(amount);
     }
+
 }

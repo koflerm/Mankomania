@@ -1,5 +1,9 @@
 package fieldLogic;
 
+import java.util.ArrayList;
+
+import playerLogic.Player;
+
 public class Field {
     private final Field nextField;
     private final Field optionalNextField;
@@ -19,6 +23,14 @@ public class Field {
 
 
     public boolean isIntersection(){return nextField != null && optionalNextField != null; }
+    public boolean hasPlayer(ArrayList<Player> players) {
+        for (Player player : players) {
+             if(player.getCurrentPosition().fieldIndex == this.fieldIndex ){
+                 return true;
+             }
+        };
+        return false;
+    }
 
     //-------GETTERS---------
     public int getFieldIndex(){return fieldIndex;}
