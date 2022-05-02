@@ -2,13 +2,14 @@ package boardLogic;
 
 import java.util.ArrayList;
 
+import boardLogic.minigames.lotteryLogic.Lottery;
 import fieldLogic.Field;
 import playerLogic.Player;
 
 public class Board {
     private Field[] fields;
     private int[] startingFieldIndexes;
-  //  private Lottery lottery;
+    private Lottery lottery;
     private ArrayList<Player> players;
     private int currentPlayerIndex;
     //private StockExchange stockExchangeData;
@@ -16,9 +17,9 @@ public class Board {
     public Board(){
         players = new ArrayList<>();
        // stockExchangeData = new StockExchange();
-     //   lottery = new Lottery();
-     //   lottery.setLotteryAmount(0);
-        currentPlayerIndex = 0;
+       lottery = new Lottery();
+       lottery.setLotteryAmount(0);
+       currentPlayerIndex = 0;
 
     }
 
