@@ -38,8 +38,8 @@ public class Board {
         setCurrentPlayerIndex((getCurrentPlayerIndex() + 1) % players.size());
     }
 
-    public void setCurrentPlayerIndex(int currentPlayerIndex) {
-        this.currentPlayerIndex = currentPlayerIndex;
+    public void setCurrentPlayerIndex(int index) {
+        this.currentPlayerIndex = index;
     }
 
     public void addPlayer(Player p){
