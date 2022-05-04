@@ -36,15 +36,16 @@ public class BoardTest {
     }
     @Test
     public void nextPlayerTest_returnTrue(){
+        b1.setCurrentPlayerIndex(1);
         assertEquals(1, (b1.getCurrentPlayerIndex()));
     }
     @Test
     public void nextPlayerTest_returnFalse(){
+        b1.setCurrentPlayerIndex(1);
         assertNotEquals(0, (b1.getCurrentPlayerIndex()));
     }
     @Test
     public void setPlayerTest_returnTrue(){
-        b1.setCurrentPlayerIndex(0);
         assertEquals(0, (b1.getCurrentPlayerIndex()));
     }
     @Test
