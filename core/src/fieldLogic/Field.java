@@ -5,18 +5,18 @@ import java.util.ArrayList;
 import playerLogic.Player;
 
 public class Field {
-    private final Field nextField;
-    private final Field optionalNextField;
-    private final Field previousField;
+    private  Field nextField;
+    private  Field optionalNextField;
+    private  Field previousField;
     private final String fieldDescription;
     private final FieldColor color;
     private final int fieldIndex;
 
-    public Field(int fieldIndex, Field nextField, Field optionalNextField, Field previousField, String fieldDescription, FieldColor color){
+    public Field(int fieldIndex,  String fieldDescription, FieldColor color){
         this.fieldIndex = fieldIndex;
-        this.nextField = nextField;
-        this.optionalNextField = optionalNextField;
-        this.previousField = previousField;
+        this.nextField = null;
+        this.optionalNextField = null;
+        this.previousField = null;
         this.fieldDescription = fieldDescription;
         this.color = color;
     }
@@ -39,6 +39,17 @@ public class Field {
     public Field getPreviousField(){return previousField;}
     public String getFieldDescription(){return fieldDescription;}
     public FieldColor getColor(){return color;}
+    //-----------------------
+    //--------SETTERS--------
+    public void setNextField(Field field){
+        this.nextField = field;
+    }
+    public void setOptionalNextField(Field field){
+        this.optionalNextField = field;
+    }
+    public void setPreviousField(Field field){
+        this.previousField = field;
+    }
     //-----------------------
 
 }
