@@ -46,6 +46,7 @@ public class BoardTest {
     }
     @Test
     public void setPlayerTest_returnTrue(){
+        b1.setCurrentPlayerIndex(0);
         assertEquals(0, (b1.getCurrentPlayerIndex()));
     }
     @Test
