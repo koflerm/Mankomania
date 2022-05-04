@@ -24,10 +24,6 @@ public class Player {
        // movePath = new IntArray();
         shares = new HashMap<>();
         setInitialRandomShares(secRand.nextInt(3 - 1) + 1);
-        shares.put(Share.DRY_OIL_PLC,0);
-        shares.put(Share.SHORT_CIRCUIT_PLC,0);
-        shares.put(Share.HARD_STEEL_PLC,0);
-
         this.playerIndex = playerIndex;
         this.currentPosition = startingField;
 
@@ -53,6 +49,7 @@ public class Player {
     public void setMoney(int money) {
         this.money = money;
     }
+
     public void setInitialRandomShares(int share_Index){
         switch(share_Index){
             case 1: shares.put(Share.DRY_OIL_PLC,0);
