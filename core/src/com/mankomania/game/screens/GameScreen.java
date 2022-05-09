@@ -31,6 +31,7 @@ public class GameScreen extends ScreenAdapter {
     private Texture p2Card;
     private Texture p3Card;
     private Texture p4Card;
+    private Texture turnBox;
 
     private boolean turnDialogIsShown;
     private boolean turnDialogNeeded;
@@ -54,6 +55,7 @@ public class GameScreen extends ScreenAdapter {
         p2Card = new Texture("P2.png");
         p3Card = new Texture("P3.png");
         p4Card = new Texture("P4.png");
+        turnBox = new Texture("turnBox.png");
         stage = new Stage();
         batch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
@@ -133,6 +135,9 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void drawPlayerBox(float x, float y, String playerName, Texture playerCard) {
+        if (playerName == turnDialogPlayerName) {
+            batch.draw(turnBox, x, y, boxWidth, boxHeight);
+        }
         batch.draw(playerCard, x, y, boxWidth, boxHeight);
     }
 
