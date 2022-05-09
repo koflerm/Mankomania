@@ -27,6 +27,10 @@ public class GameScreen extends ScreenAdapter {
     private final float boxHeight;
     private final Dialog turnDialog;
     private InputMultiplexer inputMultiplexer;
+    private Texture p1Card;
+    private Texture p2Card;
+    private Texture p3Card;
+    private Texture p4Card;
 
     private boolean turnDialogIsShown;
     private boolean turnDialogNeeded;
@@ -46,6 +50,10 @@ public class GameScreen extends ScreenAdapter {
 
     public GameScreen() {
         gameBoard = new Texture("board.jpg");
+        p1Card = new Texture("P1.png");
+        p2Card = new Texture("P2.png");
+        p3Card = new Texture("P3.png");
+        p4Card = new Texture("P4.png");
         stage = new Stage();
         batch = new SpriteBatch();
         skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
@@ -75,8 +83,10 @@ public class GameScreen extends ScreenAdapter {
         }
         stage.act(delta);
         ScreenUtils.clear(0.9f, 0.9f, 0.9f, 1);
+        batch.begin();
         drawGameBoard();
         drawPlayerInformation();
+        batch.end();
         if (!turnDialogIsShown && turnDialogNeeded) {
             drawTurnDialog();
             turnDialogIsShown = true;
@@ -97,7 +107,6 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void drawGameBoard() {
-        batch.begin();
         batch.draw(
                 gameBoard,
                 calcBoardPosition(Gdx.graphics.getWidth()),
@@ -105,17 +114,14 @@ public class GameScreen extends ScreenAdapter {
                 calcBoardSize(),
                 calcBoardSize()
         );
-        batch.end();
     }
 
     private void drawPlayerInformation() {
-        batch.begin();
-        drawPlayerBox(0, 0, "P1");
-        drawPlayerBox(0, Gdx.graphics.getHeight() - boxHeight, "P2");
-        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, Gdx.graphics.getHeight() - boxHeight, "P3");
-        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P4");
+        drawPlayerBox(0, 0, "P1", p1Card);
+        drawPlayerBox(0, Gdx.graphics.getHeight() - boxHeight, "P2", p2Card);
+        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, Gdx.graphics.getHeight() - boxHeight, "P3", p3Card);
+        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P4", p4Card);
         drawPlayerMetadata(100000);
-        batch.end();
     }
 
     private float calcWidthFactor(float factor) {
@@ -126,9 +132,8 @@ public class GameScreen extends ScreenAdapter {
         return Gdx.graphics.getHeight() / factor;
     }
 
-    private void drawPlayerBox(float x, float y, String playerName) {
-        Texture boxTexture = new Texture(playerName + ".png");
-        batch.draw(boxTexture, x, y, boxWidth, boxHeight);
+    private void drawPlayerBox(float x, float y, String playerName, Texture playerCard) {
+        batch.draw(playerCard, x, y, boxWidth, boxHeight);
     }
 
     private void drawPlayerMetadata(int money) {
@@ -198,6 +203,10 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         inputMultiplexer.removeProcessor(stage);
+        p1Card.dispose();
+        p2Card.dispose();
+        p3Card.dispose();
+        p4Card.dispose();
         this.dispose();
     }
 }
