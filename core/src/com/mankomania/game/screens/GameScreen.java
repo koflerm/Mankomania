@@ -135,7 +135,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void drawPlayerBox(float x, float y, String playerName, Texture playerCard) {
-        if (playerName == turnDialogPlayerName) {
+        if (playerName.equals(turnDialogPlayerName)) {
             batch.draw(turnBox, x, y, boxWidth, boxHeight);
         }
         batch.draw(playerCard, x, y, boxWidth, boxHeight);
@@ -212,6 +212,5 @@ public class GameScreen extends ScreenAdapter {
         p2Card.dispose();
         p3Card.dispose();
         p4Card.dispose();
-        this.dispose();
     }
 }
