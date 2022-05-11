@@ -1,9 +1,13 @@
 package boardLogic.minigames.stockExchangeLogic;
 
+import java.security.SecureRandom;
+
 import shareLogic.Share;
 
 public class StockExchange {
+    private SecureRandom secRand = new SecureRandom();
     private Share share;
+    private int shareTypeAmount = 3;
     private boolean isRising;
     private boolean needUpdate;
 
@@ -19,7 +23,6 @@ public class StockExchange {
     public Share getShare() {
         return share;
     }
-
     //-----------------------------
     //----------SETTERS------------
     public void setRising(boolean rising) {
@@ -35,4 +38,29 @@ public class StockExchange {
     }
 //-----------------------------
 //TODO add roulette method to check if the stock are rising or not (random logic)
+    public void spinTheWheel(){
+        int shareID = secRand.nextInt(shareTypeAmount - 1) + 1;
+
+        switch (shareID){
+            case 1: setShare(Share.SHORT_CIRCUIT_PLC);
+                    setRising(true);
+                    break;
+            case 2: setShare(Share.SHORT_CIRCUIT_PLC);
+                    setRising(false);
+                    break;
+            case 3: setShare(Share.HARD_STEEL_PLC);
+                    setRising(true);
+                    break;
+            case 4: setShare(Share.HARD_STEEL_PLC);
+                    setRising(false);
+                    break;
+            case 5: setShare(Share.DRY_OIL_PLC);
+                    setRising(true);
+                    break;
+            case 6: setShare(Share.DRY_OIL_PLC);
+                    setRising(false);
+                    break;
+        }
+    }
+
 }
