@@ -29,8 +29,10 @@
         lobby = room;
     })
 
-    socket.on('startGame', (room) =>{
+    socket.on('startGame', (room, players) =>{
         displayMessage("Game starts " + room);
+        console.log(players)
+
     })
 
 

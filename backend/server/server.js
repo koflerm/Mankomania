@@ -14,10 +14,9 @@ const { v4: uuidv4 } = require('uuid');
  * Instance Variables
  */
 const rooms = {};
-const START_POSITION_PLAYER_1 = "GOLD"
-const START_POSITION_PLAYER_2 = "BLACK"
-const START_POSITION_PLAYER_3 = "LILA"
-const START_POSITION_PLAYER_4 = "GREY"
+const START_MONEY = 1000000
+const MAX_LOBBY_SIZE = 4
+
 
 
     /**
@@ -70,7 +69,7 @@ function searchEmptyRooms(){
     console.log("Search")
     for (const id in rooms) {
         const room = rooms[id];
-        if(room.sockets.length < 4 && room.status === false){
+        if(room.sockets.length < MAX_LOBBY_SIZE && room.status === false){
             return room;
         }
     }
@@ -83,40 +82,37 @@ function searchEmptyRooms(){
  */
 function joinRoom(socket, room, io) {
     room.sockets.push(socket.id);
-    room.players.push(createPlayer(room, socket.id, stocksMap()))
+    room.players.push(createPlayer(room, socket.id, stocks()))
     socket.join(room.id);
     console.log(socket.id, "Joined", room.id);
     io.in(room.id).emit('join-room', room.id, room.sockets);
 
 
-    if(room.sockets.length === 4){
+    if(room.sockets.length === MAX_LOBBY_SIZE){
         room.status = true;
         console.log(room.id + " is full")
-        io.in(room.id).emit('startGame', room.id, room.sockets);
-        console.log(rooms[room.id])
+        io.in(room.id).emit('startGame', room.id, room.players);
         createRoom();
         console.log(room.players)
     }
 }
-const createPlayer = (room,socket, stocksMap) =>{
-    const player = {
-        playerIndex : room.players.length + 1,
-        socket : socket,
-        money : 1000000,
-        position: 0,
-        stocks: stocksMap
+const createPlayer = (room,socket, stocks) =>{
+    return {
+        playerIndex: room.players.length + 1,
+        socket: socket,
+        money: START_MONEY,
+        position: room.players.length + 1,
+        stocks: stocks
     }
-    return player
 }
 
 
-
-const stocksMap = ()=> {
-    const stocksMap = new Map();
-    stocksMap.set('HardSteel PLC', 0);
-    stocksMap.set('ShortCircuit PLC', 0);
-    stocksMap.set('DryOil PLC', 0);
-    return stocksMap
+const stocks = ()=> {
+    return  {
+        HardSteel_PLC: 0,
+        ShortCircuit_PLC: 0,
+        DryOil_PLC : 0
+    }
 }
 
 /**
