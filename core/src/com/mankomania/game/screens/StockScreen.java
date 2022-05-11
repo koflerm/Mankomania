@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -39,7 +41,8 @@ public class StockScreen extends ScreenAdapter {
     }
 
     private void stockwheel(){
-        int spins = random.nextInt(4681-2520)+2520;
+        int spinsDeg = random.nextInt(4681-2520)+2520;
+        calculateStock(spinsDeg);
 
         Texture wheel = new Texture(Gdx.files.internal("stockwheel.png"));
         Image stockwheel = new Image(wheel);
@@ -50,16 +53,59 @@ public class StockScreen extends ScreenAdapter {
         stockwheel.setOrigin(Align.center);
         stockwheel.setPosition(Gdx.graphics.getWidth()/2f - stockwheel.getWidth()/2f, Gdx.graphics.getHeight()/2f - stockwheel.getHeight()/2f);
 
-        rotate.setRotation(spins);
+
+        Texture wheelPoint = new Texture(Gdx.files.internal("wheel-pointer.png"));
+        Image wheelPointer = new Image(wheelPoint);
+        wheelPointer.setScale(0.8f,0.8f);
+        wheelPointer.setOrigin(Align.center);
+        wheelPointer.setPosition(Gdx.graphics.getWidth()/2f - wheelPointer.getWidth()/2f, stockwheel.getTop()-wheelPointer.getHeight()/2f);
+
+        rotate.setRotation(spinsDeg+5); //Weil aktuelles Bild 5° off center ist
         rotate.setDuration(2f);
         stockwheel.addAction(rotate);
         stage.addActor(stockwheel);
+        stage.addActor(wheelPointer);
+    }
+
+    private void calculateStock(float degrees){
+        Skin skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
+        String stock = "";
+        String stockChange = "";
+
+        if (degrees%360f >= 0 && degrees%360 < 120){
+            stock = "Bruchstahl";
+            if(degrees%360f > 80){
+                stockChange = "up";
+            }else{
+                stockChange = "down";
+            }
+        }
+        else if (degrees%360f >= 120 && degrees%360 < 240){
+            stock = "Trocken Öl";
+            if(degrees%360f > 200){
+                stockChange = "up";
+            }else{
+                stockChange = "down";
+            }
+        }
+       else if (degrees%360f >= 240 && degrees%360 < 360){
+            stock = "Kurzschluss";
+            if(degrees%360f > 320){
+                stockChange = "up";
+            }else{
+                stockChange = "down";
+            }
+        }
+        Label label = new Label(stock +" "+ stockChange, skin);
+        label.setFontScale(Gdx.graphics.getHeight() / 400f);
+        label.setPosition(50f,100f);
+        stage.addActor(label);
     }
 
     @Override
     public void render(float delta){
         if(elapsed >= duration){
-            //MankomaniaGame.getInstance().setScreen(new Gamescreen);
+            //MankomaniaGame.getInstance().setScreen(new StartScreen());
             dispose();
         }
         super.render(delta);
