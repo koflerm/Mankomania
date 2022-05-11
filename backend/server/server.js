@@ -14,9 +14,13 @@ const { v4: uuidv4 } = require('uuid');
  * Instance Variables
  */
 const rooms = {};
+const START_POSITION_PLAYER_1 = "GOLD"
+const START_POSITION_PLAYER_2 = "BLACK"
+const START_POSITION_PLAYER_3 = "LILA"
+const START_POSITION_PLAYER_4 = "GREY"
 
 
-/**
+    /**
  * Check if a private Room was send or a new room should be created or join to an room
  * @param socket A connected socket.io socket
  * @param room Name of the room
@@ -47,13 +51,16 @@ function  createRoom () {
         id: uuidv4(), // generate a unique id for the new room, that way we don't need to deal with duplicates.
         status: false,
         sockets: [],
-        ready: 0
+        ready: 0,
+        players: []
     };
     rooms[room.id] = room;
     // have the socket join the room they've just created.
     console.log("Room created " + room.id)
     return room;
 }
+
+
 
 /**
  * Will search for Empty Rooms and returns a room
@@ -76,6 +83,7 @@ function searchEmptyRooms(){
  */
 function joinRoom(socket, room, io) {
     room.sockets.push(socket.id);
+    room.players.push(createPlayer(room, socket.id, stocksMap()))
     socket.join(room.id);
     console.log(socket.id, "Joined", room.id);
     io.in(room.id).emit('join-room', room.id, room.sockets);
@@ -85,8 +93,30 @@ function joinRoom(socket, room, io) {
         room.status = true;
         console.log(room.id + " is full")
         io.in(room.id).emit('startGame', room.id, room.sockets);
+        console.log(rooms[room.id])
         createRoom();
+        console.log(room.players)
     }
+}
+const createPlayer = (room,socket, stocksMap) =>{
+    const player = {
+        playerIndex : room.players.length + 1,
+        socket : socket,
+        money : 1000000,
+        position: 0,
+        stocks: stocksMap
+    }
+    return player
+}
+
+
+
+const stocksMap = ()=> {
+    const stocksMap = new Map();
+    stocksMap.set('HardSteel PLC', 0);
+    stocksMap.set('ShortCircuit PLC', 0);
+    stocksMap.set('DryOil PLC', 0);
+    return stocksMap
 }
 
 /**
@@ -134,6 +164,7 @@ function increaseReadyCounterForRoom(socket, room, io){
             rooms[room].status = true;
             io.in(room).emit('startGame', room, rooms[room]);
             console.log("Game starts " + room)
+
         }
     }else{
         io.to(socket).emit('error', "Couldn't find Room");
