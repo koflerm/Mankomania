@@ -49,18 +49,16 @@ public class StockScreen extends ScreenAdapter {
 
         stockwheel.setWidth(.5f * Gdx.graphics.getWidth());
         stockwheel.setScaling(Scaling.fillX);
-
         stockwheel.setOrigin(Align.center);
         stockwheel.setPosition(Gdx.graphics.getWidth()/2f - stockwheel.getWidth()/2f, Gdx.graphics.getHeight()/2f - stockwheel.getHeight()/2f);
-
 
         Texture wheelPoint = new Texture(Gdx.files.internal("wheel-pointer.png"));
         Image wheelPointer = new Image(wheelPoint);
         wheelPointer.setScale(0.8f,0.8f);
         wheelPointer.setOrigin(Align.center);
-        wheelPointer.setPosition(Gdx.graphics.getWidth()/2f - wheelPointer.getWidth()/2f, stockwheel.getTop()-wheelPointer.getHeight()/2f);
+        wheelPointer.setPosition(Gdx.graphics.getWidth()/2f - wheelPointer.getWidth()/2f, stockwheel.getTop());
 
-        rotate.setRotation(spinsDeg+5); //Weil aktuelles Bild 5° off center ist
+        rotate.setRotation(spinsDeg);
         rotate.setDuration(2f);
         stockwheel.addAction(rotate);
         stage.addActor(stockwheel);
@@ -74,7 +72,7 @@ public class StockScreen extends ScreenAdapter {
 
         if (degrees%360f >= 0 && degrees%360 < 120){
             stock = "Bruchstahl";
-            if(degrees%360f > 80){
+            if(degrees%360f > 84){
                 stockChange = "up";
             }else{
                 stockChange = "down";
@@ -82,7 +80,7 @@ public class StockScreen extends ScreenAdapter {
         }
         else if (degrees%360f >= 120 && degrees%360 < 240){
             stock = "Trocken Öl";
-            if(degrees%360f > 200){
+            if(degrees%360f > 204){
                 stockChange = "up";
             }else{
                 stockChange = "down";
@@ -90,7 +88,7 @@ public class StockScreen extends ScreenAdapter {
         }
        else if (degrees%360f >= 240 && degrees%360 < 360){
             stock = "Kurzschluss";
-            if(degrees%360f > 320){
+            if(degrees%360f > 324){
                 stockChange = "up";
             }else{
                 stockChange = "down";
