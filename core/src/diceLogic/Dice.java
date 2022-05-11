@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.security.SecureRandom;
 import java.util.List;
 
-public class Die {
+public class Dice {
     private SecureRandom secRand = new SecureRandom();
     private List<Integer> dice;
 
