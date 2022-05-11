@@ -37,7 +37,6 @@ public class StockExchange {
         this.needUpdate = needUpdate;
     }
 //-----------------------------
-//TODO add roulette method to check if the stock are rising or not (random logic)
     public void spinTheWheel(){
         int shareID = secRand.nextInt(shareTypeAmount - 1) + 1;
 
