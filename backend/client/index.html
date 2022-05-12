@@ -86,7 +86,7 @@
     randomNumberButton.addEventListener("click", e =>{
         let diceCount = randomNumber(1,7)
         displayMessage("DiceCount " + diceCount)
-        socket.emit('highestDice', lobby, diceCount)
+        socket.emit('ROLE_THE_HIGHEST_DICE', lobby, diceCount)
     })
 
     const randomNumber = (min, max)=>{
@@ -144,7 +144,7 @@
         <input type="text" id="message">
     </div>
     <div>
-        <button type="button" id="randomNumber">Random</button>
+        <button type="button" id="randomNumber">Role the dice</button>
     </div>
     <div>Room</div>
     <div>

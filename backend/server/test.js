@@ -29,16 +29,18 @@ test.push(temp4)
 
 
 
-
-console.log(Math.max.apply(Math, test.map(function(o) {
+let a;
+a = Math.max.apply(Math, test.map(function(o) {
     return o.dice;
-})))
+}))
+console.log(a)
 
-for (let s of test){
-    if (s.dice === 6){
-        console.log(s.socket)
-    }
-}
+//const countBy = (d, dice) => d.reduce((r,{dice},i,a) => (r[dice] = a.filter(x => x.dice === dice).length, r),{})
+//const counts = countBy(test, 'dice')
+//console.log(counts)
+console.log(test.filter(x => [x.dice] == a))
+
+
 
 
 
