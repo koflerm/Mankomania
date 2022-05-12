@@ -56,7 +56,8 @@ function  createRoom () {
             rooms[room].players[socket.id].stocks = stock
             this.counterForStocks++
         },
-        counterForStocks : 0
+        counterForStocks : 0,
+        dice: []
     };
     rooms[room.id] = room;
     // have the socket join the room they've just created.
@@ -178,12 +179,21 @@ const saveDice = (room, socket, diceCount)=>{
         dice: diceCount
     }
     rooms[room].dice.push(dice)
-    if (rooms[room].dice.length === rooms[room].players.length){
-        validateHighestDice()
+    if (rooms[room].dice.length === rooms[room].sockets.length){
+        validateHighestDice(rooms[room].dice)
     }
 }
 
-const validateHighestDice = () =>{
+const validateHighestDice = (data) =>{
+    //find duplicates
+    //if not player with the highest number begins
+    //if role again (only players with duplicate numbers
+    let highestDice =  Math.max.apply(Math, data.map(function(o) {
+        return o.dice;
+    }))
+
+    let winner = data.filter(x => [x.dice] == highestDice)
+    console.log(winner)
 
 }
 
@@ -211,7 +221,7 @@ server.listen(PORT, ()=>{
 io.on('connection', (socket) => {
     console.log(rooms)
 
-    socket.on('highestDice', (room, diceCount) =>{
+    socket.on('ROLE_THE_HIGHEST_DICE', (room, diceCount) =>{
         saveDice(room, socket, diceCount)
 
     })
