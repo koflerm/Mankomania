@@ -23,7 +23,7 @@ public class StockScreen extends ScreenAdapter {
     private final Texture background;
     private final RotateToAction rotate;
     private final SpriteBatch batch;
-    private static final float duration = 8;
+    private static final float DURATION = 8;
     private float elapsed;
     private boolean isRising;
     private String share;
@@ -69,43 +69,22 @@ public class StockScreen extends ScreenAdapter {
 
     private void calculateStock(float degrees){
         Skin skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
-        String stock = "";
-        String stockChange = "";
+        isRising = false;
 
         if (degrees%360f >= 0 && degrees%360 < 120){
-            stock = "Bruchstahl";
             share = "HardSteel";
-            if(degrees%360f > 84){
-                stockChange = "up";
-                isRising = true;
-            }else{
-                stockChange = "down";
-                isRising = false;
-            }
+            isRising = degrees % 360f > 84;
         }
         else if (degrees%360f >= 120 && degrees%360 < 240){
-            stock = "Trocken Öl";
             share = "DryOil";
-            if(degrees%360f > 204){
-                stockChange = "up";
-                isRising = true;
-            }else{
-                stockChange = "down";
-                isRising = false;
-            }
+            isRising = degrees % 360f > 204;
         }
-       else if (degrees%360f >= 240 && degrees%360 < 360){
-            stock = "Kurzschluss";
+       else{
             share = "Shortcircuit";
-            if(degrees%360f > 324){
-                stockChange = "up";
-                isRising = true;
-            }else{
-                stockChange = "down";
-                isRising = false;
-            }
+            isRising = degrees%360f > 324;
         }
-        Label label = new Label(stock +" "+ stockChange, skin);
+
+        Label label = new Label(share +" "+ isRising, skin); //Label to check correct results
         label.setFontScale(Gdx.graphics.getHeight() / 400f);
         label.setPosition(50f,100f);
         stage.addActor(label);
@@ -121,8 +100,7 @@ public class StockScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta){
-        if(elapsed >= duration){
-            //MankomaniaGame.getInstance().setScreen(new StartScreen());
+    if(elapsed >= DURATION){
             dispose();
         }
         super.render(delta);
