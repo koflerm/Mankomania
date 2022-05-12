@@ -25,6 +25,8 @@ public class StockScreen extends ScreenAdapter {
     private final SpriteBatch batch;
     private static final float duration = 8;
     private float elapsed;
+    private boolean isRising;
+    private String share;
 
     public StockScreen(){
         stage = new Stage();
@@ -56,7 +58,7 @@ public class StockScreen extends ScreenAdapter {
         Image wheelPointer = new Image(wheelPoint);
         wheelPointer.setScale(0.8f,0.8f);
         wheelPointer.setOrigin(Align.center);
-        wheelPointer.setPosition(Gdx.graphics.getWidth()/2f - wheelPointer.getWidth()/2f, stockwheel.getTop());
+        wheelPointer.setPosition(Gdx.graphics.getWidth()/2f - wheelPointer.getWidth()/2f, Gdx.graphics.getHeight()/2f + Gdx.graphics.getHeight()*0.25f);
 
         rotate.setRotation(spinsDeg);
         rotate.setDuration(2f);
@@ -72,32 +74,49 @@ public class StockScreen extends ScreenAdapter {
 
         if (degrees%360f >= 0 && degrees%360 < 120){
             stock = "Bruchstahl";
+            share = "HardSteel";
             if(degrees%360f > 84){
                 stockChange = "up";
+                isRising = true;
             }else{
                 stockChange = "down";
+                isRising = false;
             }
         }
         else if (degrees%360f >= 120 && degrees%360 < 240){
             stock = "Trocken Öl";
+            share = "DryOil";
             if(degrees%360f > 204){
                 stockChange = "up";
+                isRising = true;
             }else{
                 stockChange = "down";
+                isRising = false;
             }
         }
        else if (degrees%360f >= 240 && degrees%360 < 360){
             stock = "Kurzschluss";
+            share = "Shortcircuit";
             if(degrees%360f > 324){
                 stockChange = "up";
+                isRising = true;
             }else{
                 stockChange = "down";
+                isRising = false;
             }
         }
         Label label = new Label(stock +" "+ stockChange, skin);
         label.setFontScale(Gdx.graphics.getHeight() / 400f);
         label.setPosition(50f,100f);
         stage.addActor(label);
+    }
+
+    public boolean isRising() {
+        return isRising;
+    }
+
+    public String getShare() {
+        return share;
     }
 
     @Override
