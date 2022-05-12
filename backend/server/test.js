@@ -1,18 +1,44 @@
-const createMap = ()=>{
-    const stocksMap = new Map();
-    stocksMap.set('HardSteel PLC', 0);
-    stocksMap.set('ShortCircuit PLC', 0);
-    stocksMap.set('DryOil PLC', 0);
-    return stocksMap
-
+const temp = {
+    socket: "1",
+    dice : 6
 }
 
-const player = {
-    playerIndex : 0,
-    money : 1000000,
-    position: 0,
-    stocks: createMap()
+const temp2 = {
+    socket: "2",
+    dice : 6
 }
 
-console.log(player)
+const temp3 = {
+    socket: "3",
+    dice : 4
+}
+
+const temp4= {
+    socket: "4",
+    dice : 3
+}
+
+const test =  []
+
+test.push(temp)
+test.push(temp2)
+test.push(temp3)
+test.push(temp4)
+
+
+
+
+
+
+console.log(Math.max.apply(Math, test.map(function(o) {
+    return o.dice;
+})))
+
+for (let s of test){
+    if (s.dice === 6){
+        console.log(s.socket)
+    }
+}
+
+
 

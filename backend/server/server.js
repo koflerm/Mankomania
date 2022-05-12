@@ -19,7 +19,7 @@ const MAX_LOBBY_SIZE = 4
 
 
 
-    /**
+/**
  * Check if a private Room was send or a new room should be created or join to an room
  * @param socket A connected socket.io socket
  * @param room Name of the room
@@ -51,7 +51,12 @@ function  createRoom () {
         status: false,
         sockets: [],
         ready: 0,
-        players: []
+        players: [],
+        stockCounterFunction : function (room, socket, stock){
+            rooms[room].players[socket.id].stocks = stock
+            this.counterForStocks++
+        },
+        counterForStocks : 0
     };
     rooms[room.id] = room;
     // have the socket join the room they've just created.
@@ -81,28 +86,30 @@ function searchEmptyRooms(){
  * @param io server instance
  */
 function joinRoom(socket, room, io) {
+    //rooms[room.id] = room;
     room.sockets.push(socket.id);
-    room.players.push(createPlayer(room, socket.id, stocks()))
+    //room.players.push(createPlayer(room, socket.id, stocks()))
+    room.players[socket.id] = createPlayer(room, socket.id, stocks())
     socket.join(room.id);
     console.log(socket.id, "Joined", room.id);
-    io.in(room.id).emit('join-room', room.id, room.sockets);
-
+    io.in(room.id).emit('join-room', room.id, room.sockets)
 
     if(room.sockets.length === MAX_LOBBY_SIZE){
         room.status = true;
         console.log(room.id + " is full")
         io.in(room.id).emit('startGame', room.id, room.players);
         createRoom();
-        console.log(room.players)
+
     }
 }
 const createPlayer = (room,socket, stocks) =>{
     return {
-        playerIndex: room.players.length + 1,
         socket: socket,
+        playerIndex: room.players.length + 1,
         money: START_MONEY,
         position: room.players.length + 1,
-        stocks: stocks
+        stocks: stocks,
+        diceCount: 0
     }
 }
 
@@ -118,7 +125,7 @@ const stocks = ()=> {
 /**
  * Will make the socket leave any rooms that it is a part of
  * @param socket A connected socket.io socket
- * @param io
+ * @param io io server instance
  */
 function leaveRooms(socket, io){
     const roomsToDelete = [];
@@ -160,10 +167,31 @@ function increaseReadyCounterForRoom(socket, room, io){
             rooms[room].status = true;
             io.in(room).emit('startGame', room, rooms[room]);
             console.log("Game starts " + room)
-
         }
     }else{
         io.to(socket).emit('error', "Couldn't find Room");
+    }
+}
+const saveDice = (room, socket, diceCount)=>{
+    const dice = {
+        socket: socket.id,
+        dice: diceCount
+    }
+    rooms[room].dice.push(dice)
+    if (rooms[room].dice.length === rooms[room].players.length){
+        validateHighestDice()
+    }
+}
+
+const validateHighestDice = () =>{
+
+}
+
+
+const updateStock = (room, socket, stock)=>{
+    rooms[room].stockCounterFunction(room, socket, stock)
+    if (rooms[room].counterForStocks === rooms[room].sockets.length){
+        io.in(room).emit('ROLE_THE_DICE');
     }
 }
 
@@ -181,20 +209,23 @@ server.listen(PORT, ()=>{
 
 
 io.on('connection', (socket) => {
-    console.log(socket.id)
     console.log(rooms)
 
+    socket.on('highestDice', (room, diceCount) =>{
+        saveDice(room, socket, diceCount)
 
+    })
+
+    socket.on('choose_stocks', (room, stock) =>{
+        updateStock(room, socket, stock)
+    })
 
     socket.on('join-room', (room) => {
         validateRoom(socket, room, io);
-
-
     });
 
     socket.on('readyForGame', (room) =>{
         increaseReadyCounterForRoom(socket, room, io);
-
     });
 
     socket.on('leaveRoom', () => {
