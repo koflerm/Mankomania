@@ -11,18 +11,26 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 
 import org.graalvm.compiler.lir.sparc.SPARCMove;
 
+import playerLogic.Player;
+
 public class Horse extends Actor {
     private int movedSteps;
     private Texture horseTexture;
+    private Player player;
 
     private static float HORSE_HEIGHT = Gdx.graphics.getHeight() / 5.5f;
     private static float HORSE_WIDTH = HORSE_HEIGHT * 1.2f;
 
-    public Horse(float x, float y, Texture texture) {
+    public Horse(float x, float y, Texture texture, Player p) {
         this.setX(x);
         this.setY(y);
         movedSteps = 0;
         horseTexture = texture;
+        player = p;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public void moveForward() {
