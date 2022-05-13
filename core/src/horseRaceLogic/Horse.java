@@ -1,40 +1,42 @@
-package com.mankomania.game.screens;
+package horseRaceLogic;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 
-public class Horse {
-    private float xPosition;
-    private float yPosition;
+import org.graalvm.compiler.lir.sparc.SPARCMove;
+
+public class Horse extends Actor {
     private int movedSteps;
+    private Texture horseTexture;
 
     private static float HORSE_HEIGHT = Gdx.graphics.getHeight() / 5.5f;
     private static float HORSE_WIDTH = HORSE_HEIGHT * 1.2f;
 
-    public Horse(float x, float y) {
-        xPosition = x;
-        yPosition = y;
+    public Horse(float x, float y, Texture texture) {
+        this.setX(x);
+        this.setY(y);
         movedSteps = 0;
-    }
-
-    public float getXPosition() {
-        return xPosition;
-    }
-
-    public float getYPosition() {
-        return yPosition;
-    }
-
-    public static float getWidth() {
-        return HORSE_WIDTH;
-    }
-
-    public static float getHeight() {
-        return HORSE_HEIGHT;
+        horseTexture = texture;
     }
 
     public void moveForward() {
-        xPosition = xPosition + Gdx.graphics.getWidth() / 8f;
+        this.clearActions();
+        MoveToAction moveAction = new MoveToAction();
+        moveAction.setPosition(this.getX() + Gdx.graphics.getWidth() / 11.5f, this.getY());
+        moveAction.setDuration(0.2f);
+        this.addAction(moveAction);
         movedSteps++;
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        batch.draw(horseTexture, this.getX(), this.getY(), HORSE_WIDTH, HORSE_HEIGHT);
     }
 
     public int getMovedSteps() {
