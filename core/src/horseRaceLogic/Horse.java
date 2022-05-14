@@ -18,8 +18,8 @@ public class Horse extends Actor {
     private Texture horseTexture;
     private Player player;
 
-    private static float HORSE_HEIGHT = Gdx.graphics.getHeight() / 5.5f;
-    private static float HORSE_WIDTH = HORSE_HEIGHT * 1.2f;
+    private static float horseHeight = Gdx.graphics.getHeight() / 5.5f;
+    private static float horseWidth = horseHeight * 1.2f;
 
     public Horse(float x, float y, Texture texture, Player p) {
         this.setX(x);
@@ -44,7 +44,7 @@ public class Horse extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        batch.draw(horseTexture, this.getX(), this.getY(), HORSE_WIDTH, HORSE_HEIGHT);
+        batch.draw(horseTexture, this.getX(), this.getY(), horseWidth, horseHeight);
     }
 
     public int getMovedSteps() {

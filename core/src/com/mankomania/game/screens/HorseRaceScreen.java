@@ -13,7 +13,6 @@ import com.mankomania.game.MankomaniaGame;
 
 import java.security.SecureRandom;
 
-import fieldLogic.Field;
 import horseRaceLogic.Horse;
 import playerLogic.Player;
 
@@ -25,12 +24,9 @@ public class HorseRaceScreen extends ScreenAdapter {
     private final Skin skin;
     private final Dialog winnerDialog;
     private float elapsedTime;
-    private Player[] players;
     private Horse winningHorse;
     private boolean winnerDialogShown;
     private boolean winnerDialogNeeded;
-
-    private boolean horseWon;
 
     private static final String BOARD_TEXT_STYLE = "title";
 
@@ -40,7 +36,6 @@ public class HorseRaceScreen extends ScreenAdapter {
         horseTexture = new Texture("horse.png");
         elapsedTime = 0;
         random = new SecureRandom();
-        horseWon = false;
         skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
         winnerDialog = new Dialog("INFO", skin, "alt") {};
         winnerDialogShown = false;
