@@ -75,7 +75,6 @@ public class AuctionScreen extends ScreenAdapter {
         Image wheelPointer = new Image(wheelPoint);
         wheelPointer.setOrigin(Align.center);
         wheelPointer.setPosition(Gdx.graphics.getWidth() / 2f - wheelPointer.getWidth() / 2f, Gdx.graphics.getHeight() / 2f + auctionwheelImg.getHeight() /2f);
-        System.out.println(auctionwheelImg.getHeight());
 
         rotate.setRotation(spinsDeg);
         rotate.setDuration(2f);
