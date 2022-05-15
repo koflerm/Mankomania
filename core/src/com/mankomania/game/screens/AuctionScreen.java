@@ -14,14 +14,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mankomania.game.MankomaniaGame;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -39,6 +36,8 @@ public class AuctionScreen extends ScreenAdapter {
     private final ArrayList<TextureRegionDrawable> auctionItems;
     private final Dialog auctionDialog;
     private InputMultiplexer inputMultiplexer;
+    private float itemPrice;
+    private boolean itemSelected;
 
 
     public AuctionScreen() {
@@ -50,6 +49,7 @@ public class AuctionScreen extends ScreenAdapter {
         rotate = new RotateToAction();
         auctionItems = new ArrayList<>();
         auctionDialog = new Dialog("", skin, "alt");
+        itemSelected = false;
 
         inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
         if (!inputMultiplexer.getProcessors().contains(stage, true)) {
@@ -59,32 +59,29 @@ public class AuctionScreen extends ScreenAdapter {
         createDialog();
     }
 
-    private void stockwheel() {
+    private void auctionwheel() {
         int spinsDeg = random.nextInt(4681 - 2520) + 2520;
         calculateMultiplier(spinsDeg);
 
-        ImageButton one = new ImageButton(auctionItems.get(0));
-
         Texture wheel = new Texture(Gdx.files.internal("auctionwheel.png"));
-        Image auctionwheel = new Image(wheel);
+        Image auctionwheelImg = new Image(wheel);
 
-        auctionwheel.setWidth(.5f * Gdx.graphics.getWidth());
-        auctionwheel.setScaling(Scaling.fillX);
-        auctionwheel.setOrigin(Align.center);
-        auctionwheel.setPosition(Gdx.graphics.getWidth() / 2f - auctionwheel.getWidth() / 2f, Gdx.graphics.getHeight() / 2f - auctionwheel.getHeight() / 2f);
+        auctionwheelImg.setWidth(.5f * Gdx.graphics.getWidth());
+        auctionwheelImg.setScaling(Scaling.fillX);
+        auctionwheelImg.setOrigin(Align.center);
+        auctionwheelImg.setPosition(Gdx.graphics.getWidth() / 2f - auctionwheelImg.getWidth() / 2f, Gdx.graphics.getHeight() / 2f - auctionwheelImg.getHeight() / 2f);
 
         Texture wheelPoint = new Texture(Gdx.files.internal("wheel-pointer.png"));
         Image wheelPointer = new Image(wheelPoint);
-        wheelPointer.setScale(0.8f, 0.8f);
         wheelPointer.setOrigin(Align.center);
-        wheelPointer.setPosition(Gdx.graphics.getWidth() / 2f - wheelPointer.getWidth() / 2f, Gdx.graphics.getHeight() / 2f + Gdx.graphics.getHeight() * 0.25f);
+        wheelPointer.setPosition(Gdx.graphics.getWidth() / 2f - wheelPointer.getWidth() / 2f, Gdx.graphics.getHeight() / 2f + auctionwheelImg.getHeight() /2f);
+        System.out.println(auctionwheelImg.getHeight());
 
         rotate.setRotation(spinsDeg);
         rotate.setDuration(2f);
-        auctionwheel.addAction(rotate);
-        stage.addActor(auctionwheel);
+        auctionwheelImg.addAction(rotate);
+        stage.addActor(auctionwheelImg);
         stage.addActor(wheelPointer);
-        stage.addActor(one);
     }
 
     private void calculateMultiplier(float degrees) {
@@ -98,9 +95,15 @@ public class AuctionScreen extends ScreenAdapter {
             multiplier = 2f;
         }
         Label label = new Label(Float.toString(multiplier), skin); //Label to check correct results
-        label.setFontScale(Gdx.graphics.getHeight() / 300f);
+        label.setFontScale(Gdx.graphics.getHeight() / 200f);
         label.setPosition(50f, 100f);
+
+        Label priceLabel = new Label(Float.toString(itemPrice), skin);
+        priceLabel.setFontScale(Gdx.graphics.getHeight() / 200f);
+        priceLabel.setPosition(50f, 200f);
+
         stage.addActor(label);
+        stage.addActor(priceLabel);
     }
 
     private void createDialog() {
@@ -117,6 +120,13 @@ public class AuctionScreen extends ScreenAdapter {
         ImageButton img4 = new ImageButton(auctionItems.get(3));
         ImageButton img5 = new ImageButton(auctionItems.get(4));
         ImageButton img6 = new ImageButton(auctionItems.get(5));
+
+        img1.addListener(item1Listener());
+        img2.addListener(item2Listener());
+        img3.addListener(item3Listener());
+        img4.addListener(item4Listener());
+        img5.addListener(item5Listener());
+        img6.addListener(item6Listener());
 
         tab.add(img1);
         tab.add(img2);
@@ -159,19 +169,97 @@ public class AuctionScreen extends ScreenAdapter {
         auctionItems.add(auction6);
     }
 
+    public ClickListener item1Listener(){
+        return new ClickListener() {
+            @Override
+            public void clicked(InputEvent inputEvent, float x, float y) {
+                auctionDialog.hide();
+                itemPrice = 80000;
+                itemSelected = true;
+                auctionwheel();
+            }
+        };
+    }
+
+    public ClickListener item2Listener(){
+        return new ClickListener() {
+            @Override
+            public void clicked(InputEvent inputEvent, float x, float y) {
+                auctionDialog.hide();
+                itemPrice = 60000;
+                itemSelected = true;
+                auctionwheel();
+            }
+        };
+    }
+
+    public ClickListener item3Listener(){
+        return new ClickListener() {
+            @Override
+            public void clicked(InputEvent inputEvent, float x, float y) {
+                auctionDialog.hide();
+                itemPrice = 80000;
+                itemSelected = true;
+                auctionwheel();
+            }
+        };
+    }
+
+    public ClickListener item4Listener(){
+        return new ClickListener() {
+            @Override
+            public void clicked(InputEvent inputEvent, float x, float y) {
+                auctionDialog.hide();
+                itemPrice = 20000;
+                itemSelected = true;
+                auctionwheel();
+            }
+        };
+    }
+
+    public ClickListener item5Listener(){
+        return new ClickListener() {
+            @Override
+            public void clicked(InputEvent inputEvent, float x, float y) {
+                auctionDialog.hide();
+                itemPrice = 40000;
+                itemSelected = true;
+                auctionwheel();
+            }
+        };
+    }
+
+    public ClickListener item6Listener(){
+        return new ClickListener() {
+            @Override
+            public void clicked(InputEvent inputEvent, float x, float y) {
+                auctionDialog.hide();
+                itemPrice = 100000;
+                itemSelected = true;
+                auctionwheel();
+            }
+        };
+    }
+
 
     public float getMultiplier() {
         return multiplier;
     }
 
+    public float getItemPrice(){
+        return itemPrice;
+    }
+
     @Override
     public void render(float delta) {
         if (elapsed >= DURATION) {
-            //MankomaniaGame.getInstance().setScreen(new StartScreen());
+            //Go back to Gamescreen
             dispose();
         }
         super.render(delta);
-        elapsed += delta;
+        if(itemSelected) {
+            elapsed += delta;
+        }
         ScreenUtils.clear(1, 1, 1, 1);
         stage.act(delta);
         batch.begin();
