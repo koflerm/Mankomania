@@ -185,15 +185,21 @@ const saveDice = (room, socket, diceCount)=>{
 }
 
 const validateHighestDice = (data) =>{
-    //find duplicates
-    //if not player with the highest number begins
-    //if role again (only players with duplicate numbers
     let highestDice =  Math.max.apply(Math, data.map(function(o) {
         return o.dice;
     }))
 
     let winner = data.filter(x => [x.dice] == highestDice)
     console.log(winner)
+    if(winner.length === 1){
+        //if we have one winner
+    }else{
+        //2 or more winners
+        winner.forEach(o =>{
+            console.log(o.socket)
+        })
+
+    }
 
 }
 
