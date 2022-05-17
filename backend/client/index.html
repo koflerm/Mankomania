@@ -36,8 +36,28 @@
 
     })
 
-    socket.on('ROLE_THE_DICE', () =>{
-        displayMessage("Role the Dice")
+    socket.on('ROLE_THE_HIGHEST_DICE', (data, winner) =>{
+        let diceCount = randomNumber(1,7)
+        displayMessage(" Roll the Dice DiceCount " + diceCount)
+        socket.emit('ROLE_THE_HIGHEST_DICE', lobby, diceCount)
+
+
+    })
+
+    socket.on('ROLE_THE_HIGHEST_DICE_AGAIN', (data,winner) =>{
+        winner.forEach(o =>{
+            if (o.socket === socket.id){
+                let diceCount = randomNumber(1,7)
+                displayMessage("DiceCount " + diceCount)
+                socket.emit('ROLE_THE_HIGHEST_DICE_AGAIN', lobby, diceCount, winner.length)
+            }
+        })
+
+    })
+
+    socket.on('START_ROUND', (data, winner) =>{
+        console.log(data)
+        displayMessage("Winner " +  winner.socket)
     })
 
 
@@ -106,6 +126,7 @@
 
 
     function displayMessage(message){
+
         const div = document.createElement("div")
         div.textContent = message;
         document.getElementById("txt").append(div);
