@@ -110,7 +110,8 @@ const createPlayer = (room,socket, stocks) =>{
         money: START_MONEY,
         position: room.players.length + 1,
         stocks: stocks,
-        diceCount: 0
+        diceCount: 0,
+        isIt: false
     }
 }
 
@@ -173,31 +174,40 @@ function increaseReadyCounterForRoom(socket, room, io){
         io.to(socket).emit('error', "Couldn't find Room");
     }
 }
-const saveDice = (room, socket, diceCount)=>{
-    const dice = {
-        socket: socket.id,
-        dice: diceCount
-    }
-    rooms[room].dice.push(dice)
-    if (rooms[room].dice.length === rooms[room].sockets.length){
-        validateHighestDice(rooms[room].dice)
-    }
+const saveDice = (room, socket, diceCount, winnerLength)=>{
+        const dice = {
+            socket: socket.id,
+            dice: diceCount
+        }
+        rooms[room].dice.push(dice)
+        if (winnerLength != null){
+            if (rooms[room].dice.length === winnerLength){
+                validateHighestDice(rooms[room].dice, room)
+            }
+        }else{
+            if (rooms[room].dice.length === rooms[room].sockets.length ){
+                validateHighestDice(rooms[room].dice, room)
+            }
+        }
 }
 
-const validateHighestDice = (data) =>{
+const validateHighestDice = (data,room ) =>{
     let highestDice =  Math.max.apply(Math, data.map(function(o) {
         return o.dice;
     }))
 
     let winner = data.filter(x => [x.dice] == highestDice)
-    console.log(winner)
+
     if(winner.length === 1){
         //if we have one winner
+        console.log(winner[0].socket)
+        console.log(rooms[room].players[winner[0].socket])
+        io.in(room).emit('START_ROUND', data, rooms[room].players[winner[0].socket]);
+        rooms[room].dice = []
     }else{
-        //2 or more winners
-        winner.forEach(o =>{
-            console.log(o.socket)
-        })
+        //if we have to ore more winners
+        io.in(room).emit('ROLE_THE_HIGHEST_DICE_AGAIN', data, winner);
+        rooms[room].dice = []
 
     }
 
@@ -207,7 +217,7 @@ const validateHighestDice = (data) =>{
 const updateStock = (room, socket, stock)=>{
     rooms[room].stockCounterFunction(room, socket, stock)
     if (rooms[room].counterForStocks === rooms[room].sockets.length){
-        io.in(room).emit('ROLE_THE_DICE');
+        io.in(room).emit('ROLE_THE_HIGHEST_DICE', {});
     }
 }
 
@@ -252,6 +262,10 @@ io.on('connection', (socket) => {
         console.log('user disconnected');
         leaveRooms(socket,io);
 
+    });
+
+    socket.on('ROLE_THE_HIGHEST_DICE_AGAIN', (room, diceCount, length) =>{
+        saveDice(room, socket, diceCount, length)
     });
 });
 
