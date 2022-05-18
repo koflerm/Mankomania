@@ -49,8 +49,8 @@ public class StockScreen extends ScreenAdapter {
         Texture wheel = new Texture(Gdx.files.internal("stockwheel.png"));
         Image stockwheel = new Image(wheel);
 
-        stockwheel.setWidth(.5f * Gdx.graphics.getWidth());
-        stockwheel.setScaling(Scaling.fillX);
+        stockwheel.setHeight(Gdx.graphics.getHeight()*0.8f);
+        stockwheel.setScaling(Scaling.fillY);
         stockwheel.setOrigin(Align.center);
         stockwheel.setPosition(Gdx.graphics.getWidth()/2f - stockwheel.getWidth()/2f, Gdx.graphics.getHeight()/2f - stockwheel.getHeight()/2f);
 
@@ -58,7 +58,7 @@ public class StockScreen extends ScreenAdapter {
         Image wheelPointer = new Image(wheelPoint);
         wheelPointer.setScale(0.8f,0.8f);
         wheelPointer.setOrigin(Align.center);
-        wheelPointer.setPosition(Gdx.graphics.getWidth()/2f - wheelPointer.getWidth()/2f, Gdx.graphics.getHeight()/2f + Gdx.graphics.getHeight()*0.25f);
+        wheelPointer.setPosition(Gdx.graphics.getWidth()/2f - wheelPointer.getWidth()/2f, Gdx.graphics.getHeight() / 2f + stockwheel.getHeight() /2f - wheelPointer.getHeight()/2f);
 
         rotate.setRotation(spinsDeg);
         rotate.setDuration(2f);
