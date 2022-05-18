@@ -66,15 +66,16 @@ public class AuctionScreen extends ScreenAdapter {
         Texture wheel = new Texture(Gdx.files.internal("auctionwheel.png"));
         Image auctionwheelImg = new Image(wheel);
 
-        auctionwheelImg.setWidth(.5f * Gdx.graphics.getWidth());
-        auctionwheelImg.setScaling(Scaling.fillX);
+        auctionwheelImg.setHeight(.8f * Gdx.graphics.getHeight());
+        auctionwheelImg.setScaling(Scaling.fillY);
         auctionwheelImg.setOrigin(Align.center);
         auctionwheelImg.setPosition(Gdx.graphics.getWidth() / 2f - auctionwheelImg.getWidth() / 2f, Gdx.graphics.getHeight() / 2f - auctionwheelImg.getHeight() / 2f);
 
         Texture wheelPoint = new Texture(Gdx.files.internal("wheel-pointer.png"));
         Image wheelPointer = new Image(wheelPoint);
+        wheelPointer.setScale(0.8f);
         wheelPointer.setOrigin(Align.center);
-        wheelPointer.setPosition(Gdx.graphics.getWidth() / 2f - wheelPointer.getWidth() / 2f, Gdx.graphics.getHeight() / 2f + auctionwheelImg.getHeight() /2f);
+        wheelPointer.setPosition(Gdx.graphics.getWidth() / 2f - wheelPointer.getWidth() / 2f, Gdx.graphics.getHeight() / 2f + auctionwheelImg.getHeight() /2f - wheelPointer.getHeight()/2f);
 
         rotate.setRotation(spinsDeg);
         rotate.setDuration(2f);
