@@ -12,14 +12,21 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mankomania.game.screens.LoadingScreen;
 import com.mankomania.game.screens.StartScreen;
 
+import boardLogic.Board;
+
 public class MankomaniaGame extends Game {
     private static MankomaniaGame game;
+    public Board board;
 
     public static MankomaniaGame getInstance() {
         if (game == null) {
             game = new MankomaniaGame();
         }
         return game;
+    }
+
+    public MankomaniaGame() {
+        board = new Board();
     }
 
     @Override

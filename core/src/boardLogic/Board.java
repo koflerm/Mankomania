@@ -1,5 +1,7 @@
 package boardLogic;
 
+import org.graalvm.compiler.core.common.Fields;
+
 import java.util.ArrayList;
 
 //import boardLogic.minigames.lotteryLogic.Lottery;  //To comment out when merged
@@ -20,7 +22,11 @@ public class Board {
       // lottery = new Lottery();                   //To comment out when merged
       // lottery.setLotteryAmount(0);               //To comment out when merged
        currentPlayerIndex = 0;
+    }
 
+    public Field[] initFields(float boardX, float boardY, float boardLength) {
+        this.fields = BoardFields.getFields(boardX, boardY, boardLength);
+        return this.fields;
     }
 
     //-------GETTERS---------
