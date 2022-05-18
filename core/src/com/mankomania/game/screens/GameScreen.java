@@ -17,6 +17,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mankomania.game.DiceAnimation;
+import com.mankomania.game.MankomaniaGame;
+
+import fieldLogic.Field;
 
 public class GameScreen extends ScreenAdapter {
     private final Texture gameBoard;
@@ -26,6 +29,11 @@ public class GameScreen extends ScreenAdapter {
     private final float boxWidth;
     private final float boxHeight;
     private final Dialog turnDialog;
+    private final float boardX;
+    private final float boardY;
+    private final float boardLength;
+
+
     private InputMultiplexer inputMultiplexer;
 
     private boolean turnDialogIsShown;
@@ -60,6 +68,15 @@ public class GameScreen extends ScreenAdapter {
         inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
         if (!inputMultiplexer.getProcessors().contains(stage, true)) {
             inputMultiplexer.addProcessor(stage);
+        }
+
+        boardX = calcBoardPosition(Gdx.graphics.getWidth());
+        boardY = calcBoardPosition(Gdx.graphics.getHeight());
+        boardLength = calcBoardSize();
+
+        MankomaniaGame game = MankomaniaGame.getInstance();
+        if (game.board.getFields() == null) {
+            game.board.initFields(boardX, boardY, boardLength);
         }
     }
 
@@ -100,10 +117,10 @@ public class GameScreen extends ScreenAdapter {
         batch.begin();
         batch.draw(
                 gameBoard,
-                calcBoardPosition(Gdx.graphics.getWidth()),
-                calcBoardPosition(Gdx.graphics.getHeight()),
-                calcBoardSize(),
-                calcBoardSize()
+                boardX,
+                boardY,
+                boardLength,
+                boardLength
         );
         batch.end();
     }
