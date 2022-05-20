@@ -8,17 +8,14 @@ public class Field {
     private  Field nextField;
     private  Field optionalNextField;
     private  Field previousField;
-    private final String fieldDescription;
-    private final FieldColor color;
     private final int fieldIndex;
+    private final float x;
+    private final float y;
 
-    public Field(int fieldIndex,  String fieldDescription, FieldColor color){
+    public Field(int fieldIndex, float x, float y){
         this.fieldIndex = fieldIndex;
-        this.nextField = null;
-        this.optionalNextField = null;
-        this.previousField = null;
-        this.fieldDescription = fieldDescription;
-        this.color = color;
+        this.x = x;
+        this.y = y;
     }
 
 
@@ -37,8 +34,8 @@ public class Field {
     public Field getNextField(){return nextField;}
     public Field getOptionalNextField(){return optionalNextField;}
     public Field getPreviousField(){return previousField;}
-    public String getFieldDescription(){return fieldDescription;}
-    public FieldColor getColor(){return color;}
+    public float getX(){return x;}
+    public float getY(){return y;}
     //-----------------------
     //--------SETTERS--------
     public void setNextField(Field field){

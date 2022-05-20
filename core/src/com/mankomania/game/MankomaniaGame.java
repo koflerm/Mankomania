@@ -9,14 +9,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mankomania.game.screens.GameScreen;
 import com.mankomania.game.screens.LoadingScreen;
 import com.mankomania.game.screens.StartScreen;
 
 import boardLogic.Board;
+import playerLogic.Player;
 
 public class MankomaniaGame extends Game {
     private static MankomaniaGame game;
-    public Board board;
+    private Board board;
 
     public static MankomaniaGame getInstance() {
         if (game == null) {
@@ -25,17 +27,16 @@ public class MankomaniaGame extends Game {
         return game;
     }
 
-    public MankomaniaGame() {
-        board = new Board();
-    }
-
     @Override
     public void create() {
+        board = new Board();
+
         Gdx.input.setInputProcessor(new InputMultiplexer());
         Screen currentScreen = this.getScreen();
 
         ScreenAdapter loadingScreen = new LoadingScreen(new StartScreen());
         this.setScreen(loadingScreen);
+
 
         if (currentScreen != null) {
             currentScreen.dispose();
@@ -54,6 +55,10 @@ public class MankomaniaGame extends Game {
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
         stage.draw();
+    }
+
+    public Board getBoard() {
+        return board;
     }
 
     @Override
