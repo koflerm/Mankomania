@@ -19,20 +19,19 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mankomania.game.DiceAnimation;
 import com.mankomania.game.MankomaniaGame;
 
+import java.util.ArrayList;
+
+import boardLogic.Board;
 import fieldLogic.Field;
+import playerLogic.Player;
 
 public class GameScreen extends ScreenAdapter {
     private final Texture gameBoard;
     private final Stage stage;
-    private final SpriteBatch batch;
     private final Skin skin;
     private final float boxWidth;
     private final float boxHeight;
     private final Dialog turnDialog;
-    private final float boardX;
-    private final float boardY;
-    private final float boardLength;
-
 
     private InputMultiplexer inputMultiplexer;
 
@@ -42,7 +41,6 @@ public class GameScreen extends ScreenAdapter {
     private String turnDialogPlayerMoney;
     private boolean turnDialogIsCurrentPlayer;
 
-    private static final float BOARD_SIZING_FACTOR = 1f;
     private static final float BOARD_PLAYER_BOX_WIDTH_FACTOR = 4.5f;
     private static final float BOARD_PLAYER_BOX_HEIGHT_FACTOR = 4f;
     private static final float BOARD_PLAYER_MONEY_FACTOR = 4.5f;
@@ -53,9 +51,13 @@ public class GameScreen extends ScreenAdapter {
     private float elapsed;
 
     public GameScreen() {
-        gameBoard = new Texture("board.jpg");
         stage = new Stage();
-        batch = new SpriteBatch();
+        gameBoard = new Texture("board.jpg");
+        p1Card = new Texture("P1.png");
+        p2Card = new Texture("P2.png");
+        p3Card = new Texture("P3.png");
+        p4Card = new Texture("P4.png");
+        turnBox = new Texture("turnBox.png");
         skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
         boxWidth = calcWidthFactor(BOARD_PLAYER_BOX_WIDTH_FACTOR);
         boxHeight = calcHeightFactor(BOARD_PLAYER_BOX_HEIGHT_FACTOR);
@@ -70,18 +72,18 @@ public class GameScreen extends ScreenAdapter {
             inputMultiplexer.addProcessor(stage);
         }
 
-        boardX = calcBoardPosition(Gdx.graphics.getWidth());
-        boardY = calcBoardPosition(Gdx.graphics.getHeight());
-        boardLength = calcBoardSize();
-
         MankomaniaGame game = MankomaniaGame.getInstance();
-        if (game.board.getFields() == null) {
-            game.board.initFields(boardX, boardY, boardLength);
+        ArrayList<Player> players = MankomaniaGame.getInstance().getBoard().getPlayers();
+        for (int i = 0; i  < players.size(); i++) {
+            stage.addActor(players.get(i));
         }
     }
 
     @Override
     public void render(float delta) {
+        stage.getBatch().begin();
+        ScreenUtils.clear(0.9f, 0.9f, 0.9f, 1);
+        Board board = MankomaniaGame.getInstance().getBoard();
         if (elapsed >= duration){
             diceAnimation.removeDice();
         diceAnimation.setDiceShown(false);
@@ -98,6 +100,7 @@ public class GameScreen extends ScreenAdapter {
             drawTurnDialog();
             turnDialogIsShown = true;
         }
+        stage.act(delta);
         stage.draw();
     }
 
@@ -113,26 +116,22 @@ public class GameScreen extends ScreenAdapter {
         this.turnDialog.hide();
     }
 
-    private void drawGameBoard() {
-        batch.begin();
-        batch.draw(
+    private void drawGameBoard(Board board) {
+        stage.getBatch().draw(
                 gameBoard,
-                boardX,
-                boardY,
-                boardLength,
-                boardLength
+                board.getX(),
+                board.getY(),
+                board.getLength(),
+                board.getLength()
         );
-        batch.end();
     }
 
     private void drawPlayerInformation() {
-        batch.begin();
         drawPlayerBox(0, 0, "P1");
         drawPlayerBox(0, Gdx.graphics.getHeight() - boxHeight, "P2");
         drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, Gdx.graphics.getHeight() - boxHeight, "P3");
         drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P4");
         drawPlayerMetadata(100000);
-        batch.end();
     }
 
     private float calcWidthFactor(float factor) {
@@ -143,9 +142,11 @@ public class GameScreen extends ScreenAdapter {
         return Gdx.graphics.getHeight() / factor;
     }
 
-    private void drawPlayerBox(float x, float y, String playerName) {
-        Texture boxTexture = new Texture(playerName + ".png");
-        batch.draw(boxTexture, x, y, boxWidth, boxHeight);
+    private void drawPlayerBox(float x, float y, String playerName, Texture playerCard) {
+        if (playerName.equals(turnDialogPlayerName)) {
+            stage.getBatch().draw(turnBox, x, y, boxWidth, boxHeight);
+        }
+        stage.getBatch().draw(playerCard, x, y, boxWidth, boxHeight);
     }
 
     private void drawPlayerMetadata(int money) {
@@ -191,14 +192,6 @@ public class GameScreen extends ScreenAdapter {
         float dialogYPosition = (Gdx.graphics.getHeight() / 2f) - ((turnDialog.getHeight() * scale) / 2f);
 
         turnDialog.setPosition(dialogXPosition, dialogYPosition);
-    }
-
-    private float calcBoardPosition(int base) {
-        return base / 2f - (Gdx.graphics.getHeight() / BOARD_SIZING_FACTOR / 2);
-    }
-
-    private float calcBoardSize() {
-        return Gdx.graphics.getHeight() / BOARD_SIZING_FACTOR;
     }
 
 

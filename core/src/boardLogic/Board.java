@@ -1,5 +1,7 @@
 package boardLogic;
 
+import com.badlogic.gdx.Gdx;
+
 import org.graalvm.compiler.core.common.Fields;
 
 import java.util.ArrayList;
@@ -15,18 +17,25 @@ public class Board {
     private ArrayList<Player> players;
     private int currentPlayerIndex;
     //private StockExchange stockExchangeData;      //To comment out when merged
+    private float x;
+    private float y;
+    private float length;
+
+    private static final float BOARD_SIZING_FACTOR = 1f;
 
     public Board(){
         players = new ArrayList<>();
+
+        // UI Properties
+        x = calcBoardPosition(Gdx.graphics.getWidth());
+        y = calcBoardPosition(Gdx.graphics.getHeight());
+        length = calcBoardSize();
+        fields = BoardFields.getFields(x, y, length);
+
        // stockExchangeData = new StockExchange();  //To comment out when merged
       // lottery = new Lottery();                   //To comment out when merged
       // lottery.setLotteryAmount(0);               //To comment out when merged
-       currentPlayerIndex = 0;
-    }
-
-    public Field[] initFields(float boardX, float boardY, float boardLength) {
-        this.fields = BoardFields.getFields(boardX, boardY, boardLength);
-        return this.fields;
+        currentPlayerIndex = 0;
     }
 
     //-------GETTERS---------
@@ -35,6 +44,7 @@ public class Board {
     public Field getCurrentPlayerField(){return players.get(currentPlayerIndex).getCurrentPosition();}
     public int[] getStartingFieldIndexes(){return startingFieldIndexes;}
     public Player getCurrentPlayer(){return players.get(currentPlayerIndex);}
+    public ArrayList<Player> getPlayers(){return players;}
     public Field getFieldByIndex(int fieldIndex){return fields[fieldIndex];}
     public Field[] getFields(){return fields;}
     //-----------------------
@@ -52,5 +62,26 @@ public class Board {
         players.add(p);
     }
     //-----------------------
+
+    // UI Methods
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getLength() {
+        return length;
+    }
+
+    private float calcBoardPosition(int base) {
+        return base / 2f - (Gdx.graphics.getHeight() / BOARD_SIZING_FACTOR / 2);
+    }
+
+    private float calcBoardSize() {
+        return Gdx.graphics.getHeight() / BOARD_SIZING_FACTOR;
+    }
 
 }
