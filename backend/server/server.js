@@ -177,11 +177,16 @@ function increaseReadyCounterForRoom(socket, room, io){
 const saveDice = (room, socket, diceCount, winnerLength)=>{
         const dice = {
             socket: socket.id,
-            dice: diceCount
+            dice_1: diceCount[0],
+            dice_2: diceCount[1],
+            sum: diceCount[0] + diceCount[1]
         }
+        console.log(dice)
+
         rooms[room].dice.push(dice)
         if (winnerLength != null){
             if (rooms[room].dice.length === winnerLength){
+                console.log(rooms[room].dice)
                 validateHighestDice(rooms[room].dice, room)
             }
         }else{
@@ -193,22 +198,25 @@ const saveDice = (room, socket, diceCount, winnerLength)=>{
 
 const validateHighestDice = (data,room ) =>{
     let highestDice =  Math.max.apply(Math, data.map(function(o) {
-        return o.dice;
+        return o.sum;
     }))
 
-    let winner = data.filter(x => [x.dice] == highestDice)
 
+    console.log(highestDice)
+
+    let winner = data.filter(x => [x.sum] == highestDice)
+    console.log(winner)
     if(winner.length === 1){
         //if we have one winner
-        console.log(winner[0].socket)
-        console.log(rooms[room].players[winner[0].socket])
+        //console.log(winner[0].socket)
+        //console.log(rooms[room].players[winner[0].socket])
+
         io.in(room).emit('START_ROUND', data, rooms[room].players[winner[0].socket]);
         rooms[room].dice = []
     }else{
         //if we have to ore more winners
         io.in(room).emit('ROLE_THE_HIGHEST_DICE_AGAIN', data, winner);
         rooms[room].dice = []
-
     }
 
 }
@@ -217,10 +225,10 @@ const validateHighestDice = (data,room ) =>{
 const updateStock = (room, socket, stock)=>{
     rooms[room].stockCounterFunction(room, socket, stock)
     if (rooms[room].counterForStocks === rooms[room].sockets.length){
-        io.in(room).emit('ROLE_THE_HIGHEST_DICE', {});
+        io.in(room).emit('ROLE_THE_HIGHEST_DICE');
     }
 }
-
+//toDo Player Exchange
 
 
 app.get('/', (req, res) =>{
@@ -238,11 +246,11 @@ io.on('connection', (socket) => {
     console.log(rooms)
 
     socket.on('ROLE_THE_HIGHEST_DICE', (room, diceCount) =>{
+        console.log(diceCount)
         saveDice(room, socket, diceCount)
-
     })
 
-    socket.on('choose_stocks', (room, stock) =>{
+    socket.on('CHOSE_STOCKS', (room, stock) =>{
         updateStock(room, socket, stock)
     })
 

@@ -12,6 +12,7 @@
     const socket = io('http://localhost:3000');
     //const socket = io('https://mankomania-backend.herokuapp.com');
     let lobby;
+    let diceCounts = [];
 
     socket.on("connect", () => {
         //clearDisplay()
@@ -36,12 +37,10 @@
 
     })
 
-    socket.on('ROLE_THE_HIGHEST_DICE', (data, winner) =>{
+    socket.on('ROLE_THE_HIGHEST_DICE', () =>{
         let diceCount = randomNumber(1,7)
         displayMessage(" Roll the Dice DiceCount " + diceCount)
         socket.emit('ROLE_THE_HIGHEST_DICE', lobby, diceCount)
-
-
     })
 
     socket.on('ROLE_THE_HIGHEST_DICE_AGAIN', (data,winner) =>{
@@ -77,7 +76,7 @@
             ShortCircuit_PLC: 0,
             DryOil_PLC : 0
         }
-        socket.emit("choose_stocks", lobby, stock)
+        socket.emit("CHOSE_STOCKS", lobby, stock)
     })
 
     readyForGameButton.addEventListener("click", e=>{
@@ -104,14 +103,21 @@
     })
     */
     randomNumberButton.addEventListener("click", e =>{
-        let diceCount = randomNumber(1,7)
-        displayMessage("DiceCount " + diceCount)
-        socket.emit('ROLE_THE_HIGHEST_DICE', lobby, diceCount)
+        diceCounts[0] = randomNumber(1,7)
+        displayMessage("DiceCount 1: " + diceCounts[0])
+        diceCounts[1] = randomNumber(1,7)
+        displayMessage("DiceCount 2: " + diceCounts[1])
+        socket.emit('ROLE_THE_HIGHEST_DICE', lobby, diceCounts)
+
     })
+
+
 
     const randomNumber = (min, max)=>{
         return Math.floor(Math.random() * (max - min)) + min;
     }
+
+
 
     joinRoomButton.addEventListener("click", e => {
         const room = roomInput.value;
@@ -165,8 +171,9 @@
         <input type="text" id="message">
     </div>
     <div>
-        <button type="button" id="randomNumber">Role the dice</button>
+        <button type="button" id="randomNumber">Role the dice 1</button>
     </div>
+
     <div>Room</div>
     <div>
         <input type="text" id="room">
@@ -186,6 +193,8 @@
     <div>
         <button class="btn" type="button" id="updateStock">update Stock</button>
     </div>
+
+
 
 </div>
 
