@@ -25,22 +25,24 @@
 
     })
 
-    socket.on('join-room', (room, id) =>{
+    socket.on('JOIN_ROOM', (room, id) =>{
         console.log(id)
         displayMessage(id + " joined " + room)
         lobby = room;
     })
 
-    socket.on('startGame', (room, players) =>{
+    socket.on('START_GAME', (room, players) =>{
         displayMessage("Game starts " + room);
         console.log(players)
 
     })
 
     socket.on('ROLE_THE_HIGHEST_DICE', () =>{
-        let diceCount = randomNumber(1,7)
-        displayMessage(" Roll the Dice DiceCount " + diceCount)
-        socket.emit('ROLE_THE_HIGHEST_DICE', lobby, diceCount)
+        diceCounts[0] = randomNumber(1,7)
+        displayMessage("DiceCount 1: " + diceCounts[0])
+        diceCounts[1] = randomNumber(1,7)
+        displayMessage("DiceCount 2: " + diceCounts[1])
+        socket.emit('ROLE_THE_HIGHEST_DICE', lobby, diceCounts)
     })
 
     socket.on('ROLE_THE_HIGHEST_DICE_AGAIN', (data,winner) =>{
@@ -56,7 +58,8 @@
 
     socket.on('START_ROUND', (data, winner) =>{
         console.log(data)
-        displayMessage("Winner " +  winner.socket)
+        console.log(winner)
+        displayMessage("Winner " +  winner)
     })
 
 
@@ -80,7 +83,7 @@
     })
 
     readyForGameButton.addEventListener("click", e=>{
-        socket.emit('readyForGame', lobby)
+        socket.emit('READY_FOR_GAME', lobby)
     })
 
     disconnectButton.addEventListener("click", e =>{
@@ -126,7 +129,7 @@
             displayMessage(message) //callback Function
         } )
         */
-        socket.emit('join-room', room);
+        socket.emit('JOIN_ROOM', room);
     })
 
 

@@ -87,18 +87,16 @@ function searchEmptyRooms(){
  * @param io server instance
  */
 function joinRoom(socket, room, io) {
-    //rooms[room.id] = room;
     room.sockets.push(socket.id);
-    //room.players.push(createPlayer(room, socket.id, stocks()))
     room.players[socket.id] = createPlayer(room, socket.id, stocks())
     socket.join(room.id);
     console.log(socket.id, "Joined", room.id);
-    io.in(room.id).emit('join-room', room.id, room.sockets)
+    io.in(room.id).emit('JOIN_ROOM', room.id, room.sockets)
 
     if(room.sockets.length === MAX_LOBBY_SIZE){
         room.status = true;
         console.log(room.id + " is full")
-        io.in(room.id).emit('startGame', room.id, room.players);
+        io.in(room.id).emit('START_GAME', room.id, room.players);
         createRoom();
 
     }
@@ -111,7 +109,7 @@ const createPlayer = (room,socket, stocks) =>{
         position: room.players.length + 1,
         stocks: stocks,
         diceCount: 0,
-        isIt: false
+        yourTurn: false
     }
 }
 
@@ -138,11 +136,10 @@ function leaveRooms(socket, io){
         if(room.sockets.includes(socket.id)){
                 socket.leave(id)
 
-
             // remove the socket from the room object
             room.sockets = room.sockets.filter((item) => item !== socket.id);
             console.log(room.sockets)
-            io.in(room.id).emit('join-room', room.id, room.sockets);
+            io.in(room.id).emit('JOIN_ROOM', room.id, room.sockets);
 
         }
         // Prepare to delete any rooms that are now empty
@@ -167,11 +164,11 @@ function increaseReadyCounterForRoom(socket, room, io){
         rooms[room].ready++;
         if(rooms[room].ready === rooms[room].sockets.length && rooms[room].sockets.length >= 2){
             rooms[room].status = true;
-            io.in(room).emit('startGame', room, rooms[room]);
+            io.in(room).emit('START_GAME', room, rooms[room]);
             console.log("Game starts " + room)
         }
     }else{
-        io.to(socket).emit('error', "Couldn't find Room");
+        io.to(socket).emit('ERROR', "Couldn't find Room");
     }
 }
 const saveDice = (room, socket, diceCount, winnerLength)=>{
@@ -196,11 +193,10 @@ const saveDice = (room, socket, diceCount, winnerLength)=>{
         }
 }
 
-const validateHighestDice = (data,room ) =>{
+const validateHighestDice = (data,room) =>{
     let highestDice =  Math.max.apply(Math, data.map(function(o) {
         return o.sum;
     }))
-
 
     console.log(highestDice)
 
@@ -208,27 +204,25 @@ const validateHighestDice = (data,room ) =>{
     console.log(winner)
     if(winner.length === 1){
         //if we have one winner
-        //console.log(winner[0].socket)
-        //console.log(rooms[room].players[winner[0].socket])
 
-        io.in(room).emit('START_ROUND', data, rooms[room].players[winner[0].socket]);
+        io.in(room).emit('START_ROUND', data, winner[0].socket);
         rooms[room].dice = []
     }else{
         //if we have to ore more winners
         io.in(room).emit('ROLE_THE_HIGHEST_DICE_AGAIN', data, winner);
         rooms[room].dice = []
     }
-
 }
 
 
 const updateStock = (room, socket, stock)=>{
     rooms[room].stockCounterFunction(room, socket, stock)
     if (rooms[room].counterForStocks === rooms[room].sockets.length){
+        console.log("Update Stock finished " + rooms[room].sockets)
         io.in(room).emit('ROLE_THE_HIGHEST_DICE');
     }
 }
-//toDo Player Exchange
+
 
 
 app.get('/', (req, res) =>{
@@ -254,19 +248,19 @@ io.on('connection', (socket) => {
         updateStock(room, socket, stock)
     })
 
-    socket.on('join-room', (room) => {
+    socket.on('JOIN_ROOM', (room) => {
         validateRoom(socket, room, io);
     });
 
-    socket.on('readyForGame', (room) =>{
+    socket.on('READY_FOR_GAME', (room) =>{
         increaseReadyCounterForRoom(socket, room, io);
     });
 
-    socket.on('leaveRoom', () => {
+    socket.on('LEAVE_ROOM', () => {
         leaveRooms(socket,io);
     });
 
-    socket.on('disconnect', () => {
+    socket.on('DISCONNECT', () => {
         console.log('user disconnected');
         leaveRooms(socket,io);
 
