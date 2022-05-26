@@ -17,6 +17,7 @@ public class Player extends Actor {
     private static float SIZE = Gdx.graphics.getHeight() / 15;
 
     private int playerIndex;
+    private String playerSocketID;
     private int money;
     private Field currentPosition;
     private SecureRandom secRand = new SecureRandom();
@@ -28,7 +29,7 @@ public class Player extends Actor {
 
     }
 
-    public Player(Field startingField, int playerIndex) {
+    public Player(Field startingField, int playerIndex, String playerSocketID) {
         money = 1000000;
         // movePath = new IntArray();
         shares = new HashMap<>();
@@ -38,39 +39,40 @@ public class Player extends Actor {
         this.setX(currentPosition.getX());
         this.setY(currentPosition.getY());
         playerTexture = new Texture("p" + playerIndex + "icon.png");
+        this.playerSocketID = playerSocketID;
     }
 
     //--------GETTERS-----------
     public int getPlayerIndex() {
         return playerIndex;
     }
-
+    public String getPlayerSocketID() {
+        return playerSocketID;
+    }
     public int getMoney() {
         return money;
     }
-
     public int getAmountOfShare(Share shareName) {
         return shares.get(shareName);
     }
-
     public Field getCurrentPosition() {
         return currentPosition;
     }
-
     //--------------------------
+
     //--------SETTERS-----------
     public void setCurrentFieldPosition(Field field) {
         this.currentPosition = field;
     }
-
+    public void setPlayerSocketID(String playerSocketID) {
+        this.playerSocketID = playerSocketID;
+    }
     public void setPlayerIndex(int playerIndex) {
         this.playerIndex = playerIndex;
     }
-
     public void setMoney(int money) {
         this.money = money;
     }
-
     public void setInitialRandomShares(int share_Index) {
         switch (share_Index) {
             case 1:
