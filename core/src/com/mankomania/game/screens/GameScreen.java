@@ -5,7 +5,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -16,13 +15,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mankomania.game.DiceAnimation;
+import diceLogic.DiceAnimation;
 import com.mankomania.game.MankomaniaGame;
 
 import java.util.ArrayList;
 
 import boardLogic.Board;
-import fieldLogic.Field;
 import playerLogic.Player;
 
 public class GameScreen extends ScreenAdapter {
@@ -35,6 +33,11 @@ public class GameScreen extends ScreenAdapter {
     private final Dialog intersectionDialog;
 
     private InputMultiplexer inputMultiplexer;
+    private Texture p1Card;
+    private Texture p2Card;
+    private Texture p3Card;
+    private Texture p4Card;
+    private Texture turnBox;
 
     private boolean turnDialogIsShown;
     private boolean turnDialogNeeded;
@@ -115,6 +118,18 @@ public class GameScreen extends ScreenAdapter {
         stage.getBatch().begin();
         ScreenUtils.clear(0.9f, 0.9f, 0.9f, 1);
         Board board = MankomaniaGame.getInstance().getBoard();
+        renderMovement(delta);
+        renderDices(delta, board);
+        drawGameBoard(board);
+        drawPlayerInformation();
+        stage.getBatch().end();
+
+        renderDialogs();
+        stage.act(delta);
+        stage.draw();
+    }
+
+    private void renderMovement(float delta) {
         if (movingPlayer != null && !intersectionDialogIsShown) {
             if (movingElapsed >= 0.5) {
                 if (movingPlayerCurrentSteps < movingPlayerTargetSteps) {
@@ -128,18 +143,20 @@ public class GameScreen extends ScreenAdapter {
                 movingElapsed += delta;
             }
         }
+    }
+
+    private void renderDices(float delta, Board board) {
         if (elapsed >= duration){
             diceAnimation.removeDice();
             diceAnimation.setDiceShown(false);
-            movePlayer(100, board.getCurrentPlayer());
+            movePlayer(diceAnimation.getDiceSum(), board.getCurrentPlayer());
         }
         if(diceAnimation.getDiceShown()){
             elapsed+=delta;
         }
-        stage.act(delta);
-        ScreenUtils.clear(0.9f, 0.9f, 0.9f, 1);
-        drawGameBoard();
-        drawPlayerInformation();
+    }
+
+    private void renderDialogs() {
         if (!turnDialogIsShown && turnDialogNeeded) {
             drawTurnDialog();
             turnDialogIsShown = true;
@@ -148,8 +165,6 @@ public class GameScreen extends ScreenAdapter {
             drawIntersectionDialog();
             intersectionDialogIsShown = true;
         }
-        stage.act(delta);
-        stage.draw();
     }
 
     public void movePlayer(int steps, Player player) {
@@ -202,10 +217,10 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void drawPlayerInformation() {
-        drawPlayerBox(0, 0, "P1");
-        drawPlayerBox(0, Gdx.graphics.getHeight() - boxHeight, "P2");
-        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, Gdx.graphics.getHeight() - boxHeight, "P3");
-        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P4");
+        drawPlayerBox(0, 0, "P1", p1Card);
+        drawPlayerBox(0, Gdx.graphics.getHeight() - boxHeight, "P2", p2Card);
+        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, Gdx.graphics.getHeight() - boxHeight, "P3", p3Card);
+        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P4", p4Card);
         drawPlayerMetadata(100000);
     }
 
@@ -305,7 +320,7 @@ public class GameScreen extends ScreenAdapter {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
                 hideTurnDialog();
-                diceAnimation.showDice(stage);
+                diceAnimation.showAndRollTheDice(stage);
             }
         };
     }

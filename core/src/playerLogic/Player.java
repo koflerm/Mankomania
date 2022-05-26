@@ -37,7 +37,7 @@ public class Player extends Actor {
         currentPosition = startingField;
         this.setX(currentPosition.getX());
         this.setY(currentPosition.getY());
-        playerTexture = new Texture("player.png");
+        playerTexture = new Texture("p" + playerIndex + "icon.png");
     }
 
     //--------GETTERS-----------
