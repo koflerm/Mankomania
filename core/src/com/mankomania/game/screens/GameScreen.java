@@ -32,6 +32,7 @@ public class GameScreen extends ScreenAdapter {
     private final float boxWidth;
     private final float boxHeight;
     private final Dialog turnDialog;
+    private final Dialog intersectionDialog;
 
     private InputMultiplexer inputMultiplexer;
 
@@ -45,10 +46,20 @@ public class GameScreen extends ScreenAdapter {
     private static final float BOARD_PLAYER_BOX_HEIGHT_FACTOR = 4f;
     private static final float BOARD_PLAYER_MONEY_FACTOR = 4.5f;
     private static final String BOARD_TEXT_STYLE = "title";
+    private static final float duration = 3;
 
     private DiceAnimation diceAnimation;
-    private static final float duration = 3;
     private float elapsed;
+
+    private boolean intersectionDialogNeeded;
+    private boolean intersectionDialogIsShown;
+    private boolean moveToIntersection;
+    private boolean intersectionDecided;
+
+    private Player movingPlayer;
+    private int movingPlayerTargetSteps;
+    private int movingPlayerCurrentSteps;
+    private float movingElapsed;
 
     public GameScreen() {
         stage = new Stage();
@@ -66,13 +77,33 @@ public class GameScreen extends ScreenAdapter {
         turnDialogNeeded = false;
         diceAnimation = new DiceAnimation();
         elapsed = 0;
+        intersectionDialog = new Dialog("", skin, "alt") {
+            @Override
+            protected void result(Object object) {
+                if ((Boolean) object) {
+                    hideIntersectionDialog();
+                    moveToIntersection = false;
+                }else{
+                    hideIntersectionDialog();
+                    moveToIntersection = true;
+                }
+            }
+        };
+
+        intersectionDialogNeeded = false;
+        intersectionDialogIsShown = false;
+        moveToIntersection = false;
+        intersectionDecided = false;
+
+        movingPlayerCurrentSteps = 0;
+        movingPlayerTargetSteps = 0;
+        movingElapsed = 0;
 
         inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
         if (!inputMultiplexer.getProcessors().contains(stage, true)) {
             inputMultiplexer.addProcessor(stage);
         }
 
-        MankomaniaGame game = MankomaniaGame.getInstance();
         ArrayList<Player> players = MankomaniaGame.getInstance().getBoard().getPlayers();
         for (int i = 0; i  < players.size(); i++) {
             stage.addActor(players.get(i));
@@ -84,11 +115,24 @@ public class GameScreen extends ScreenAdapter {
         stage.getBatch().begin();
         ScreenUtils.clear(0.9f, 0.9f, 0.9f, 1);
         Board board = MankomaniaGame.getInstance().getBoard();
+        if (movingPlayer != null && !intersectionDialogIsShown) {
+            if (movingElapsed >= 0.5) {
+                if (movingPlayerCurrentSteps < movingPlayerTargetSteps) {
+                    movePlayerForward();
+                } else {
+                    movingPlayer = null;
+                    movingPlayerTargetSteps = 0;
+                }
+                movingElapsed = 0;
+            } else {
+                movingElapsed += delta;
+            }
+        }
         if (elapsed >= duration){
             diceAnimation.removeDice();
-        diceAnimation.setDiceShown(false);
+            diceAnimation.setDiceShown(false);
+            movePlayer(100, board.getCurrentPlayer());
         }
-        super.render(delta);
         if(diceAnimation.getDiceShown()){
             elapsed+=delta;
         }
@@ -100,20 +144,51 @@ public class GameScreen extends ScreenAdapter {
             drawTurnDialog();
             turnDialogIsShown = true;
         }
+        if (!intersectionDialogIsShown && intersectionDialogNeeded) {
+            drawIntersectionDialog();
+            intersectionDialogIsShown = true;
+        }
         stage.act(delta);
         stage.draw();
     }
 
-    public void showTurnDialog(String playerName, String playerMoney, boolean isCurrentPlayer) {
+    public void movePlayer(int steps, Player player) {
+        movingPlayer = player;
+        movingPlayerTargetSteps = steps;
+    }
+
+    private void movePlayerForward() {
+        if (movingPlayer.getCurrentPosition().isIntersection() && !intersectionDecided) {
+            intersectionDialogNeeded = true;
+        } else if (movingPlayer.getCurrentPosition().isIntersection() && intersectionDecided) {
+            movingPlayer.moveForward(moveToIntersection);
+        } else {
+            movingPlayer.moveForward(false);
+            if (intersectionDecided) {
+                intersectionDecided = false;
+            }
+        }
+        movingPlayerCurrentSteps++;
+    }
+
+    public void showTurnDialog(Player player, boolean isCurrentPlayer) {
         this.turnDialogNeeded = true;
-        this.turnDialogPlayerName = playerName;
-        this.turnDialogPlayerMoney = playerMoney;
+        this.turnDialogPlayerName = "" + player.getPlayerIndex();
+        this.turnDialogPlayerMoney = "" + player.getMoney();
         this.turnDialogIsCurrentPlayer = isCurrentPlayer;
     }
 
     public void hideTurnDialog() {
         this.turnDialogNeeded = false;
-        this.turnDialog.hide();
+        this.turnDialogIsShown = false;
+        this.turnDialog.remove();
+    }
+
+    public void hideIntersectionDialog() {
+        this.intersectionDecided = true;
+        this.intersectionDialogNeeded = false;
+        this.intersectionDialogIsShown = false;
+        this.intersectionDialog.remove();
     }
 
     private void drawGameBoard(Board board) {
@@ -192,6 +267,36 @@ public class GameScreen extends ScreenAdapter {
         float dialogYPosition = (Gdx.graphics.getHeight() / 2f) - ((turnDialog.getHeight() * scale) / 2f);
 
         turnDialog.setPosition(dialogXPosition, dialogYPosition);
+    }
+
+    private void drawIntersectionDialog() {
+        float scale = Gdx.graphics.getWidth() / 1000f;
+
+        Table tab = new Table();
+        tab.align(Align.center);
+        Label directionLabel = new Label("USE SHORTER PATH?", skin, BOARD_TEXT_STYLE);
+
+        tab.add(directionLabel).row();
+        tab.pad(20);
+
+        TextButton leftButton = new TextButton("NO", skin, "default");
+        TextButton rightButton = new TextButton("YES", skin, "default");
+        leftButton.setTransform(true);
+        rightButton.setTransform(true);
+        if (intersectionDialog.getButtonTable().getChildren().size == 0) {
+            intersectionDialog.button(leftButton, true).padBottom(20);
+            intersectionDialog.button(rightButton, false).padBottom(20);
+        }
+
+        intersectionDialog.getContentTable().clear();
+        intersectionDialog.getContentTable().add(tab);
+        intersectionDialog.setScale(scale);
+        intersectionDialog.show(stage);
+
+        float dialogXPosition = (Gdx.graphics.getWidth() / 2f) - ((intersectionDialog.getWidth() * scale) / 2f);
+        float dialogYPosition = (Gdx.graphics.getHeight() / 2f) - ((intersectionDialog.getHeight() * scale) / 2f);
+
+        intersectionDialog.setPosition(dialogXPosition, dialogYPosition);
     }
 
 
