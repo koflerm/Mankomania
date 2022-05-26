@@ -1,4 +1,4 @@
-package com.mankomania.game;
+package diceLogic;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
@@ -16,6 +16,7 @@ public class DiceAnimation extends ScreenAdapter {
     private final ArrayList<Image> secondDiceList;
     private final float spacing = Gdx.graphics.getWidth() / 14f;
     private boolean diceShown;
+    private int diceSum;
 
     public DiceAnimation() {
         random = new SecureRandom();
@@ -24,7 +25,7 @@ public class DiceAnimation extends ScreenAdapter {
         initDice();
     }
 
-    public void showDice(Stage stage) {
+    public void showAndRollTheDice(Stage stage) {
         int num = random.nextInt(6) + 1;
         int num2 = random.nextInt(6) + 1;
 
@@ -46,6 +47,7 @@ public class DiceAnimation extends ScreenAdapter {
             }
         }
         setDiceShown(true);
+        diceSum = num + num2;
     }
 
     public void removeDice() {
@@ -69,6 +71,8 @@ public class DiceAnimation extends ScreenAdapter {
     public boolean getDiceShown(){
         return diceShown;
     }
+
+    public int getDiceSum() { return diceSum; }
 
     private void initDice() {
         Texture one = new Texture(Gdx.files.internal("dice/dice-six-faces-one.png"));
