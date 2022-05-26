@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import org.graalvm.compiler.core.common.Fields;
 
 import java.util.ArrayList;
+import java.util.List;
 
 //import boardLogic.minigames.lotteryLogic.Lottery;  //To comment out when merged
 import fieldLogic.Field;
@@ -14,7 +15,7 @@ public class Board {
     private Field[] fields;
     private int[] startingFieldIndexes;
     //private Lottery lottery;                      //To comment out when merged
-    private ArrayList<Player> players;
+    private List<Player> players;
     private int currentPlayerIndex;
     //private StockExchange stockExchangeData;      //To comment out when merged
     private float x;
@@ -30,7 +31,7 @@ public class Board {
         x = calcBoardPosition(Gdx.graphics.getWidth());
         y = calcBoardPosition(Gdx.graphics.getHeight());
         length = calcBoardSize();
-        fields = BoardFields.getFields(x, y, length);
+        fields = BoardFields.getFields(x, length);
 
        // stockExchangeData = new StockExchange();  //To comment out when merged
       // lottery = new Lottery();                   //To comment out when merged
@@ -44,7 +45,7 @@ public class Board {
     public Field getCurrentPlayerField(){return players.get(currentPlayerIndex).getCurrentPosition();}
     public int[] getStartingFieldIndexes(){return startingFieldIndexes;}
     public Player getCurrentPlayer(){return players.get(currentPlayerIndex);}
-    public ArrayList<Player> getPlayers(){return players;}
+    public List<Player> getPlayers(){return players;}
     public Field getFieldByIndex(int fieldIndex){return fields[fieldIndex];}
     public Field[] getFields(){return fields;}
     //-----------------------

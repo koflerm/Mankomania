@@ -14,13 +14,12 @@ import fieldLogic.Field;
 import shareLogic.Share;
 
 public class Player extends Actor {
-    private static float SIZE = Gdx.graphics.getHeight() / 15;
+    private static final float SIZE = Gdx.graphics.getHeight() / 15f;
 
     private int playerIndex;
     private String playerSocketID;
     private int money;
     private Field currentPosition;
-    private SecureRandom secRand = new SecureRandom();
     // private IntArray movePath;
     private HashMap<Share, Integer> shares;
     private Texture playerTexture;
@@ -33,6 +32,7 @@ public class Player extends Actor {
         money = 1000000;
         // movePath = new IntArray();
         shares = new HashMap<>();
+        SecureRandom secRand = new SecureRandom();
         setInitialRandomShares(secRand.nextInt(3 - 1) + 1);
         this.playerIndex = playerIndex;
         currentPosition = startingField;

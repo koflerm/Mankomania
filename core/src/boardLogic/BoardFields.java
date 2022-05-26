@@ -4,7 +4,7 @@ import fieldLogic.Field;
 
 public class BoardFields {
 
-    private static Field[] initFields(float boardX, float boardY, float boardLength) {
+    private static Field[] initFields(float boardX, float boardLength) {
         return new Field[]{
                 new Field(0, boardX + (boardLength / 1.135f), boardLength / 15),
                 new Field(1, boardX + (boardLength / 14f), boardLength / 8.5f),
@@ -77,8 +77,8 @@ public class BoardFields {
                 new Field(68, boardX + (boardLength / 1.08f), boardLength / 9f)
         };
     }
-    public static Field[] getFields(float boardX, float boardY, float boardLength) {
-        Field[] fields = initFields(boardX, boardY, boardLength);
+    public static Field[] getFields(float boardX, float boardLength) {
+        Field[] fields = initFields(boardX, boardLength);
         connectFields(fields);
         return fields;
     }
