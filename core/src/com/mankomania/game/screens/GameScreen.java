@@ -188,7 +188,7 @@ public class GameScreen extends ScreenAdapter {
 
     public void showTurnDialog(Player player, boolean isCurrentPlayer) {
         this.turnDialogNeeded = true;
-        this.turnDialogPlayerName = "" + player.getPlayerIndex();
+        this.turnDialogPlayerName = "P" + player.getPlayerIndex();
         this.turnDialogPlayerMoney = "" + player.getMoney();
         this.turnDialogIsCurrentPlayer = isCurrentPlayer;
     }
