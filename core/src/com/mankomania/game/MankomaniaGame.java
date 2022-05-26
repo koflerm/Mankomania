@@ -9,12 +9,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mankomania.game.screens.GameScreen;
 import com.mankomania.game.screens.LoadingScreen;
 import com.mankomania.game.screens.StartScreen;
 
 import boardLogic.Board;
-import playerLogic.Player;
 
 public class MankomaniaGame extends Game {
     private static MankomaniaGame game;

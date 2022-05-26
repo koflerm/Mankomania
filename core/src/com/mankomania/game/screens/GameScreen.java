@@ -19,6 +19,7 @@ import diceLogic.DiceAnimation;
 import com.mankomania.game.MankomaniaGame;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import boardLogic.Board;
 import playerLogic.Player;
@@ -49,6 +50,7 @@ public class GameScreen extends ScreenAdapter {
     private static final float BOARD_PLAYER_BOX_HEIGHT_FACTOR = 4f;
     private static final float BOARD_PLAYER_MONEY_FACTOR = 4.5f;
     private static final String BOARD_TEXT_STYLE = "title";
+    private static final String BOARD_MODAL_BUTTON_STYLE = "default";
     private static final float duration = 3;
 
     private DiceAnimation diceAnimation;
@@ -107,7 +109,7 @@ public class GameScreen extends ScreenAdapter {
             inputMultiplexer.addProcessor(stage);
         }
 
-        ArrayList<Player> players = MankomaniaGame.getInstance().getBoard().getPlayers();
+        List<Player> players = MankomaniaGame.getInstance().getBoard().getPlayers();
         for (int i = 0; i  < players.size(); i++) {
             stage.addActor(players.get(i));
         }
@@ -265,12 +267,12 @@ public class GameScreen extends ScreenAdapter {
         tab.pad(20);
 
         if (turnDialogIsCurrentPlayer) {
-            TextButton startTurnButton = new TextButton("START TURN", skin, "default");
+            TextButton startTurnButton = new TextButton("START TURN", skin, BOARD_MODAL_BUTTON_STYLE);
             startTurnButton.setTransform(true);
             turnDialog.button(startTurnButton, true).padBottom(20);
             startTurnButton.addListener(startTurnListener());
         } else {
-            Label l4 = new Label("Waiting for player...", skin, "default");
+            Label l4 = new Label("Waiting for player...", skin, BOARD_MODAL_BUTTON_STYLE);
             tab.add(l4).row();
         }
 
@@ -294,8 +296,8 @@ public class GameScreen extends ScreenAdapter {
         tab.add(directionLabel).row();
         tab.pad(20);
 
-        TextButton leftButton = new TextButton("NO", skin, "default");
-        TextButton rightButton = new TextButton("YES", skin, "default");
+        TextButton leftButton = new TextButton("NO", skin, BOARD_MODAL_BUTTON_STYLE);
+        TextButton rightButton = new TextButton("YES", skin, BOARD_MODAL_BUTTON_STYLE);
         leftButton.setTransform(true);
         rightButton.setTransform(true);
         if (intersectionDialog.getButtonTable().getChildren().size == 0) {
