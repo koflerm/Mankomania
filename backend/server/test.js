@@ -1,46 +1,66 @@
-const temp = {
-    socket: "1",
-    dice : 6
+const room = {
+    id: '8fca7fc1-a2e4-494b-9b02-191dc94ca467',
+    status: true,
+    sockets: [
+        'S1RfJPQVQ260WWvuAAAP',
+        'yN0piTPfla13HZYWAAAN',
+        'mzMJJdGhGOXDcs4gAAAL',
+        'wZxGwsyNiD1KTSLRAAAJ'
+    ],
+    ready: 0,
+    players: {
+        S1RfJPQVQ260WWvuAAAP: {
+            socket: 'S1RfJPQVQ260WWvuAAAP',
+            playerIndex: 1,
+            money: 1000000,
+            position: 1,
+            stocks: [Object],
+            yourTurn: false,
+            dice_1: 5,
+            dice_2: 5,
+            dice_Count: 10
+        },
+        yN0piTPfla13HZYWAAAN: {
+            socket: 'yN0piTPfla13HZYWAAAN',
+            playerIndex: 2,
+            money: 1000000,
+            position: 2,
+            stocks: [Object],
+            yourTurn: false,
+            dice_1: 4,
+            dice_2: 4,
+            dice_Count: 8
+        },
+        mzMJJdGhGOXDcs4gAAAL: {
+            socket: 'mzMJJdGhGOXDcs4gAAAL',
+            playerIndex: 3,
+            money: 1000000,
+            position: 3,
+            stocks: [Object],
+            yourTurn: false,
+            dice_1: 3,
+            dice_2: 3,
+            dice_Count: 6
+        },
+        wZxGwsyNiD1KTSLRAAAJ: {
+            socket: 'wZxGwsyNiD1KTSLRAAAJ',
+            playerIndex: 4,
+            money: 1000000,
+            position: 4,
+            stocks: [Object],
+            yourTurn: false,
+            dice_1: 6,
+            dice_2: 6,
+            dice_Count: 12
+        }
+    },
+    counterForStocks: 0,
+    counterForDice: 0
 }
 
-const temp2 = {
-    socket: "2",
-    dice : 6
-}
-
-const temp3 = {
-    socket: "3",
-    dice : 4
-}
-
-const temp4= {
-    socket: "4",
-    dice : 3
-}
-
-const test =  []
-
-test.push(temp)
-test.push(temp2)
-test.push(temp3)
-test.push(temp4)
-
-
-
-
-
-let a;
-a = Math.max.apply(Math, test.map(function(o) {
-    return o.dice;
+let a =  Object.values(room.players)
+let max = Math.max.apply(Math, a.map(function(o) {
+    return o.dice_Count;
 }))
-console.log(a)
 
-//const countBy = (d, dice) => d.reduce((r,{dice},i,a) => (r[dice] = a.filter(x => x.dice === dice).length, r),{})
-//const counts = countBy(test, 'dice')
-//console.log(counts)
-console.log(test.filter(x => [x.dice] == a))
-
-
-
-
-
+console.log(max)
