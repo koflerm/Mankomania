@@ -18,7 +18,6 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import diceLogic.DiceAnimation;
 import com.mankomania.game.MankomaniaGame;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import boardLogic.Board;

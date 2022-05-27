@@ -6,7 +6,7 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 public class Connection {
-    private static final String server = "https://mankomania-backend.herokuapp.com/";
+    private static final String SERVER = "https://mankomania-backend.herokuapp.com/";
     private static Socket cs;
 
     private static boolean start = false;
@@ -15,7 +15,7 @@ public class Connection {
 
     public static void createConnection(){
         try {
-            cs = IO.socket(server);
+            cs = IO.socket(SERVER);
             cs.connect();
 
         } catch (URISyntaxException e) {
@@ -79,5 +79,53 @@ public class Connection {
         cs.off();
         cs.close();
     }
+
+    /**
+     * new Methods
+     * **/
+
+    public static void emitStocks() {
+        cs.emit("CHOSE_STOCKS", "{" +
+                "HardSteel_PLC: 2," +
+                "hortCircuit_PLC: 0," +
+                "DryOil_PLC : 0" +
+                "}");
+    }
+
+    public static void roleHighestDice (Emitter.Listener el) {
+        cs.once("ROLE_THE_HIGHEST_DICE", el);
+    }
+
+    public static void emitHighestDice(int dice) {
+        cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, dice);
+    }
+
+    public static void roleHighestDiceAgain(Emitter.Listener el) {
+        cs.on("ROLE_THE_HIGHEST_DICE_AGAIN", el);
+    }
+  /* Bekommen:
+  [
+{ socket: '8oq6z37GMXw4JFijAAAN', dice: 5 },
+{ socket: 'Zi_ShZhd61WqfuosAAAJ', dice: 6 }
+  ]
+   */
+
+    public static void emitHighestDiceAgain() {
+        cs.emit("ROLE_THE_HIGHEST_DICE_AGAIN", "[" +
+                "  { socket: '8oq6z37GMXw4JFijAAAN', dice: 5 }," +
+                "  { socket: 'Zi_ShZhd61WqfuosAAAJ', dice: 6 }" +
+                "]");
+    }
+
+    public static void startRound(Emitter.Listener el) {
+        cs.on("START_ROUND", el);
+    }
+  /* Bekommen: Gewinner
+  {const dice = {
+          socket: socket.id,
+          dice: diceCount
+          }
+   }
+   */
 
 }
