@@ -20,8 +20,8 @@
 
     })
 
-    socket.on("receive-message", message => {
-        displayMessage(message)
+    socket.on("receive-message", (message) => {
+        console.log(message)
 
     })
 
