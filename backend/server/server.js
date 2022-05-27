@@ -6,6 +6,7 @@ const {Server} = require("socket.io");
 const io = new Server(server, { cors: { origin: '*'} });
 const PORT = process.env.PORT || 3000;
 const { v4: uuidv4 } = require('uuid');
+const Json = require("nodemon");
 //const { instrument } = require("@socket.io/admin-ui");
 
 
@@ -51,13 +52,13 @@ function  createRoom () {
         status: false,
         sockets: [],
         ready: 0,
-        players: [],
+        players: {},
         stockCounterFunction : function (room, socket, stock){
             rooms[room].players[socket.id].stocks = stock
             this.counterForStocks++
         },
         counterForStocks : 0,
-        dice: []
+        counterForDice: 0
     };
     rooms[room.id] = room;
     // have the socket join the room they've just created.
@@ -72,7 +73,7 @@ function  createRoom () {
  * @returns {room}
  */
 function searchEmptyRooms(){
-    console.log("Search")
+    //console.log("Search")
     for (const id in rooms) {
         const room = rooms[id];
         if(room.sockets.length < MAX_LOBBY_SIZE && room.status === false){
@@ -88,29 +89,39 @@ function searchEmptyRooms(){
  */
 function joinRoom(socket, room, io) {
     room.sockets.push(socket.id);
-    room.players[socket.id] = createPlayer(room, socket.id, stocks())
+    createPlayer(room, socket.id, stocks())
     socket.join(room.id);
     console.log(socket.id, "Joined", room.id);
     io.in(room.id).emit('JOIN_ROOM', room.id, room.sockets)
 
     if(room.sockets.length === MAX_LOBBY_SIZE){
         room.status = true;
-        console.log(room.id + " is full")
-        io.in(room.id).emit('START_GAME', room.id, room.players);
+        //console.log(room.id + " is full")
+        io.in(room.id).emit('START_GAME', room.id, room);
+        console.log(rooms[room.id])
         createRoom();
 
     }
 }
 const createPlayer = (room,socket, stocks) =>{
-    return {
+   const player = {
         socket: socket,
-        playerIndex: room.players.length + 1,
+        playerIndex: room.sockets.length,
         money: START_MONEY,
-        position: room.players.length + 1,
+        position: room.sockets.length,
         stocks: stocks,
-        diceCount: 0,
-        yourTurn: false
+        yourTurn: false,
+        dice_1: 0,
+        dice_2: 0,
+        dice_Count: 0,
+       calculateDiceCount : function (diceCount){
+           this.dice_1 = diceCount[0]
+           this.dice_2 = diceCount[1]
+           this.dice_Count = this.dice_1 +  this.dice_2
+       }
     }
+    rooms[room.id].players[socket] = player
+
 }
 
 
@@ -171,47 +182,51 @@ function increaseReadyCounterForRoom(socket, room, io){
         io.to(socket).emit('ERROR', "Couldn't find Room");
     }
 }
-const saveDice = (room, socket, diceCount, winnerLength)=>{
-        const dice = {
-            socket: socket.id,
-            dice_1: diceCount[0],
-            dice_2: diceCount[1],
-            sum: diceCount[0] + diceCount[1]
-        }
-        console.log(dice)
+const saveDice = (room, socket, diceCount, winnerLength) =>{
+        rooms[room].players[socket.id].calculateDiceCount(diceCount)
+        rooms[room].counterForDice++
 
-        rooms[room].dice.push(dice)
-        if (winnerLength != null){
-            if (rooms[room].dice.length === winnerLength){
-                console.log(rooms[room].dice)
-                validateHighestDice(rooms[room].dice, room)
+
+        if (winnerLength != null){//if we have one or more winner
+            if (rooms[room].counterForDice === winnerLength){
+                console.log(rooms[room].players[socket.id])
+                validateHighestDice(room)
             }
         }else{
-            if (rooms[room].dice.length === rooms[room].sockets.length ){
-                validateHighestDice(rooms[room].dice, room)
+            if (rooms[room].counterForDice === rooms[room].sockets.length){
+                validateHighestDice(room)
             }
         }
 }
 
-const validateHighestDice = (data,room) =>{
-    let highestDice =  Math.max.apply(Math, data.map(function(o) {
-        return o.sum;
+const validateHighestDice = (room) =>{
+    let data = Object.values(rooms[room].players)
+    let highestDice = Math.max.apply(Math, data.map(function(o) {
+        return o.dice_Count;
     }))
 
-    console.log(highestDice)
 
-    let winner = data.filter(x => [x.sum] == highestDice)
+    console.log("Highest Dice: " + highestDice)
+
+    let winner = data.filter(x => [x.dice_Count] == highestDice)
     console.log(winner)
     if(winner.length === 1){
         //if we have one winner
-
         io.in(room).emit('START_ROUND', data, winner[0].socket);
-        rooms[room].dice = []
+        resetPlayersDice(room)
     }else{
         //if we have to ore more winners
         io.in(room).emit('ROLE_THE_HIGHEST_DICE_AGAIN', data, winner);
-        rooms[room].dice = []
+        resetPlayersDice(room)
     }
+}
+
+const resetPlayersDice = (room) =>{
+    Object.values(rooms[room].players).map(a=>a.dice_1 = 0);
+    Object.values(rooms[room].players).map(a=>a.dice_2 = 0);
+    Object.values(rooms[room].players).map(a=>a. dice_Count = 0);
+    rooms[room].counterForDice = 0
+    console.log(rooms[room])
 }
 
 
@@ -240,7 +255,7 @@ io.on('connection', (socket) => {
     console.log(rooms)
 
     socket.on('ROLE_THE_HIGHEST_DICE', (room, diceCount) =>{
-        console.log(diceCount)
+        //console.log(diceCount)
         saveDice(room, socket, diceCount)
     })
 
@@ -260,10 +275,13 @@ io.on('connection', (socket) => {
         leaveRooms(socket,io);
     });
 
-    socket.on('DISCONNECT', () => {
+    socket.on('disconnect', () => {
         console.log('user disconnected');
         leaveRooms(socket,io);
-
+    });
+    socket.on('disconnecting', () => {
+        console.log('user disconnected');
+        leaveRooms(socket,io);
     });
 
     socket.on('ROLE_THE_HIGHEST_DICE_AGAIN', (room, diceCount, length) =>{
