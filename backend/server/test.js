@@ -1,66 +1,75 @@
-const room = {
-    id: '8fca7fc1-a2e4-494b-9b02-191dc94ca467',
-    status: true,
-    sockets: [
-        'S1RfJPQVQ260WWvuAAAP',
-        'yN0piTPfla13HZYWAAAN',
-        'mzMJJdGhGOXDcs4gAAAL',
-        'wZxGwsyNiD1KTSLRAAAJ'
-    ],
-    ready: 0,
-    players: {
-        S1RfJPQVQ260WWvuAAAP: {
-            socket: 'S1RfJPQVQ260WWvuAAAP',
-            playerIndex: 1,
-            money: 1000000,
-            position: 1,
-            stocks: [Object],
-            yourTurn: false,
-            dice_1: 5,
-            dice_2: 5,
-            dice_Count: 10
+const test = {
+    "id": "db6c20f2-3f1b-48ee-be52-a6e9b33c449a",
+    "status": true,
+    "sockets": [
+    "3E3k8F9tWRwK_bHgAAAB",
+    "w3Z-gT1Az_tVs9svAAAD",
+    "BGc22EA4gkXDI3kdAAAF",
+    "KHnH49znG3-4oLFTAAAH"
+],
+    "ready": 0,
+    "players": {
+    "3E3k8F9tWRwK_bHgAAAB": {
+        "socket": "3E3k8F9tWRwK_bHgAAAB",
+            "playerIndex": 1,
+            "money": 1000000,
+            "position": 1,
+            "stocks": {
+            "HardSteel_PLC": 0,
+                "ShortCircuit_PLC": 0,
+                "DryOil_PLC": 0
         },
-        yN0piTPfla13HZYWAAAN: {
-            socket: 'yN0piTPfla13HZYWAAAN',
-            playerIndex: 2,
-            money: 1000000,
-            position: 2,
-            stocks: [Object],
-            yourTurn: false,
-            dice_1: 4,
-            dice_2: 4,
-            dice_Count: 8
-        },
-        mzMJJdGhGOXDcs4gAAAL: {
-            socket: 'mzMJJdGhGOXDcs4gAAAL',
-            playerIndex: 3,
-            money: 1000000,
-            position: 3,
-            stocks: [Object],
-            yourTurn: false,
-            dice_1: 3,
-            dice_2: 3,
-            dice_Count: 6
-        },
-        wZxGwsyNiD1KTSLRAAAJ: {
-            socket: 'wZxGwsyNiD1KTSLRAAAJ',
-            playerIndex: 4,
-            money: 1000000,
-            position: 4,
-            stocks: [Object],
-            yourTurn: false,
-            dice_1: 6,
-            dice_2: 6,
-            dice_Count: 12
-        }
+        "yourTurn": false,
+            "dice_1": 0,
+            "dice_2": 0,
+            "dice_Count": 0
     },
-    counterForStocks: 0,
-    counterForDice: 0
+    "w3Z-gT1Az_tVs9svAAAD": {
+        "socket": "w3Z-gT1Az_tVs9svAAAD",
+            "playerIndex": 2,
+            "money": 1000000,
+            "position": 2,
+            "stocks": {
+            "HardSteel_PLC": 0,
+                "ShortCircuit_PLC": 0,
+                "DryOil_PLC": 0
+        },
+        "yourTurn": false,
+            "dice_1": 0,
+            "dice_2": 0,
+            "dice_Count": 0
+    },
+    "BGc22EA4gkXDI3kdAAAF": {
+        "socket": "BGc22EA4gkXDI3kdAAAF",
+            "playerIndex": 3,
+            "money": 1000000,
+            "position": 3,
+            "stocks": {
+            "HardSteel_PLC": 0,
+                "ShortCircuit_PLC": 0,
+                "DryOil_PLC": 0
+        },
+        "yourTurn": false,
+            "dice_1": 0,
+            "dice_2": 0,
+            "dice_Count": 0
+    },
+    "KHnH49znG3-4oLFTAAAH": {
+        "socket": "KHnH49znG3-4oLFTAAAH",
+            "playerIndex": 4,
+            "money": 1000000,
+            "position": 4,
+            "stocks": {
+            "HardSteel_PLC": 0,
+                "ShortCircuit_PLC": 0,
+                "DryOil_PLC": 0
+        },
+        "yourTurn": false,
+            "dice_1": 0,
+            "dice_2": 0,
+            "dice_Count": 0
+    }
+},
+    "counterForStocks": 0,
+    "counterForDice": 0
 }
-
-let a =  Object.values(room.players)
-let max = Math.max.apply(Math, a.map(function(o) {
-    return o.dice_Count;
-}))
-
-console.log(max)
