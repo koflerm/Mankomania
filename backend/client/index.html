@@ -17,40 +17,35 @@
     socket.on("connect", () => {
         //clearDisplay()
        displayMessage(`You connected with id: ${socket.id}`)
-
     })
 
-    socket.on("receive-message", (message) => {
-        console.log(message)
-
-    })
 
     socket.on('JOIN_ROOM', (room, id) =>{
-        console.log(id)
         displayMessage(id + " joined " + room)
         lobby = room;
     })
 
     socket.on('START_GAME', (room, players) =>{
         displayMessage("Game starts " + room);
-        console.log(players)
-
     })
 
-    socket.on('ROLE_THE_HIGHEST_DICE', () =>{
+    socket.on('ROLE_THE_HIGHEST_DICE', (room) =>{
         diceCounts[0] = randomNumber(1,7)
         displayMessage("DiceCount 1: " + diceCounts[0])
         diceCounts[1] = randomNumber(1,7)
         displayMessage("DiceCount 2: " + diceCounts[1])
         socket.emit('ROLE_THE_HIGHEST_DICE', lobby, diceCounts)
+        console.log("Highest DICE")
     })
 
     socket.on('ROLE_THE_HIGHEST_DICE_AGAIN', (data,winner) =>{
         winner.forEach(o =>{
             if (o.socket === socket.id){
-                let diceCount = randomNumber(1,7)
-                displayMessage("DiceCount " + diceCount)
-                socket.emit('ROLE_THE_HIGHEST_DICE_AGAIN', lobby, diceCount, winner.length)
+                diceCounts[0] = randomNumber(1,7)
+                displayMessage("DiceCount 1: " + diceCounts[0])
+                diceCounts[1] = randomNumber(1,7)
+                displayMessage("DiceCount 2: " + diceCounts[1])
+                socket.emit('ROLE_THE_HIGHEST_DICE_AGAIN', lobby, diceCounts, winner.length)
             }
         })
 
@@ -154,7 +149,7 @@
         border: 5px solid black;
         margin: 10px;
         font-size: large;
-        height:300px;
+        height:500px;
 
     }
 
