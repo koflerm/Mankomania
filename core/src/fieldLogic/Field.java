@@ -9,11 +9,13 @@ public class Field {
     private  Field optionalNextField;
     private  Field previousField;
     private final int fieldIndex;
+    private final String fieldDescription;
     private final float x;
     private final float y;
 
-    public Field(int fieldIndex, float x, float y){
+    public Field(int fieldIndex, String fieldDescription, float x, float y){
         this.fieldIndex = fieldIndex;
+        this.fieldDescription = fieldDescription;
         this.x = x;
         this.y = y;
     }
@@ -31,6 +33,7 @@ public class Field {
 
     //-------GETTERS---------
     public int getFieldIndex(){return fieldIndex;}
+    public String getFieldDescription(){return fieldDescription;}
     public Field getNextField(){return nextField;}
     public Field getOptionalNextField(){return optionalNextField;}
     public Field getPreviousField(){return previousField;}
