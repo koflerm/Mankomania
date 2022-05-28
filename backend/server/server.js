@@ -97,7 +97,7 @@ function joinRoom(socket, room) {
     //when lobby is full
     if(room.sockets.length === MAX_LOBBY_SIZE){
         room.status = true;
-        io.in(room.id).emit('START_GAME', room.id, room);
+        io.in(room.id).emit('START_GAME', room.id, room.players);
         console.log(rooms[room.id])
         //create a new Room for other players
         createRoom();
@@ -116,7 +116,7 @@ const createPlayer = (room,socket, stocks) =>{
         socket: socket,
         playerIndex: room.sockets.length,
         money: START_MONEY,
-        position: room.sockets.length,
+        position: room.sockets.length - 1,
         stocks: stocks,
         yourTurn: false,
         dice_1: 0,
@@ -233,12 +233,12 @@ const validateHighestDice = (room) =>{
     console.log(winner)
     //if we have one winner
     if(winner.length === 1){
-        io.in(room).emit('START_ROUND', data, winner[0].socket);
+        io.in(room).emit('START_ROUND', rooms[room].players, winner[0].socket);
         resetPlayersDice(room)
     }
     //if we have to ore more winners
     else{
-        io.in(room).emit('ROLE_THE_HIGHEST_DICE_AGAIN', data, winner);
+        io.in(room).emit('ROLE_THE_HIGHEST_DICE_AGAIN', rooms[room].players, winner);
         resetPlayersDice(room)
     }
 }
@@ -266,7 +266,7 @@ const updateStock = (room, socket, stock)=>{
     //check if all clients have selected their stocks
     if (rooms[room].counterForStocks === rooms[room].sockets.length){
         console.log("Update Stock finished " + rooms[room].sockets)
-        io.in(room).emit('ROLE_THE_HIGHEST_DICE');
+        io.in(room).emit('ROLE_THE_HIGHEST_DICE', rooms[room].players);
     }
 }
 
