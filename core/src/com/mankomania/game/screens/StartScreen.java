@@ -76,20 +76,14 @@ public class StartScreen extends ScreenAdapter {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new LobbyScreen());
 
+                /**
+                 * Create Socket Connection
+                 */
                 Connection.createConnection();
 
-                Emitter.Listener startGameListener = new Emitter.Listener() {
-
-                    @Override
-                    public void call(Object... args) {
-                        Connection.setStart(true);
-
-                        Connection.setLobbyID(args[0].toString());
-
-                    }
-                };
-
-                Connection.readyForGame(startGameListener);
+                /**
+                 * Create playerJoinRoom Listener
+                 */
 
                 Emitter.Listener joinRoomListener = new Emitter.Listener() {
 
@@ -105,7 +99,52 @@ public class StartScreen extends ScreenAdapter {
 
                     }
                 };
+
+
+                /**
+                 * Create ReadyForGame Listener
+                 */
+                Emitter.Listener rdyGameListener = new Emitter.Listener() {
+
+                    @Override
+                    public void call(Object... args) {
+                        Connection.setStart(true);
+
+                        Connection.setLobbyID(args[0].toString());
+
+                        System.out.println("Set new Screen");
+
+                    }
+                };
+
+                /**
+                 * Create GAME_START Listener
+                 */
+                Emitter.Listener startGameListener = new Emitter.Listener() {
+
+                    @Override
+                    public void call(Object... args) {
+
+                        System.out.println("Event START_GAME");
+
+                        System.out.println(args[0].toString());
+
+                        System.out.println(args[1].toString());
+
+                        Connection.setStart(true);
+
+                    }
+                };
+
+                /**
+                 * Call Connection Methods
+                 */
+                Connection.startGame(startGameListener);
+
+                Connection.readyForGame(rdyGameListener);
+
                 Connection.joinRoom(joinRoomListener);
+
             }
         };
     }
