@@ -70,7 +70,12 @@ public class Connection {
     }
 
     public static void readyForGame(Emitter.Listener el) {
-        cs.on("startGame", el);
+        cs.once("startGame", el);
+    }
+
+    public static void startGame(Emitter.Listener el) {
+        System.out.println("Waiting to receive START_GAME");
+        cs.on("START_GAME", el);
     }
 
     public static void closeConnection() {
@@ -85,30 +90,20 @@ public class Connection {
      * **/
 
     public static void emitStocks() {
-        cs.emit("CHOSE_STOCKS", "{" +
-                "HardSteel_PLC: 2," +
-                "hortCircuit_PLC: 0," +
-                "DryOil_PLC : 0" +
-                "}");
+        cs.emit("CHOSE_STOCKS", lobbyID, "{ HardSteel_PLC: 2, ShortCircuit_PLC: 0, DryOil_PLC: 0 }");
     }
 
     public static void roleHighestDice (Emitter.Listener el) {
         cs.once("ROLE_THE_HIGHEST_DICE", el);
     }
 
-    public static void emitHighestDice(int dice) {
+    public static void emitHighestDice(int dice[]) {
         cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, dice);
     }
 
     public static void roleHighestDiceAgain(Emitter.Listener el) {
         cs.on("ROLE_THE_HIGHEST_DICE_AGAIN", el);
     }
-  /* Bekommen:
-  [
-{ socket: '8oq6z37GMXw4JFijAAAN', dice: 5 },
-{ socket: 'Zi_ShZhd61WqfuosAAAJ', dice: 6 }
-  ]
-   */
 
     public static void emitHighestDiceAgain() {
         cs.emit("ROLE_THE_HIGHEST_DICE_AGAIN", "[" +
