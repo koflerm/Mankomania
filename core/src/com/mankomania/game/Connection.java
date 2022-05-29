@@ -65,16 +65,11 @@ public class Connection {
 
 
     public static void joinRoom(Emitter.Listener el) {
-        cs.on("join-room", el);
-        cs.emit("join-room", "");
-    }
-
-    public static void readyForGame(Emitter.Listener el) {
-        cs.once("startGame", el);
+        cs.on("JOIN_ROOM", el);
+        cs.emit("JOIN_ROOM", "");
     }
 
     public static void startGame(Emitter.Listener el) {
-        System.out.println("Waiting to receive START_GAME");
         cs.on("START_GAME", el);
     }
 
