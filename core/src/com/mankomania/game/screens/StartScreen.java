@@ -13,10 +13,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.mankomania.game.ConPlayer;
 import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.socket.emitter.Emitter;
+import playerLogic.Player;
 
 public class StartScreen extends ScreenAdapter {
     private final Stage stage;
@@ -102,22 +111,6 @@ public class StartScreen extends ScreenAdapter {
 
 
                 /**
-                 * Create ReadyForGame Listener
-                 */
-                Emitter.Listener rdyGameListener = new Emitter.Listener() {
-
-                    @Override
-                    public void call(Object... args) {
-                        Connection.setStart(true);
-
-                        Connection.setLobbyID(args[0].toString());
-
-                        System.out.println("Set new Screen");
-
-                    }
-                };
-
-                /**
                  * Create GAME_START Listener
                  */
                 Emitter.Listener startGameListener = new Emitter.Listener() {
@@ -125,14 +118,89 @@ public class StartScreen extends ScreenAdapter {
                     @Override
                     public void call(Object... args) {
 
-                        System.out.println("Event START_GAME");
+                        //System.out.println(args[1].toString());
 
-                        System.out.println(args[0].toString());
-
-                        System.out.println(args[1].toString());
+                       // System.out.println("Str0: " + str[0]);
+                       // System.out.println("Str1: " + str[1]);
 
                         Connection.setStart(true);
 
+                        /**
+                         * Split Player-Array in multiple Player Strings
+                         */
+
+                        String[] players = args[1].toString().split("},", 10);
+
+                        for(int i = 0; i < players.length; i++) {
+
+                            String temp = players[i];
+
+                            String newString = "";
+
+                            if(i == 0){
+                                //Ersten 24 Zeichen entfernen
+                                //} hinten hinzufügen
+
+                                newString = temp.substring(24);
+                                newString += "}";
+                                players[i] = newString;
+                            }
+
+                            else if(i < (players.length - 1)){
+                                //Ersten 23 Zeichen entfernen
+                                //} hinten hinzufügen
+
+                                newString = temp.substring(23);
+                                newString += "}";
+
+                                players[i] = newString;
+
+                            }else if(i == (players.length - 1)){
+                                //Ersten 23 Zeichen entfernen
+                                //Hinten entfernen: }
+
+                                newString = temp.substring(23);
+                                newString = newString.substring(0, newString.length()-1);
+                                players[i] = newString;
+                            }
+
+                            System.out.println(players[i]);
+
+                        }
+
+                        System.out.println();
+                        System.out.println();
+
+                        /**
+                         * Parse Player-Strings into Con-Players
+                         */
+
+                        String player1 = players[0];
+                        String player2 = players[1];
+                        String player3 = players[2];
+                        String player4 = players[3];
+
+                        JsonObject jsonObject = JsonParser.parseString(player1).getAsJsonObject();
+
+                        ConPlayer cp = new ConPlayer();
+
+                        cp.setDice_2(jsonObject.get("dice_2").getAsInt());
+
+                        cp.setDice_1(jsonObject.get("dice_1").getAsInt());
+
+                        cp.setMoney(jsonObject.get("money").getAsInt());
+
+                        cp.setYouTurn(jsonObject.get("yourTurn").getAsBoolean());
+
+                        cp.setSocket(jsonObject.get("socket").getAsString());
+
+                        cp.setPosition(jsonObject.get("position").getAsInt());
+
+                        cp.setDice_Count(jsonObject.get("dice_Count").getAsInt());
+
+                        cp.setPlayerIndex(jsonObject.get("playerIndex").getAsInt());
+
+                        System.out.println(cp.toString());
                     }
                 };
 
@@ -140,8 +208,6 @@ public class StartScreen extends ScreenAdapter {
                  * Call Connection Methods
                  */
                 Connection.startGame(startGameListener);
-
-                Connection.readyForGame(rdyGameListener);
 
                 Connection.joinRoom(joinRoomListener);
 
