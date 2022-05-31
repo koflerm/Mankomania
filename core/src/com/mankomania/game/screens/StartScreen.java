@@ -24,7 +24,10 @@ import com.mankomania.game.MankomaniaGame;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import io.socket.emitter.Emitter;
+import netscape.javascript.JSObject;
 import playerLogic.Player;
 
 public class StartScreen extends ScreenAdapter {
@@ -164,12 +167,42 @@ public class StartScreen extends ScreenAdapter {
                                 players[i] = newString;
                             }
 
-                            System.out.println(players[i]);
+                           // System.out.println(players[i]);
 
                         }
 
                         System.out.println();
                         System.out.println();
+
+                        /**
+                         * Parser for Stocks
+                         */
+
+                        ArrayList<String> stockAsString = new ArrayList<String>();
+
+
+                        for(int i = 0; i < players.length; i++){
+                            String[] stock = players[i].split(":\\{");
+
+                            String newStock = stock[1];
+
+                            String newNewStock = "{";
+
+                            newNewStock += newStock;
+
+                            String finalStock = newNewStock.substring(0, newNewStock.length()-1);
+
+                            stockAsString.add(finalStock);
+
+
+                        }
+
+                   /*     System.out.println("Stocks");
+                        for(String s : stockAsString){
+                            System.out.println(s);
+                        }*/
+
+
 
                         /**
                          * Parse Player-Strings into Con-Players
@@ -180,27 +213,58 @@ public class StartScreen extends ScreenAdapter {
                         String player3 = players[2];
                         String player4 = players[3];
 
-                        JsonObject jsonObject = JsonParser.parseString(player1).getAsJsonObject();
+                        ArrayList<String> allPlayersAsString = new ArrayList<String>();
 
-                        ConPlayer cp = new ConPlayer();
+                        allPlayersAsString.add(player1);
+                        allPlayersAsString.add(player2);
+                        allPlayersAsString.add(player3);
+                        allPlayersAsString.add(player4);
 
-                        cp.setDice_2(jsonObject.get("dice_2").getAsInt());
+                        ArrayList<ConPlayer> cp = new ArrayList<ConPlayer>();
 
-                        cp.setDice_1(jsonObject.get("dice_1").getAsInt());
+                        for(String p : allPlayersAsString) {
 
-                        cp.setMoney(jsonObject.get("money").getAsInt());
+                            JsonObject jsonObject = JsonParser.parseString(p).getAsJsonObject();
 
-                        cp.setYouTurn(jsonObject.get("yourTurn").getAsBoolean());
+                            ConPlayer temp = new ConPlayer();
 
-                        cp.setSocket(jsonObject.get("socket").getAsString());
+                            temp.setDice_2(jsonObject.get("dice_2").getAsInt());
 
-                        cp.setPosition(jsonObject.get("position").getAsInt());
+                            temp.setDice_1(jsonObject.get("dice_1").getAsInt());
 
-                        cp.setDice_Count(jsonObject.get("dice_Count").getAsInt());
+                            temp.setMoney(jsonObject.get("money").getAsInt());
 
-                        cp.setPlayerIndex(jsonObject.get("playerIndex").getAsInt());
+                            temp.setYouTurn(jsonObject.get("yourTurn").getAsBoolean());
 
-                        System.out.println(cp.toString());
+                            temp.setSocket(jsonObject.get("socket").getAsString());
+
+                            temp.setPosition(jsonObject.get("position").getAsInt());
+
+                            temp.setDice_Count(jsonObject.get("dice_Count").getAsInt());
+
+                            temp.setPlayerIndex(jsonObject.get("playerIndex").getAsInt());
+
+                            cp.add(temp);
+
+                        }
+
+                        /**
+                         * Parse Stocks into ConPlayer Object
+                         */
+
+                        for(int i = 0; i < stockAsString.size(); i++){
+
+                            JsonObject jsonStock = JsonParser.parseString(stockAsString.get(i)).getAsJsonObject();
+
+                            cp.get(i).setHARD_STEEL_PLC(jsonStock.get("HardSteel_PLC").getAsInt());
+                            cp.get(i).setSHORT_CIRCUIT_PLC(jsonStock.get("ShortCircuit_PLC").getAsInt());
+                            cp.get(i).setDRY_OIL_PLC(jsonStock.get("DryOil_PLC").getAsInt());
+                        }
+
+                        for(ConPlayer out : cp){
+
+                            System.out.println("ConPlayer: " + out.toString());
+                        }
                     }
                 };
 
