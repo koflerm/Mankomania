@@ -12,7 +12,9 @@ public class ConPlayer {
     private int position;
     private int dice_Count;
     private int playerIndex;
-    private HashMap<String, Integer> stocks;
+    private int HARD_STEEL_PLC;
+    private int SHORT_CIRCUIT_PLC;
+    private int DRY_OIL_PLC;
 
     public ConPlayer(){
 
@@ -50,14 +52,6 @@ public class ConPlayer {
         this.position = position;
     }
 
-    public HashMap<String, Integer> getStocks() {
-        return stocks;
-    }
-
-    public void setStocks(HashMap<String, Integer> stocks) {
-        this.stocks = stocks;
-    }
-
     public boolean isYouTurn() {
         return youTurn;
     }
@@ -90,6 +84,30 @@ public class ConPlayer {
         this.dice_Count = dice_Count;
     }
 
+    public int getHARD_STEEL_PLC() {
+        return HARD_STEEL_PLC;
+    }
+
+    public void setHARD_STEEL_PLC(int HARD_STEEL_PLC) {
+        this.HARD_STEEL_PLC = HARD_STEEL_PLC;
+    }
+
+    public int getSHORT_CIRCUIT_PLC() {
+        return SHORT_CIRCUIT_PLC;
+    }
+
+    public void setSHORT_CIRCUIT_PLC(int SHORT_CIRCUIT_PLC) {
+        this.SHORT_CIRCUIT_PLC = SHORT_CIRCUIT_PLC;
+    }
+
+    public int getDRY_OIL_PLC() {
+        return DRY_OIL_PLC;
+    }
+
+    public void setDRY_OIL_PLC(int DRY_OIL_PLC) {
+        this.DRY_OIL_PLC = DRY_OIL_PLC;
+    }
+
     @Override
     public String toString() {
         return "ConPlayer{" +
@@ -101,7 +119,9 @@ public class ConPlayer {
                 ", position=" + position +
                 ", dice_Count=" + dice_Count +
                 ", playerIndex=" + playerIndex +
-                ", stocks=" + stocks +
+                ", HARD_STEEL_PLC=" + HARD_STEEL_PLC +
+                ", SHORT_CIRCUIT_PLC=" + SHORT_CIRCUIT_PLC +
+                ", DRY_OIL_PLC=" + DRY_OIL_PLC +
                 '}';
     }
 }
