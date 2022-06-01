@@ -19,6 +19,8 @@ public class Connection {
     private static String lobbyID;
     private static String[] players = {"", "", "", ""};
 
+    private static String winners[];
+
     public static void createConnection() {
         try {
             cs = IO.socket(SERVER);
@@ -87,29 +89,42 @@ public class Connection {
      * new Methods
      **/
 
-    public static void emitStocks() {
-        cs.emit("CHOSE_STOCKS", lobbyID, "{ HardSteel_PLC: 2, ShortCircuit_PLC: 0, DryOil_PLC: 0 }");
+    //Aufrufen
+    public static void emitStocks(int hardSteel, int shortCircuit, int dryOil) {
+        cs.emit("CHOSE_STOCKS", lobbyID, "{ HardSteel_PLC: " + hardSteel + ", ShortCircuit_PLC: " + shortCircuit + ", DryOil_PLC: " + dryOil + " }");
+        System.out.println("Emit Stocks");
     }
 
+    //Aufrufen
     public static void roleHighestDice(Emitter.Listener el) {
         cs.once("ROLE_THE_HIGHEST_DICE", el);
+        System.out.println("Listen for diceRoll Event");
     }
 
-    public static void emitHighestDice(int dice[]) {
-        cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, dice);
+    //Aufrufen
+    public static void emitHighestDice(int dice1, int dice2) {
+        cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, "[" + dice1 + ", " + dice2 + "]");
+        System.out.println("Emit dices");
     }
 
+    //Aufrufen
+    //Case Two ore more Winners The server will send an event socket.on('ROLE_THE_HIGHEST_DICE_AGAIN',
+    // (data, winner) data = players object, winner = winner Array. Loop the array and check if the
+    // socketID equals your id, if this is true: roll the dice again and emit to the server
     public static void roleHighestDiceAgain(Emitter.Listener el) {
         cs.on("ROLE_THE_HIGHEST_DICE_AGAIN", el);
+        System.out.println("Listen for dice roll again");
     }
 
-    public static void emitHighestDiceAgain() {
-        cs.emit("ROLE_THE_HIGHEST_DICE_AGAIN", "[" +
-                "  { socket: '8oq6z37GMXw4JFijAAAN', dice: 5 }," +
-                "  { socket: 'Zi_ShZhd61WqfuosAAAJ', dice: 6 }" +
-                "]");
+    //Aufrufen
+    public static void emitHighestDiceAgain(int dice1, int dice2) {
+        cs.emit("ROLE_THE_HIGHEST_DICE_AGAIN", lobbyID, "[" + dice1 + ", " + dice2 + "]", winners.length);
+        System.out.println("Emits dice roll again");
     }
 
+    //Aufrufen
+    //Case One Winner The server will send an event socket.on('START_ROUND', (data, winner)
+    // data= players Object; winner = winner ID Round will start (winner index in currentPlayer speichern)
     public static void startRound(Emitter.Listener el) {
         cs.on("START_ROUND", el);
     }
@@ -183,7 +198,7 @@ public class Connection {
 
         ArrayList<String> allPlayersAsString = new ArrayList<String>();
 
-        for(String s : players){
+        for (String s : players) {
             allPlayersAsString.add(s);
         }
 
