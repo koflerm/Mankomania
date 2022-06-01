@@ -25,10 +25,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import fieldLogic.Field;
 import io.socket.emitter.Emitter;
 import netscape.javascript.JSObject;
 import playerLogic.Player;
+import shareLogic.Share;
 
 public class StartScreen extends ScreenAdapter {
     private final Stage stage;
@@ -261,10 +264,35 @@ public class StartScreen extends ScreenAdapter {
                             cp.get(i).setDRY_OIL_PLC(jsonStock.get("DryOil_PLC").getAsInt());
                         }
 
-                        for(ConPlayer out : cp){
+                      /*  for(ConPlayer out : cp){
 
                             System.out.println("ConPlayer: " + out.toString());
+                        }*/
+
+                        /**
+                         * Create real Players
+                         */
+
+                        for(ConPlayer c : cp){
+
+                            Player p = new Player();
+
+                            p.setPlayerIndex(c.getPlayerIndex());
+                            p.setPlayerSocketID(c.getSocket());
+                            p.setMoney(c.getMoney());
+
+                            //Field
+                            p.setCurrentFieldPosition(MankomaniaGame.getInstance().getBoard().getFieldByIndex(c.getPosition()));
+
+                            //Stocks
+                            p.setShares(c.getHARD_STEEL_PLC(), c.getSHORT_CIRCUIT_PLC(), c.getDRY_OIL_PLC());
+
+
+                            //Problem
+                            MankomaniaGame.getInstance().getBoard().addPlayer(p);
+
                         }
+
                     }
                 };
 

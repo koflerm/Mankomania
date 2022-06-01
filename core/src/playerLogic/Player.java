@@ -21,7 +21,7 @@ public class Player extends Actor {
     private int money;
     private Field currentPosition;
     // private IntArray movePath;
-    private HashMap<Share, Integer> shares;
+    private HashMap<Share, Integer> shares = new HashMap<>();
     private Texture playerTexture;
 
     public Player() {
@@ -88,6 +88,13 @@ public class Player extends Actor {
                 shares.put(Share.SHORT_CIRCUIT_PLC, 0);
         }
     }
+    public void setShares(int hardSteel, int shortCircuit, int dryOil) {
+        shares.clear();
+        shares.put(Share.HARD_STEEL_PLC, hardSteel);
+        shares.put(Share.SHORT_CIRCUIT_PLC, shortCircuit);
+        shares.put(Share.DRY_OIL_PLC, dryOil);
+    }
+
     //--------------------------
 
     //-----MONEY UPDATING-------
@@ -128,5 +135,17 @@ public class Player extends Actor {
 
     public void dispose() {
         playerTexture.dispose();
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "playerIndex=" + playerIndex +
+                ", playerSocketID='" + playerSocketID + '\'' +
+                ", money=" + money +
+                ", currentPosition=" + currentPosition +
+                ", shares=" + shares +
+                ", playerTexture=" + playerTexture +
+                '}';
     }
 }
