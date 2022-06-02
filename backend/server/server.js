@@ -233,6 +233,7 @@ const validateHighestDice = (room) =>{
     console.log(winner)
     //if we have one winner
     if(winner.length === 1){
+        rooms[room].players[winner[0].socket].yourTurn = true;
         io.in(room).emit('START_ROUND', rooms[room].players, winner[0].socket);
         resetPlayersDice(room)
     }
