@@ -18,6 +18,11 @@ import com.badlogic.gdx.utils.Align;
 import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
 
+import java.util.ArrayList;
+
+import io.socket.emitter.Emitter;
+import playerLogic.Player;
+
 
 public class LobbyScreen extends ScreenAdapter{
     private final Stage stage;
@@ -60,6 +65,64 @@ public class LobbyScreen extends ScreenAdapter{
         if (!inputMultiplexer.getProcessors().contains(stage, true)) {
             inputMultiplexer.addProcessor(stage);
         }
+
+        initConnection();
+    }
+
+    public void initConnection() {
+        /**
+         * Create Socket Connection
+         */
+        Connection.createConnection();
+
+        /**
+         * Create playerJoinRoom Listener
+         */
+
+        Emitter.Listener joinRoomListener = new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                Connection.setLobbyID(args[0].toString());
+
+                String temp = args[1].toString().substring(1, args[1].toString().length() - 1);
+
+                String temp1 = temp.replaceAll("[\"]", "");
+
+                Connection.setPlayers(temp1.split(","));
+
+            }
+        };
+
+
+        /**
+         * Create GAME_START Listener
+         */
+        Emitter.Listener startGameListener = new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+
+                //System.out.println(args[1].toString());
+
+                // System.out.println("Str0: " + str[0]);
+                // System.out.println("Str1: " + str[1]);
+
+                /**
+                 * Convert args[1] into Player Object
+                 */
+                Connection.convertJsonToPlayer("" + args[1]);
+
+                Connection.setStart(true);
+            }
+        };
+
+        /**
+         * Call Connection Methods
+         */
+        Connection.startGame(startGameListener);
+
+        Connection.joinRoom(joinRoomListener);
     }
 
     @Override
@@ -154,6 +217,13 @@ public class LobbyScreen extends ScreenAdapter{
         MankomaniaGame.renderMenu(stage, batch, delta, background);
         update();
         if(Connection.getStart()){
+            ArrayList<Player> players = Connection.convertConPlayersToPlayers();
+
+            for(Player p : players){
+                System.out.println("Adding player " + p.getPlayerSocketID());
+                MankomaniaGame.getInstance().getBoard().addPlayer(p);
+            }
+
             MankomaniaGame.getInstance().disposeCurrentScreen();
             MankomaniaGame.getInstance().setScreen(new GameScreen());
         }
