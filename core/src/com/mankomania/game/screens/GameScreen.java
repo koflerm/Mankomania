@@ -112,6 +112,8 @@ public class GameScreen extends ScreenAdapter {
         for (int i = 0; i  < players.size(); i++) {
             stage.addActor(players.get(i));
         }
+
+        showTurnDialog(players.get(0), true);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.mankomania.game;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sun.tools.javac.code.Attribute;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -12,12 +13,13 @@ import io.socket.emitter.Emitter;
 import playerLogic.Player;
 
 public class Connection {
-    private static final String SERVER = "https://mankomania-backend.herokuapp.com/";
+    private static final String SERVER = "https://mankomania.herokuapp.com/";
     private static Socket cs;
 
     private static boolean start = false;
     private static String lobbyID;
     private static String[] players = {"", "", "", ""};
+    private static ArrayList<ConPlayer> cp = new ArrayList<ConPlayer>();
 
     private static String winners[];
 
@@ -202,8 +204,6 @@ public class Connection {
             allPlayersAsString.add(s);
         }
 
-        ArrayList<ConPlayer> cp = new ArrayList<ConPlayer>();
-
         for (String p : allPlayersAsString) {
 
             JsonObject jsonObject = JsonParser.parseString(p).getAsJsonObject();
@@ -247,9 +247,12 @@ public class Connection {
         /**
          * Create real Player-Objects
          */
+    }
+
+    public static ArrayList<Player> convertConPlayersToPlayers() {
+        ArrayList<Player> pList = new ArrayList<Player>();
 
         for (ConPlayer c : cp) {
-
             Player p = new Player();
 
             p.setPlayerIndex(c.getPlayerIndex());
@@ -266,8 +269,12 @@ public class Connection {
             //Problem
             //MankomaniaGame.getInstance().getBoard().addPlayer(p);
 
-            System.out.println(p.toString());
+            pList.add(p);
+
+            //System.out.println(p.toString());
 
         }
+
+        return pList;
     }
 }

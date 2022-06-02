@@ -90,62 +90,6 @@ public class StartScreen extends ScreenAdapter {
             public void clicked(InputEvent inputEvent, float x, float y) {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new LobbyScreen());
-
-                /**
-                 * Create Socket Connection
-                 */
-                Connection.createConnection();
-
-                /**
-                 * Create playerJoinRoom Listener
-                 */
-
-                Emitter.Listener joinRoomListener = new Emitter.Listener() {
-
-                    @Override
-                    public void call(Object... args) {
-                        Connection.setLobbyID(args[0].toString());
-
-                        String temp = args[1].toString().substring(1, args[1].toString().length() - 1);
-
-                        String temp1 = temp.replaceAll("[\"]", "");
-
-                        Connection.setPlayers(temp1.split(","));
-
-                    }
-                };
-
-
-                /**
-                 * Create GAME_START Listener
-                 */
-                Emitter.Listener startGameListener = new Emitter.Listener() {
-
-                    @Override
-                    public void call(Object... args) {
-
-                        //System.out.println(args[1].toString());
-
-                       // System.out.println("Str0: " + str[0]);
-                       // System.out.println("Str1: " + str[1]);
-
-                        Connection.setStart(true);
-
-                        /**
-                         * Convert args[1] into Player Object
-                         */
-                        Connection.convertJsonToPlayer(args[1]+"");
-
-                    }
-                };
-
-                /**
-                 * Call Connection Methods
-                 */
-                Connection.startGame(startGameListener);
-
-                Connection.joinRoom(joinRoomListener);
-
             }
         };
     }

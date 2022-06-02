@@ -25,7 +25,11 @@ public class Player extends Actor {
     private Texture playerTexture;
 
     public Player() {
-
+        money = 1000000;
+        // movePath = new IntArray();
+        shares = new HashMap<>();
+        SecureRandom secRand = new SecureRandom();
+        setInitialRandomShares(secRand.nextInt(3 - 1) + 1);
     }
 
     public Player(Field startingField, int playerIndex, String playerSocketID) {
@@ -63,11 +67,14 @@ public class Player extends Actor {
     //--------SETTERS-----------
     public void setCurrentFieldPosition(Field field) {
         this.currentPosition = field;
+        this.setX(currentPosition.getX());
+        this.setY(currentPosition.getY());
     }
     public void setPlayerSocketID(String playerSocketID) {
         this.playerSocketID = playerSocketID;
     }
     public void setPlayerIndex(int playerIndex) {
+        playerTexture = new Texture("p" + playerIndex + "icon.png");
         this.playerIndex = playerIndex;
     }
     public void setMoney(int money) {
