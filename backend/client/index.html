@@ -13,6 +13,8 @@
     //const socket = io('https://mankomania-backend.herokuapp.com');
     let lobby;
     let diceCounts = [];
+    let players = {}
+    let moveStatus = false;
 
     socket.on("connect", () => {
         //clearDisplay()
@@ -52,9 +54,47 @@
     })
 
     socket.on('START_ROUND', (data, winner) =>{
-        console.log(data)
-        console.log(winner)
-        displayMessage("Winner " +  winner)
+
+        players = data
+        let sockets = [];
+        for (const key in players) {
+            sockets.push(key)
+        }
+
+        let player1 = players[sockets[0]];
+        let player2 = players[sockets[1]];
+        let player3 = players[sockets[2]];
+        let player4 = players[sockets[3]];
+
+        console.log(player1)
+        console.log(player2)
+        console.log(player3)
+        console.log(player4)
+
+        if(data[socket.id].yourTurn === true){
+            displayMessage("Me " + data[winner].playerIndex)
+            diceCounts[0] = randomNumber(1,7)
+            displayMessage("DiceCount 1: " + diceCounts[0])
+            diceCounts[1] = randomNumber(1,7)
+            displayMessage("DiceCount 2: " + diceCounts[1])
+            socket.emit('ROLE_THE_DICE', lobby, diceCounts)
+            displayMessage("Total Dice Count " + diceCounts[0] + diceCounts[1] + ". Move Status true")
+            moveStatus = true
+
+
+        }else{
+            displayMessage("Winner " + data[winner].playerIndex)
+            displayMessage("Player " + data[winner].playerIndex + " has the turn")
+
+        }
+
+    })
+
+    socket.on('UPDATE_DICE', (socket, diceCounts) => {
+        players[socket].dice_1 = diceCounts[0]
+        players[socket].dice_2 = diceCounts[1]
+        displayMessage("Player " + players[socket].playerIndex + " rolled the dice. Dice 1: " +  players[socket].dice_1 + ", Dice 2: " + players[socket].dice_2)
+
     })
 
 
@@ -67,6 +107,7 @@
     const disconnectButton = document.getElementById("disconnect");
     const readyForGameButton = document.getElementById("readyForGame")
     const updateStockButton = document.getElementById("updateStock")
+    const movePlayerButton = document.getElementById("movePlayer")
 
     updateStockButton.addEventListener("click", (event) =>{
         const stock = {
@@ -125,6 +166,14 @@
         } )
         */
         socket.emit('JOIN_ROOM', room);
+    })
+
+    movePlayerButton.addEventListener("click", e =>{
+        if(moveStatus === true){
+            
+        }else{
+            alert("Move status false");
+        }
     })
 
 
@@ -190,6 +239,10 @@
 
     <div>
         <button class="btn" type="button" id="updateStock">update Stock</button>
+    </div>
+
+    <div>
+        <button class="btn" type="button" id="movePlayer">Move</button>
     </div>
 
 

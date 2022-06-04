@@ -271,6 +271,14 @@ const updateStock = (room, socket, stock)=>{
     }
 }
 
+const updateDice = (room, diceCount, socket) =>{
+    //check param
+    rooms[room].players[socket.id].dice_1 = diceCount[0]
+    rooms[room].players[socket.id].dice_1 = diceCount[1]
+
+    socket.to(room).emit('UPDATE_DICE', socket.id, diceCount)
+}
+
 
 
 app.get('/', (req, res) =>{
@@ -319,6 +327,10 @@ io.on('connection', (socket) => {
     socket.on('ROLE_THE_HIGHEST_DICE_AGAIN', (room, diceCount, length) =>{
         saveDice(room, socket, diceCount, length)
     });
+
+    socket.on('ROLE_THE_DICE', (room, diceCount)=>{
+        updateDice(room, diceCount, socket)
+    })
 });
 
 
