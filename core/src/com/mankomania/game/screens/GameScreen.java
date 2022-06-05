@@ -16,11 +16,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import diceLogic.DiceAnimation;
+
+import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import boardLogic.Board;
+import io.socket.emitter.Emitter;
 import playerLogic.Player;
 
 public class GameScreen extends ScreenAdapter {
@@ -114,6 +118,27 @@ public class GameScreen extends ScreenAdapter {
         }
 
         showTurnDialog(players.get(0), true);
+
+        /**
+         * Listener for "RoleHighestDice"
+         * Set roleDice to true
+         */
+
+        Emitter.Listener highestDiceListener = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                Connection.convertJsonToPlayer("" + args[0]);
+                //oder doch args[1]? --> BWL Justus fragen
+
+                Connection.setRoleDice(true);
+
+                //Nach Dice-Roll wieder auf false setzen
+
+            }
+        };
+
+        Connection.roleHighestDice(highestDiceListener);
     }
 
     @Override
@@ -130,6 +155,24 @@ public class GameScreen extends ScreenAdapter {
         renderDialogs();
         stage.act(delta);
         stage.draw();
+
+        /**
+         * Update all Players
+         */
+
+        if(Connection.isRoleDice() == true){
+
+            ArrayList<Player> players = Connection.convertConPlayersToPlayersUpdate();
+            MankomaniaGame.getInstance().getBoard().deleteAllPlayers();
+
+            for(Player p : players){
+                System.out.println("Update player " + p.getPlayerSocketID());
+                MankomaniaGame.getInstance().getBoard().addPlayer(p);
+            }
+
+            //Connection.setRoleDice(false);
+
+        }
     }
 
     private void renderMovement(float delta) {

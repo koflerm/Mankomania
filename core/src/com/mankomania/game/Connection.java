@@ -22,7 +22,17 @@ public class Connection {
     private static String[] players = {"", "", "", ""};
     private static ArrayList<ConPlayer> cp = new ArrayList<ConPlayer>();
 
+    public static boolean isRoleDice() {
+        return roleDice;
+    }
+
+    public static void setRoleDice(boolean roleDice) {
+        Connection.roleDice = roleDice;
+    }
+
     private static String winners[];
+
+    private static boolean roleDice = false;
 
     public static void createConnection() {
         try {
@@ -98,7 +108,6 @@ public class Connection {
         System.out.println("Emit Stocks");
     }
 
-    //Aufrufen
     public static void roleHighestDice(Emitter.Listener el) {
         cs.once("ROLE_THE_HIGHEST_DICE", el);
         System.out.println("Listen for diceRoll Event");
@@ -133,6 +142,8 @@ public class Connection {
     }
 
     public static void convertJsonToPlayer(String args) {
+
+        cp.clear();
 
         /**
          * Split Player-Array in multiple Player Strings

@@ -62,6 +62,12 @@ public class Board {
     public void addPlayer(Player p){
         players.add(p);
     }
+
+    public void deleteAllPlayers(){
+        players.clear();
+    }
+
+
     //-----------------------
 
     // UI Methods
