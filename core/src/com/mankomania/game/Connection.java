@@ -268,4 +268,29 @@ public class Connection {
 
         return pList;
     }
+
+    /**
+     * Create real Player-Objects at Update
+     */
+
+    public static ArrayList<Player> convertConPlayersToPlayersUpdate() {
+        ArrayList<Player> pList = new ArrayList<Player>();
+
+        for (ConPlayer c : cp) {
+
+            Field f = MankomaniaGame.getInstance().getBoard().getFieldByIndex(c.getPosition());
+
+            Player p = new Player(f, c.getPlayerIndex(), c.getSocket());
+
+            p.setMoney(c.getMoney());
+
+            p.setShares(c.getHARD_STEEL_PLC(), c.getSHORT_CIRCUIT_PLC(), c.getDRY_OIL_PLC());
+
+            pList.add(p);
+
+        }
+
+        return pList;
+    }
+
 }
