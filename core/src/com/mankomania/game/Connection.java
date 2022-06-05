@@ -7,6 +7,7 @@ import com.sun.tools.javac.code.Attribute;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+import fieldLogic.Field;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -243,35 +244,25 @@ public class Connection {
             cp.get(i).setDRY_OIL_PLC(jsonStock.get("DryOil_PLC").getAsInt());
         }
 
-
-        /**
-         * Create real Player-Objects
-         */
     }
 
-    public static ArrayList<Player> convertConPlayersToPlayers() {
+    /**
+     * Create real Player-Objects Initial
+     */
+
+    public static ArrayList<Player> convertConPlayersToPlayersInitial() {
         ArrayList<Player> pList = new ArrayList<Player>();
 
         for (ConPlayer c : cp) {
-            Player p = new Player();
 
-            p.setPlayerIndex(c.getPlayerIndex());
-            p.setPlayerSocketID(c.getSocket());
-            p.setMoney(c.getMoney());
+            Field f = MankomaniaGame.getInstance().getBoard().getFieldByIndex(c.getPosition());
 
-            //Field
-            p.setCurrentFieldPosition(MankomaniaGame.getInstance().getBoard().getFieldByIndex(c.getPosition()));
+            Player p = new Player(f, c.getPlayerIndex(), c.getSocket());
 
             //Stocks
-            p.setShares(c.getHARD_STEEL_PLC(), c.getSHORT_CIRCUIT_PLC(), c.getDRY_OIL_PLC());
-
-
-            //Problem
-            //MankomaniaGame.getInstance().getBoard().addPlayer(p);
+            //p.setShares(c.getHARD_STEEL_PLC(), c.getSHORT_CIRCUIT_PLC(), c.getDRY_OIL_PLC());
 
             pList.add(p);
-
-            //System.out.println(p.toString());
 
         }
 
