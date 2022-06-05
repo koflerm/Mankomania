@@ -105,6 +105,25 @@
         displayMessage("Player: " + players[socket].playerIndex + " is on Field " + players[socket].position)
     })
 
+    socket.on('NEXT_TURN', (nextPlayer) =>{
+        if(nextPlayer === socket.id){
+            players[socket.id].yourTurn = true;
+            displayMessage(players[socket.id].playerIndex + " your Turn")
+            diceCounts[0] = randomNumber(1,7)
+            displayMessage("DiceCount 1: " + diceCounts[0])
+            diceCounts[1] = randomNumber(1,7)
+            displayMessage("DiceCount 2: " + diceCounts[1])
+            socket.emit('ROLE_THE_DICE', lobby, diceCounts)
+            players[socket.id].dice_1 = diceCounts[0];
+            players[socket.id].dice_2 = diceCounts[1];
+            players[socket.id].diceCount =  players[socket.id].dice_1 + players[socket.id].dice_2
+            displayMessage("Total Dice Count " + players[socket.id].diceCount + ". Move Status true")
+            moveStatus = true
+        }else{
+            displayMessage("Player " + players[nextPlayer].playerIndex + " has the turn")
+        }
+    })
+
 
 
     const messageInput = document.getElementById("message");
@@ -116,6 +135,11 @@
     const readyForGameButton = document.getElementById("readyForGame")
     const updateStockButton = document.getElementById("updateStock")
     const movePlayerButton = document.getElementById("movePlayer")
+    const printPlayersButton = document.getElementById("printPlayers")
+
+    printPlayersButton.addEventListener("click", (event)=>{
+        console.log(players)
+    })
 
     updateStockButton.addEventListener("click", (event) =>{
         const stock = {
@@ -186,6 +210,10 @@
                     displayMessage("Player: " + players[socket.id].playerIndex + " is on Field " + players[socket.id].position)
                     if (players[socket.id].position === to) {
                         clearInterval(timerId);
+                        displayMessage("Move finished successfully")
+
+                        socket.emit('NEXT_TURN', lobby)
+                        players[socket.id].yourTurn = false;
                     }
                 }
                 go();
@@ -197,7 +225,6 @@
             alert("Move status false");
         }
     })
-
 
 
     function displayMessage(message){
@@ -266,6 +293,10 @@
 
     <div>
         <button class="btn" type="button" id="movePlayer">Move</button>
+    </div>
+
+    <div>
+        <button class="btn" type="button" id="printPlayers">Print Player</button>
     </div>
 
 
