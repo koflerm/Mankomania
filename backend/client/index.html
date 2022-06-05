@@ -78,7 +78,10 @@
             diceCounts[1] = randomNumber(1,7)
             displayMessage("DiceCount 2: " + diceCounts[1])
             socket.emit('ROLE_THE_DICE', lobby, diceCounts)
-            displayMessage("Total Dice Count " + diceCounts[0] + diceCounts[1] + ". Move Status true")
+            players[socket.id].dice_1 = diceCounts[0];
+            players[socket.id].dice_2 = diceCounts[1];
+            players[socket.id].diceCount =  players[socket.id].dice_1 + players[socket.id].dice_2
+            displayMessage("Total Dice Count " + players[socket.id].diceCount + ". Move Status true")
             moveStatus = true
 
 
@@ -95,6 +98,11 @@
         players[socket].dice_2 = diceCounts[1]
         displayMessage("Player " + players[socket].playerIndex + " rolled the dice. Dice 1: " +  players[socket].dice_1 + ", Dice 2: " + players[socket].dice_2)
 
+    })
+
+    socket.on('UPDATE_PLAYER_POSITION', (socket, position) =>{
+        players[socket].position = position
+        displayMessage("Player: " + players[socket].playerIndex + " is on Field " + players[socket].position)
     })
 
 
@@ -170,7 +178,21 @@
 
     movePlayerButton.addEventListener("click", e =>{
         if(moveStatus === true){
-            
+            function printNumbers(from, to) {
+                function go() {
+                    players[socket.id].position++;
+                    socket.emit('UPDATE_PLAYER_POSITION',lobby, players[socket.id].position)
+
+                    displayMessage("Player: " + players[socket.id].playerIndex + " is on Field " + players[socket.id].position)
+                    if (players[socket.id].position === to) {
+                        clearInterval(timerId);
+                    }
+                }
+                go();
+                let timerId = setInterval(go, 2000);
+            }
+            printNumbers(players[socket.id].position, players[socket.id].position +  players[socket.id].diceCount );
+
         }else{
             alert("Move status false");
         }
@@ -199,6 +221,7 @@
         margin: 10px;
         font-size: large;
         height:500px;
+        overflow-y: scroll;
 
     }
 

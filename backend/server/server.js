@@ -279,6 +279,12 @@ const updateDice = (room, diceCount, socket) =>{
     socket.to(room).emit('UPDATE_DICE', socket.id, diceCount)
 }
 
+const updatePlayerPosition = (room, position, socket) =>{
+    //check param
+    rooms[room].players[socket.id].position = position;
+    socket.to(room).emit('UPDATE_PLAYER_POSITION', socket.id, position);
+}
+
 
 
 app.get('/', (req, res) =>{
@@ -330,6 +336,10 @@ io.on('connection', (socket) => {
 
     socket.on('ROLE_THE_DICE', (room, diceCount)=>{
         updateDice(room, diceCount, socket)
+    })
+
+    socket.on('UPDATE_PLAYER_POSITION', (room, position) =>{
+      updatePlayerPosition(room, position, socket)
     })
 });
 
