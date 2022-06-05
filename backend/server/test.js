@@ -73,6 +73,23 @@ let player4 = players[sockets[3]];
 
 
 
+const navObj = (obj, currentKey, direction) => {
+    let temp = (Object.values(obj)[Object.keys(obj).indexOf(currentKey) + direction]);
+    if(temp !== undefined){
+        return temp.socket;
+    }else{
+        return (obj[Object.keys(obj)[0]]).socket;
+    }
+};
+
+console.log(navObj(players, 'y94JPlkimCvbTaE1AAAP', -1));
+
+
+
+
+
+
+
 
 
 
