@@ -103,11 +103,6 @@ public class LobbyScreen extends ScreenAdapter{
             @Override
             public void call(Object... args) {
 
-                //System.out.println(args[1].toString());
-
-                // System.out.println("Str0: " + str[0]);
-                // System.out.println("Str1: " + str[1]);
-
                 /**
                  * Convert args[1] into Player Object
                  */
@@ -191,7 +186,7 @@ public class LobbyScreen extends ScreenAdapter{
                 MankomaniaGame.getInstance().setScreen(new StartScreen());
 
                 //Comment for Debug purpose:
-                //Connection.closeConnection();
+                Connection.closeConnection();
 
             }
         };
@@ -216,8 +211,8 @@ public class LobbyScreen extends ScreenAdapter{
         super.render(delta);
         MankomaniaGame.renderMenu(stage, batch, delta, background);
         update();
-        if(Connection.getStart()){
-            ArrayList<Player> players = Connection.convertConPlayersToPlayers();
+        if(Connection.getStart() == true){
+            ArrayList<Player> players = Connection.convertConPlayersToPlayersInitial();
 
             for(Player p : players){
                 System.out.println("Adding player " + p.getPlayerSocketID());
