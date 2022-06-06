@@ -120,6 +120,15 @@ public class GameScreen extends ScreenAdapter {
         showTurnDialog(players.get(0), true);
 
         /**
+         * Debugging purpose
+         */
+
+        ConStock cStock = new ConStock(1, 1, 0);
+        Connection.emitStocks(cStock);
+
+
+
+        /**
          * Listener for "RoleHighestDice"
          * Set roleDice to true
          */
@@ -128,17 +137,72 @@ public class GameScreen extends ScreenAdapter {
             @Override
             public void call(Object... args) {
 
+                System.out.println("Role the Highest Dice listene");
+
                 Connection.convertJsonToPlayer("" + args[0]);
-                //oder doch args[1]? --> BWL Justus fragen
 
-                Connection.setRoleDice(true);
+                Connection.setRoleHighestDice(true);
 
-                //Nach Dice-Roll wieder auf false setzen
+                Connection.setUpdate(true);
+
+                //Nach Dice-Roll, RoleDice wieder auf false setzen
+
+                /**
+                 * Debug mode on:
+                 */
+
+                Connection.emitHighestDice(6, 6);
 
             }
         };
 
+        /**
+         * Listener for "StartRound"
+         * Cheks if cLient can start
+         */
+
+        Emitter.Listener startRoundListener = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                System.out.println("StartRound Listener");
+
+                Connection.convertJsonToPlayer("" + args[0]);
+
+                System.out.println("Args1: " + args[1]);
+
+                if(args[1].toString().equals(Connection.getCs().id())){
+                    Connection.setYourTurn(true);
+
+                    System.out.println("My turn");
+                }
+
+                //Danach wieder auf false setzen
+
+
+                Connection.setUpdate(true);
+
+            }
+        };
+
+        /**
+         * Role Highest Dice Again Listener
+         */
+
+        Emitter.Listener roleAgain = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                //Connection.convertJsonToPlayer("" + args[0]);
+
+                System.out.println("Args1 2.mal: " + args[1]);
+            }
+        };
+
+        Connection.startRound(startRoundListener);
+
         Connection.roleHighestDice(highestDiceListener);
+
     }
 
     @Override
@@ -160,7 +224,7 @@ public class GameScreen extends ScreenAdapter {
          * Update all Players
          */
 
-        if(Connection.isRoleDice() == true){
+        if(Connection.isUpdate() == true){
 
             ArrayList<Player> players = Connection.convertConPlayersToPlayersUpdate();
             MankomaniaGame.getInstance().getBoard().deleteAllPlayers();
@@ -170,7 +234,7 @@ public class GameScreen extends ScreenAdapter {
                 MankomaniaGame.getInstance().getBoard().addPlayer(p);
             }
 
-            //Connection.setRoleDice(false);
+            Connection.setUpdate(false);
 
         }
     }
