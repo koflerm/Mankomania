@@ -13,25 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mankomania.game.ConPlayer;
-import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import fieldLogic.Field;
-import io.socket.emitter.Emitter;
-import netscape.javascript.JSObject;
-import playerLogic.Player;
-import shareLogic.Share;
 
 public class StartScreen extends ScreenAdapter {
     private final Stage stage;
