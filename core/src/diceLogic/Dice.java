@@ -6,15 +6,15 @@ import java.util.List;
 
 public class Dice {
     private SecureRandom secRand = new SecureRandom();
-    private List<Integer> dice;
+    private List<Integer> dicee;
 
 
     public List<Integer> throwDice (int numberOfFaces, int numberOfDice){
-        dice = new ArrayList<>();
+        dicee = new ArrayList<>();
         for(int i = 0; i < numberOfDice; i++){
-         dice.add((secRand.nextInt(numberOfFaces - 1) + 1));
+         dicee.add((secRand.nextInt(numberOfFaces - 1) + 1));
         }
-        return dice;
+        return dicee;
     }
     public int getSumOfDice (List<Integer> diceToSum){
         int sum = 0;
@@ -24,6 +24,6 @@ public class Dice {
         return sum;
     }
     //-----------GETTER-----------------
-    public List<Integer> getDice(){ return dice; }
+    public List<Integer> getDicee(){ return dicee; }
     //---------------------------------
 }

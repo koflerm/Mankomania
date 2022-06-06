@@ -31,7 +31,6 @@ public class LobbyScreen extends ScreenAdapter{
     private final Table tab;
     private final Table innerTab;
     private InputMultiplexer inputMultiplexer;
-    private String[] players;
     private final Skin skin;
     private Label label1;
     private Label label2;
@@ -157,7 +156,7 @@ public class LobbyScreen extends ScreenAdapter{
     }
 
     private void update(){
-        players = Connection.getPlayers();
+        String[] players;players = Connection.getPlayers();
 
         label1.setText(players[0]);
 
@@ -209,11 +208,10 @@ public class LobbyScreen extends ScreenAdapter{
         super.render(delta);
         MankomaniaGame.renderMenu(stage, batch, delta, background);
         update();
-        if(Connection.getStart() == true){
+        if(Connection.getStart()){
             ArrayList<Player> players = Connection.convertConPlayersToPlayersInitial();
 
             for(Player p : players){
-                System.out.println("Adding player " + p.getPlayerSocketID());
                 MankomaniaGame.getInstance().getBoard().addPlayer(p);
             }
 

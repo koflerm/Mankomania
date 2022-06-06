@@ -4,6 +4,9 @@ import fieldLogic.Field;
 
 public class BoardFields {
 
+    public BoardFields() {
+    }
+
     private static Field[] initFields(float boardX, float boardLength) {
         return new Field[]{
                 new Field(0, boardX + (boardLength / 1.135f), boardLength / 15),

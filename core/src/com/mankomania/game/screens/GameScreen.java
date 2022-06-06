@@ -55,7 +55,7 @@ public class GameScreen extends ScreenAdapter {
     private static final float BOARD_PLAYER_MONEY_FACTOR = 4.5f;
     private static final String BOARD_TEXT_STYLE = "title";
     private static final String BOARD_MODAL_BUTTON_STYLE = "default";
-    private static final float duration = 3;
+    private static final float DURATION = 3;
 
     private DiceAnimation diceAnimation;
     private float elapsed;
@@ -138,7 +138,7 @@ public class GameScreen extends ScreenAdapter {
             @Override
             public void call(Object... args) {
 
-                System.out.println("Role the Highest Dice listene");
+                System.out.println("Role the Highest Dice listener");
 
                 Connection.convertJsonToPlayer("" + args[0]);
 
@@ -230,7 +230,7 @@ public class GameScreen extends ScreenAdapter {
          * Update all Players
          */
 
-        if(Connection.isUpdate() == true){
+        if(Connection.isUpdate()){
 
             ArrayList<Player> players = Connection.convertConPlayersToPlayersUpdate();
             MankomaniaGame.getInstance().getBoard().deleteAllPlayers();
@@ -262,7 +262,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void renderDices(float delta, Board board) {
-        if (elapsed >= duration){
+        if (elapsed >= DURATION){
             diceAnimation.removeDice();
             diceAnimation.setDiceShown(false);
             movePlayer(diceAnimation.getDiceSum(), board.getCurrentPlayer());
@@ -444,6 +444,5 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         inputMultiplexer.removeProcessor(stage);
-        this.dispose();
     }
 }

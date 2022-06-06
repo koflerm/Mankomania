@@ -2,8 +2,6 @@ package boardLogic;
 
 import com.badlogic.gdx.Gdx;
 
-import org.graalvm.compiler.core.common.Fields;
-
 import java.util.ArrayList;
 import java.util.List;
 

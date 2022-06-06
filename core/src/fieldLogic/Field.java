@@ -25,7 +25,7 @@ public class Field {
              if(player.getCurrentPosition().fieldIndex == this.fieldIndex ){
                  return true;
              }
-        };
+        }
         return false;
     }
 

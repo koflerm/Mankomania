@@ -19,12 +19,11 @@ public class Player extends Actor {
     private String playerSocketID;
     private int money;
     private Field currentPosition;
-    private HashMap<Share, Integer> shares = new HashMap<>();
+    private HashMap<Share, Integer> shares;
     private Texture playerTexture;
 
     public Player() {
         money = 1000000;
-        // movePath = new IntArray();
         shares = new HashMap<>();
         SecureRandom secRand = new SecureRandom();
         setInitialRandomShares(secRand.nextInt(3 - 1) + 1);
@@ -32,7 +31,6 @@ public class Player extends Actor {
 
     public Player(Field startingField, int playerIndex, String playerSocketID) {
         money = 1000000;
-        // movePath = new IntArray();
         shares = new HashMap<>();
         SecureRandom secRand = new SecureRandom();
         setInitialRandomShares(secRand.nextInt(3 - 1) + 1);
@@ -78,19 +76,26 @@ public class Player extends Actor {
     public void setMoney(int money) {
         this.money = money;
     }
-    public void setInitialRandomShares(int share_Index) {
-        switch (share_Index) {
+    public void setInitialRandomShares(int shareIndex) {
+        switch (shareIndex) {
             case 1:
                 shares.put(Share.DRY_OIL_PLC, 0);
                 shares.put(Share.SHORT_CIRCUIT_PLC, 0);
+                break;
 
             case 2:
                 shares.put(Share.DRY_OIL_PLC, 0);
                 shares.put(Share.HARD_STEEL_PLC, 0);
+                break;
 
             case 3:
                 shares.put(Share.HARD_STEEL_PLC, 0);
                 shares.put(Share.SHORT_CIRCUIT_PLC, 0);
+                break;
+
+            default:
+                break;
+
         }
     }
     public void setShares(int hardSteel, int shortCircuit, int dryOil) {

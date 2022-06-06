@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import fieldLogic.Field;
 import io.socket.client.IO;
@@ -23,9 +24,9 @@ public class Connection {
     private static boolean start = false;
     private static String lobbyID;
     private static String[] players = {"", "", "", ""};
-    private static ArrayList<ConPlayer> cp = new ArrayList<ConPlayer>();
+    private static ArrayList<ConPlayer> cp = new ArrayList<>();
 
-    private static String winners[];
+    private static String[] winners;
 
     private static boolean roleHighestDice = false;
     private static boolean update = false;
@@ -220,15 +221,12 @@ public class Connection {
          * Parser for Stocks
          */
 
-        ArrayList<String> stockAsString = new ArrayList<String>();
+        ArrayList<String> stockAsString = new ArrayList<>();
 
 
         for (int i = 0; i < players.length; i++) {
 
-            String[] stock = new String[3];
-
-            stock = players[i].split(":\\{");
-
+            String[] stock = players[i].split(":\\{");
 
             String newStock = stock[1];
 
@@ -246,11 +244,9 @@ public class Connection {
          * Parse Player-Strings into Con-Players
          */
 
-        ArrayList<String> allPlayersAsString = new ArrayList<String>();
+        ArrayList<String> allPlayersAsString = new ArrayList<>();
 
-        for (String s : players) {
-            allPlayersAsString.add(s);
-        }
+        Collections.addAll(allPlayersAsString, players);
 
         for (String p : allPlayersAsString) {
 
@@ -258,9 +254,9 @@ public class Connection {
 
             ConPlayer temp = new ConPlayer();
 
-            temp.setDice_2(jsonObject.get("dice_2").getAsInt());
+            temp.setDice2(jsonObject.get("dice_2").getAsInt());
 
-            temp.setDice_1(jsonObject.get("dice_1").getAsInt());
+            temp.setDice1(jsonObject.get("dice_1").getAsInt());
 
             temp.setMoney(jsonObject.get("money").getAsInt());
 
@@ -270,7 +266,7 @@ public class Connection {
 
             temp.setPosition(jsonObject.get("position").getAsInt());
 
-            temp.setDice_Count(jsonObject.get("dice_Count").getAsInt());
+            temp.setDiceCount(jsonObject.get("dice_Count").getAsInt());
 
             temp.setPlayerIndex(jsonObject.get("playerIndex").getAsInt());
 
@@ -287,9 +283,9 @@ public class Connection {
             JsonObject jsonStock = JsonParser.parseString(stockAsString.get(i)).getAsJsonObject();
 
 
-            cp.get(i).setHARD_STEEL_PLC(jsonStock.get("HardSteel_PLC").getAsInt());
-            cp.get(i).setSHORT_CIRCUIT_PLC(jsonStock.get("ShortCircuit_PLC").getAsInt());
-            cp.get(i).setDRY_OIL_PLC(jsonStock.get("DryOil_PLC").getAsInt());
+            cp.get(i).setHardSteelPlc(jsonStock.get("HardSteel_PLC").getAsInt());
+            cp.get(i).setShortCircuitPlc(jsonStock.get("ShortCircuit_PLC").getAsInt());
+            cp.get(i).setDryOilPlc(jsonStock.get("DryOil_PLC").getAsInt());
         }
 
     }
@@ -299,7 +295,7 @@ public class Connection {
      */
 
     public static ArrayList<Player> convertConPlayersToPlayersInitial() {
-        ArrayList<Player> pList = new ArrayList<Player>();
+        ArrayList<Player> pList = new ArrayList<>();
 
         for (ConPlayer c : cp) {
 
@@ -319,7 +315,7 @@ public class Connection {
      */
 
     public static ArrayList<Player> convertConPlayersToPlayersUpdate() {
-        ArrayList<Player> pList = new ArrayList<Player>();
+        ArrayList<Player> pList = new ArrayList<>();
 
         for (ConPlayer c : cp) {
 
@@ -329,7 +325,7 @@ public class Connection {
 
             p.setMoney(c.getMoney());
 
-            p.setShares(c.getHARD_STEEL_PLC(), c.getSHORT_CIRCUIT_PLC(), c.getDRY_OIL_PLC());
+            p.setShares(c.getHardSteelPlc(), c.getShortCircuitPlc(), c.getDryOilPlc());
 
             pList.add(p);
 
