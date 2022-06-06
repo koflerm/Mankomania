@@ -1,8 +1,12 @@
 package com.mankomania.game;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sun.tools.javac.code.Attribute;
+import com.mankomania.game.screens.ConStock;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -22,17 +26,35 @@ public class Connection {
     private static String[] players = {"", "", "", ""};
     private static ArrayList<ConPlayer> cp = new ArrayList<ConPlayer>();
 
-    public static boolean isRoleDice() {
-        return roleDice;
-    }
-
-    public static void setRoleDice(boolean roleDice) {
-        Connection.roleDice = roleDice;
-    }
-
     private static String winners[];
 
-    private static boolean roleDice = false;
+    private static boolean roleHighestDice = false;
+    private static boolean update = false;
+    private static boolean yourTurn = false;
+
+    public static boolean isYourTurn() {
+        return yourTurn;
+    }
+
+    public static void setYourTurn(boolean yourTurn) {
+        Connection.yourTurn = yourTurn;
+    }
+
+    public static boolean isRoleHighestDice() {
+        return roleHighestDice;
+    }
+
+    public static void setRoleHighestDice(boolean roleHighestDice) {
+        Connection.roleHighestDice = roleHighestDice;
+    }
+
+    public static boolean isUpdate() {
+        return update;
+    }
+
+    public static void setUpdate(boolean update) {
+        Connection.update = update;
+    }
 
     public static void createConnection() {
         try {
@@ -103,8 +125,16 @@ public class Connection {
      **/
 
     //Aufrufen
-    public static void emitStocks(int hardSteel, int shortCircuit, int dryOil) {
-        cs.emit("CHOSE_STOCKS", lobbyID, "{ HardSteel_PLC: " + hardSteel + ", ShortCircuit_PLC: " + shortCircuit + ", DryOil_PLC: " + dryOil + " }");
+    public static void emitStocks(ConStock s) {
+
+        String jsonInString = new Gson().toJson(s);
+        try {
+            JSONObject mJSONObject = new JSONObject(jsonInString);
+            cs.emit("CHOSE_STOCKS", lobbyID, mJSONObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         System.out.println("Emit Stocks");
     }
 
@@ -115,7 +145,12 @@ public class Connection {
 
     //Aufrufen
     public static void emitHighestDice(int dice1, int dice2) {
-        cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, "[" + dice1 + ", " + dice2 + "]");
+
+        int[] diceCount = new int[2];
+        diceCount[0] = dice1;
+        diceCount[1] = dice2;
+
+        cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, diceCount);
         System.out.println("Emit dices");
     }
 
@@ -134,7 +169,6 @@ public class Connection {
         System.out.println("Emits dice roll again");
     }
 
-    //Aufrufen
     //Case One Winner The server will send an event socket.on('START_ROUND', (data, winner)
     // data= players Object; winner = winner ID Round will start (winner index in currentPlayer speichern)
     public static void startRound(Emitter.Listener el) {
@@ -143,7 +177,11 @@ public class Connection {
 
     public static void convertJsonToPlayer(String args) {
 
+        System.out.println("ID: " + cs.id());
+
         cp.clear();
+
+        System.out.println("Get from Server Raw: " + args);
 
         /**
          * Split Player-Array in multiple Player Strings
@@ -192,7 +230,11 @@ public class Connection {
 
 
         for (int i = 0; i < players.length; i++) {
-            String[] stock = players[i].split(":\\{");
+
+            String[] stock = new String[3];
+
+            stock = players[i].split(":\\{");
+
 
             String newStock = stock[1];
 
@@ -249,6 +291,7 @@ public class Connection {
         for (int i = 0; i < stockAsString.size(); i++) {
 
             JsonObject jsonStock = JsonParser.parseString(stockAsString.get(i)).getAsJsonObject();
+
 
             cp.get(i).setHARD_STEEL_PLC(jsonStock.get("HardSteel_PLC").getAsInt());
             cp.get(i).setSHORT_CIRCUIT_PLC(jsonStock.get("ShortCircuit_PLC").getAsInt());
