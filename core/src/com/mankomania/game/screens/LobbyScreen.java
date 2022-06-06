@@ -183,6 +183,7 @@ public class LobbyScreen extends ScreenAdapter{
             public void clicked(InputEvent inputEvent, float x, float y) {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new StartScreen());
+
                 Connection.closeConnection();
 
             }
@@ -208,6 +209,7 @@ public class LobbyScreen extends ScreenAdapter{
         super.render(delta);
         MankomaniaGame.renderMenu(stage, batch, delta, background);
         update();
+
         if(Connection.getStart()){
             ArrayList<Player> players = Connection.convertConPlayersToPlayersInitial();
 

@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import diceLogic.DiceAnimation;
 
+
 import com.mankomania.game.ConStock;
 import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
@@ -144,7 +145,6 @@ public class GameScreen extends ScreenAdapter {
 
                 Connection.setUpdate(true);
 
-
                 /**
                  * Debug mode on:
                  */
@@ -199,7 +199,6 @@ public class GameScreen extends ScreenAdapter {
         Connection.roleHighestDice(highestDiceListener);
 
         Connection.roleHighestDiceAgain(roleAgain);
-
 
     }
 
