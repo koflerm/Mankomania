@@ -51,11 +51,11 @@ jobs:
       - name: Print current path
         run: pwd
       - name: List folder
-        run: ls .
+        run: ls android/build
       - name: List android folder
         run: ls android
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
           name: apk
-          path: app/build/outputs
+          path: android/build/outputs/apk/debug
