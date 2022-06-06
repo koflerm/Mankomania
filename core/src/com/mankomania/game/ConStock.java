@@ -1,4 +1,4 @@
-package com.mankomania.game.screens;
+package com.mankomania.game;
 
 public class ConStock {
     int ShortCircuit_PLC;

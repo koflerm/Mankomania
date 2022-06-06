@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import diceLogic.DiceAnimation;
 
+import com.mankomania.game.ConStock;
 import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
 
@@ -145,7 +146,6 @@ public class GameScreen extends ScreenAdapter {
 
                 Connection.setUpdate(true);
 
-                //Nach Dice-Roll, RoleDice wieder auf false setzen
 
                 /**
                  * Debug mode on:
@@ -177,9 +177,6 @@ public class GameScreen extends ScreenAdapter {
                     System.out.println("My turn");
                 }
 
-                //Danach wieder auf false setzen
-
-
                 Connection.setUpdate(true);
 
             }
@@ -193,15 +190,24 @@ public class GameScreen extends ScreenAdapter {
             @Override
             public void call(Object... args) {
 
-                //Connection.convertJsonToPlayer("" + args[0]);
+                String[] winners = args[1].toString().split(",");
 
-                System.out.println("Args1 2.mal: " + args[1]);
+                Connection.setWinners(winners);
+
+                for(int i = 0; i < winners.length; i++){
+                    if(winners[i].equals(Connection.getCs().id())){
+                        Connection.setRoleHighestDice(true);
+                    }
+                }
             }
         };
 
         Connection.startRound(startRoundListener);
 
         Connection.roleHighestDice(highestDiceListener);
+
+        Connection.roleHighestDiceAgain(roleAgain);
+
 
     }
 

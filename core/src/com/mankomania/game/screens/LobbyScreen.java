@@ -184,9 +184,7 @@ public class LobbyScreen extends ScreenAdapter{
             public void clicked(InputEvent inputEvent, float x, float y) {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new StartScreen());
-
-                //Comment for Debug purpose:
-                //Connection.closeConnection();
+                Connection.closeConnection();
 
             }
         };

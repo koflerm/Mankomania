@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
-import com.badlogic.gdx.utils.IntArray;
 
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -20,7 +19,6 @@ public class Player extends Actor {
     private String playerSocketID;
     private int money;
     private Field currentPosition;
-    // private IntArray movePath;
     private HashMap<Share, Integer> shares = new HashMap<>();
     private Texture playerTexture;
 

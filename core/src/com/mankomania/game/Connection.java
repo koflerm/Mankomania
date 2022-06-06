@@ -3,7 +3,6 @@ package com.mankomania.game;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mankomania.game.screens.ConStock;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +45,14 @@ public class Connection {
 
     public static void setRoleHighestDice(boolean roleHighestDice) {
         Connection.roleHighestDice = roleHighestDice;
+    }
+
+    public static String[] getWinners() {
+        return winners;
+    }
+
+    public static void setWinners(String[] winners) {
+        Connection.winners = winners;
     }
 
     public static boolean isUpdate() {
@@ -124,7 +131,6 @@ public class Connection {
      * new Methods
      **/
 
-    //Aufrufen
     public static void emitStocks(ConStock s) {
 
         String jsonInString = new Gson().toJson(s);
@@ -143,7 +149,6 @@ public class Connection {
         System.out.println("Listen for diceRoll Event");
     }
 
-    //Aufrufen
     public static void emitHighestDice(int dice1, int dice2) {
 
         int[] diceCount = new int[2];
@@ -154,23 +159,18 @@ public class Connection {
         System.out.println("Emit dices");
     }
 
-    //Aufrufen
-    //Case Two ore more Winners The server will send an event socket.on('ROLE_THE_HIGHEST_DICE_AGAIN',
-    // (data, winner) data = players object, winner = winner Array. Loop the array and check if the
-    // socketID equals your id, if this is true: roll the dice again and emit to the server
     public static void roleHighestDiceAgain(Emitter.Listener el) {
         cs.on("ROLE_THE_HIGHEST_DICE_AGAIN", el);
-        System.out.println("Listen for dice roll again");
     }
 
-    //Aufrufen
     public static void emitHighestDiceAgain(int dice1, int dice2) {
-        cs.emit("ROLE_THE_HIGHEST_DICE_AGAIN", lobbyID, "[" + dice1 + ", " + dice2 + "]", winners.length);
-        System.out.println("Emits dice roll again");
+        int[] diceCount = new int[2];
+        diceCount[0] = dice1;
+        diceCount[1] = dice2;
+
+        cs.emit("ROLE_THE_HIGHEST_DICE_AGAIN", lobbyID, diceCount, winners.length);
     }
 
-    //Case One Winner The server will send an event socket.on('START_ROUND', (data, winner)
-    // data= players Object; winner = winner ID Round will start (winner index in currentPlayer speichern)
     public static void startRound(Emitter.Listener el) {
         cs.on("START_ROUND", el);
     }
@@ -196,15 +196,11 @@ public class Connection {
             String newString = "";
 
             if (i == 0) {
-                //Ersten 24 Zeichen entfernen
-                //} hinten hinzufügen
 
                 newString = temp.substring(24);
                 newString += "}";
                 players[i] = newString;
             } else if (i < (players.length - 1)) {
-                //Ersten 23 Zeichen entfernen
-                //} hinten hinzufügen
 
                 newString = temp.substring(23);
                 newString += "}";
@@ -212,8 +208,6 @@ public class Connection {
                 players[i] = newString;
 
             } else if (i == (players.length - 1)) {
-                //Ersten 23 Zeichen entfernen
-                //Hinten entfernen: }
 
                 newString = temp.substring(23);
                 newString = newString.substring(0, newString.length() - 1);
@@ -312,9 +306,6 @@ public class Connection {
             Field f = MankomaniaGame.getInstance().getBoard().getFieldByIndex(c.getPosition());
 
             Player p = new Player(f, c.getPlayerIndex(), c.getSocket());
-
-            //Stocks
-            //p.setShares(c.getHARD_STEEL_PLC(), c.getSHORT_CIRCUIT_PLC(), c.getDRY_OIL_PLC());
 
             pList.add(p);
 
