@@ -48,6 +48,12 @@ jobs:
           java-version: 11
       - name: Build APK
         run: bash ./gradlew assembleDebug --stacktrace
+      - name: Print current path
+        run: pwd
+      - name: List folder
+        run: ls .
+      - name: List android folder
+        run: ls android
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
