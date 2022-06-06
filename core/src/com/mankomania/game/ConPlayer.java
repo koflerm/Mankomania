@@ -14,7 +14,9 @@ public class ConPlayer {
     private int dryOilPlc;
 
     public ConPlayer() {
-        //Default Constructor
+        /**
+         * Default Constructor
+         */
     }
 
     public String getSocket() {

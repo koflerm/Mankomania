@@ -138,8 +138,6 @@ public class GameScreen extends ScreenAdapter {
             @Override
             public void call(Object... args) {
 
-                System.out.println("Role the Highest Dice listener");
-
                 Connection.convertJsonToPlayer("" + args[0]);
 
                 Connection.setRoleHighestDice(true);
@@ -165,16 +163,10 @@ public class GameScreen extends ScreenAdapter {
             @Override
             public void call(Object... args) {
 
-                System.out.println("StartRound Listener");
-
                 Connection.convertJsonToPlayer("" + args[0]);
-
-                System.out.println("Args1: " + args[1]);
 
                 if(args[1].toString().equals(Connection.getCs().id())){
                     Connection.setYourTurn(true);
-
-                    System.out.println("My turn");
                 }
 
                 Connection.setUpdate(true);
@@ -236,7 +228,6 @@ public class GameScreen extends ScreenAdapter {
             MankomaniaGame.getInstance().getBoard().deleteAllPlayers();
 
             for(Player p : players){
-                System.out.println("Update player " + p.getPlayerSocketID());
                 MankomaniaGame.getInstance().getBoard().addPlayer(p);
             }
 

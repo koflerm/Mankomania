@@ -141,13 +141,10 @@ public class Connection {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        System.out.println("Emit Stocks");
     }
 
     public static void roleHighestDice(Emitter.Listener el) {
         cs.once("ROLE_THE_HIGHEST_DICE", el);
-        System.out.println("Listen for diceRoll Event");
     }
 
     public static void emitHighestDice(int dice1, int dice2) {
@@ -157,7 +154,6 @@ public class Connection {
         diceCount[1] = dice2;
 
         cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, diceCount);
-        System.out.println("Emit dices");
     }
 
     public static void roleHighestDiceAgain(Emitter.Listener el) {
@@ -178,11 +174,7 @@ public class Connection {
 
     public static void convertJsonToPlayer(String args) {
 
-        System.out.println("ID: " + cs.id());
-
         cp.clear();
-
-        System.out.println("Get from Server Raw: " + args);
 
         /**
          * Split Player-Array in multiple Player Strings
