@@ -8,6 +8,7 @@ public class BoardFields {
     }
 
     private static Field[] initFields(float boardX, float boardLength) {
+
         return new Field[]{
                 new Field(0, "Dein Buch \"Geld verjubeln leicht gemacht\" ist ein Bestseller! Kassiere 5000 Euro",boardX + (boardLength / 1.135f), boardLength / 15),
                 new Field(1, "Verwöhne dich bei Juwelier \"Bling Bling & Bling\". Zahle 170.000 Euro.",boardX + (boardLength / 14f), boardLength / 8.5f),
@@ -66,7 +67,7 @@ public class BoardFields {
                 new Field(52, "Du steckst deine Ersparnisse in ein Schneeballsystem. Zahle 100.000 Euro.",boardX + (boardLength / 1.22f), boardLength / 1.05f),
                 new Field(53, "Deine Mutter klaut dein Geld für eine neue Handtasche. Zahle 20.000 Euro.",boardX + (boardLength / 1.14f), boardLength / 1.08f),
                 new Field(54, "Verwöhne dein Pony mit Beinwärmern aus Kaschmir! Zahle 50.000 Euro.",boardX + (boardLength / 1.055f), boardLength / 1.22f),
-                new Field(55, "",boardX + (boardLength / 1.06f), boardLength / 1.33f),
+                new Field(55, "Du verkaufst deine Kinder. Bekomme 70.000 Euro.",boardX + (boardLength / 1.06f), boardLength / 1.33f),
                 // MINIGAME RENNSTRECKE
                 new Field(56, "Rennstrecke",boardX + (boardLength / 1.1f), boardLength / 1.44f),
                 new Field(57, "Du bist auf einem Kaviarschnittchen ausgerutscht. Kassiere 10.000 Euro",boardX + (boardLength / 1.17f), boardLength / 1.52f),
