@@ -70,6 +70,7 @@ public class GameScreen extends ScreenAdapter {
     private int movingPlayerTargetSteps;
     private int movingPlayerCurrentSteps;
     private float movingElapsed;
+    private List<Player> players;
 
     public GameScreen() {
         stage = new Stage();
@@ -114,12 +115,10 @@ public class GameScreen extends ScreenAdapter {
             inputMultiplexer.addProcessor(stage);
         }
 
-        List<Player> players = MankomaniaGame.getInstance().getBoard().getPlayers();
+        players = MankomaniaGame.getInstance().getBoard().getPlayers();
         for (int i = 0; i  < players.size(); i++) {
             stage.addActor(players.get(i));
         }
-
-        showTurnDialog(players.get(0), true);
 
         /**
          * Debugging purpose
@@ -149,7 +148,7 @@ public class GameScreen extends ScreenAdapter {
                  * Debug mode on:
                  */
 
-                Connection.emitHighestDice(6, 6);
+                Connection.emitHighestDice(1, 1);
 
             }
         };
@@ -167,7 +166,19 @@ public class GameScreen extends ScreenAdapter {
 
                 if(args[1].toString().equals(Connection.getCs().id())){
                     Connection.setYourTurn(true);
+                }else{
+                    Connection.setYourTurn(false);
                 }
+
+
+                for(Player p : players){
+                    if(p.getPlayerSocketID().equals(args[1].toString())){
+                        Connection.setCurrentPlayer(p);
+                    }
+                }
+
+
+
 
                 Connection.setUpdate(true);
 
@@ -233,6 +244,14 @@ public class GameScreen extends ScreenAdapter {
             Connection.setUpdate(false);
 
         }
+
+        if(Connection.getCurrentPlayer() != null){
+            showTurnDialog(Connection.getCurrentPlayer(), Connection.isYourTurn());
+        }
+
+
+
+
     }
 
     private void renderMovement(float delta) {

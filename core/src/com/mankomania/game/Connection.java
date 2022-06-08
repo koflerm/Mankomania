@@ -32,6 +32,8 @@ public class Connection {
     private static boolean update = false;
     private static boolean yourTurn = false;
 
+    private static Player currentPlayer;
+
     public static boolean isYourTurn() {
         return yourTurn;
     }
@@ -46,6 +48,14 @@ public class Connection {
 
     public static void setRoleHighestDice(boolean roleHighestDice) {
         Connection.roleHighestDice = roleHighestDice;
+    }
+
+    public static Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public static void setCurrentPlayer(Player currentPlayer) {
+        Connection.currentPlayer = currentPlayer;
     }
 
     public static String[] getWinners() {
@@ -70,7 +80,9 @@ public class Connection {
             cs.connect();
 
         } catch (URISyntaxException e) {
-            System.out.println("Couldn't connect to server");
+            /**
+             * Error
+             */
 
         }
     }
@@ -290,6 +302,8 @@ public class Connection {
         ArrayList<Player> pList = new ArrayList<>();
 
         for (ConPlayer c : cp) {
+
+            System.out.println(c.getPlayerIndex());
 
             Field f = MankomaniaGame.getInstance().getBoard().getFieldByIndex(c.getPosition());
 
