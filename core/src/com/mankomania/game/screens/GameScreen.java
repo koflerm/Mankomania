@@ -323,10 +323,10 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void drawPlayerInformation() {
-        drawPlayerBox(0, 0, "P1", p1Card);
-        drawPlayerBox(0, Gdx.graphics.getHeight() - boxHeight, "P2", p2Card);
-        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, Gdx.graphics.getHeight() - boxHeight, "P3", p3Card);
-        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P4", p4Card);
+        drawPlayerBox(0, 0, "P2", p2Card);
+        drawPlayerBox(0, Gdx.graphics.getHeight() - boxHeight, "P3", p3Card);
+        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, Gdx.graphics.getHeight() - boxHeight, "P4", p4Card);
+        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P1", p1Card);
         drawPlayerMetadata(100000);
     }
 
