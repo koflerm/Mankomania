@@ -82,7 +82,7 @@ const navObj = (obj, currentKey, direction) => {
     }
 };
 
-console.log(navObj(players, 'y94JPlkimCvbTaE1AAAP', -1));
+
 
 
 
