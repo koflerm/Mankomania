@@ -325,9 +325,36 @@ const navObj = (obj, currentKey, direction) => {
     }
 }
 
+/**
+ *
+ * @param room
+ * @param amount
+ * @param socket
+ */
+const playerLoseMoney = (room, amount, socket) =>{
+    if(room || amount || socket === null){
+        io.to(socket.id).emit('ERROR', "Error in PlayerLoseMoney");
+    }else{
+        rooms[room].players[socket.id].money -= amount;
+        socket.to(room).emit('LOSE_MONEY', socket, amount);
+    }
+}
 
+/**
+ *
+ * @param room
+ * @param amount
+ * @param socket
+ */
+const playerGetMoney = (room, amount, socket) =>{
+    if(room || amount || socket === null){
+        io.to(socket.id).emit('ERROR', "Error in PlayerGetMoney");
+    }else{
+        rooms[room].players[socket.id].money += amount;
+        socket.to(room).emit('GET_MONEY', socket, amount);
+    }
 
-
+}
 
 
 
@@ -339,7 +366,6 @@ app.get('/', (req, res) =>{
 
 server.listen(PORT, ()=>{
     console.log('Listing on*:3000')
-
 })
 
 
@@ -390,6 +416,16 @@ io.on('connection', (socket) => {
     socket.on('NEXT_TURN', (room) =>{
         validateNextTurn(room, socket)
     })
+
+    socket.on('LOSE_MONEY', (room, amount) =>{
+        playerLoseMoney(room, amount,socket)
+    })
+
+    socket.on('GET_MONEY', (room, amount) =>{
+        playerGetMoney(room, amount,socket)
+    })
+
+
 
 
 });
