@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
-import com.badlogic.gdx.utils.IntArray;
 
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -20,17 +19,18 @@ public class Player extends Actor {
     private String playerSocketID;
     private int money;
     private Field currentPosition;
-    // private IntArray movePath;
     private HashMap<Share, Integer> shares;
     private Texture playerTexture;
 
     public Player() {
-
+        money = 1000000;
+        shares = new HashMap<>();
+        SecureRandom secRand = new SecureRandom();
+        setInitialRandomShares(secRand.nextInt(3 - 1) + 1);
     }
 
     public Player(Field startingField, int playerIndex, String playerSocketID) {
         money = 1000000;
-        // movePath = new IntArray();
         shares = new HashMap<>();
         SecureRandom secRand = new SecureRandom();
         setInitialRandomShares(secRand.nextInt(3 - 1) + 1);
@@ -63,31 +63,48 @@ public class Player extends Actor {
     //--------SETTERS-----------
     public void setCurrentFieldPosition(Field field) {
         this.currentPosition = field;
+        this.setX(currentPosition.getX());
+        this.setY(currentPosition.getY());
     }
     public void setPlayerSocketID(String playerSocketID) {
         this.playerSocketID = playerSocketID;
     }
     public void setPlayerIndex(int playerIndex) {
+        playerTexture = new Texture("p" + playerIndex + "icon.png");
         this.playerIndex = playerIndex;
     }
     public void setMoney(int money) {
         this.money = money;
     }
-    public void setInitialRandomShares(int share_Index) {
-        switch (share_Index) {
+    public void setInitialRandomShares(int shareIndex) {
+        switch (shareIndex) {
             case 1:
                 shares.put(Share.DRY_OIL_PLC, 0);
                 shares.put(Share.SHORT_CIRCUIT_PLC, 0);
+                break;
 
             case 2:
                 shares.put(Share.DRY_OIL_PLC, 0);
                 shares.put(Share.HARD_STEEL_PLC, 0);
+                break;
 
             case 3:
                 shares.put(Share.HARD_STEEL_PLC, 0);
                 shares.put(Share.SHORT_CIRCUIT_PLC, 0);
+                break;
+
+            default:
+                break;
+
         }
     }
+    public void setShares(int hardSteel, int shortCircuit, int dryOil) {
+        shares.clear();
+        shares.put(Share.HARD_STEEL_PLC, hardSteel);
+        shares.put(Share.SHORT_CIRCUIT_PLC, shortCircuit);
+        shares.put(Share.DRY_OIL_PLC, dryOil);
+    }
+
     //--------------------------
 
     //-----MONEY UPDATING-------
@@ -128,5 +145,17 @@ public class Player extends Actor {
 
     public void dispose() {
         playerTexture.dispose();
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "playerIndex=" + playerIndex +
+                ", playerSocketID='" + playerSocketID + '\'' +
+                ", money=" + money +
+                ", currentPosition=" + currentPosition +
+                ", shares=" + shares +
+                ", playerTexture=" + playerTexture +
+                '}';
     }
 }

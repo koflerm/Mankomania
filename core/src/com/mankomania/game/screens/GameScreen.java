@@ -16,12 +16,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import diceLogic.DiceAnimation;
+
+
+import com.mankomania.game.ConStock;
+import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import boardLogic.Board;
+import io.socket.emitter.Emitter;
 import playerLogic.Player;
 
 public class GameScreen extends ScreenAdapter {
@@ -51,7 +56,7 @@ public class GameScreen extends ScreenAdapter {
     private static final float BOARD_PLAYER_MONEY_FACTOR = 4.5f;
     private static final String BOARD_TEXT_STYLE = "title";
     private static final String BOARD_MODAL_BUTTON_STYLE = "default";
-    private static final float duration = 3;
+    private static final float DURATION = 3;
 
     private DiceAnimation diceAnimation;
     private float elapsed;
@@ -65,6 +70,7 @@ public class GameScreen extends ScreenAdapter {
     private int movingPlayerTargetSteps;
     private int movingPlayerCurrentSteps;
     private float movingElapsed;
+    private List<Player> players;
 
     public GameScreen() {
         stage = new Stage();
@@ -109,10 +115,102 @@ public class GameScreen extends ScreenAdapter {
             inputMultiplexer.addProcessor(stage);
         }
 
-        List<Player> players = MankomaniaGame.getInstance().getBoard().getPlayers();
+        players = MankomaniaGame.getInstance().getBoard().getPlayers();
         for (int i = 0; i  < players.size(); i++) {
             stage.addActor(players.get(i));
         }
+
+        /**
+         * Debugging purpose
+         */
+
+        ConStock cStock = new ConStock(1, 1, 0);
+        Connection.emitStocks(cStock);
+
+
+
+        /**
+         * Listener for "RoleHighestDice"
+         * Set roleDice to true
+         */
+
+        Emitter.Listener highestDiceListener = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                Connection.convertJsonToPlayer("" + args[0]);
+
+                Connection.setRoleHighestDice(true);
+
+                Connection.setUpdate(true);
+
+                /**
+                 * Debug mode on:
+                 */
+
+                Connection.emitHighestDice(1, 1);
+
+            }
+        };
+
+        /**
+         * Listener for "StartRound"
+         * Cheks if cLient can start
+         */
+
+        Emitter.Listener startRoundListener = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                Connection.convertJsonToPlayer("" + args[0]);
+
+                if(args[1].toString().equals(Connection.getCs().id())){
+                    Connection.setYourTurn(true);
+                }else{
+                    Connection.setYourTurn(false);
+                }
+
+
+                for(Player p : players){
+                    if(p.getPlayerSocketID().equals(args[1].toString())){
+                        Connection.setCurrentPlayer(p);
+                    }
+                }
+
+
+
+
+                Connection.setUpdate(true);
+
+            }
+        };
+
+        /**
+         * Role Highest Dice Again Listener
+         */
+
+        Emitter.Listener roleAgain = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                String[] winners = args[1].toString().split(",");
+
+                Connection.setWinners(winners);
+
+                for(int i = 0; i < winners.length; i++){
+                    if(winners[i].equals(Connection.getCs().id())){
+                        Connection.setRoleHighestDice(true);
+                    }
+                }
+            }
+        };
+
+        Connection.startRound(startRoundListener);
+
+        Connection.roleHighestDice(highestDiceListener);
+
+        Connection.roleHighestDiceAgain(roleAgain);
+
     }
 
     @Override
@@ -129,6 +227,31 @@ public class GameScreen extends ScreenAdapter {
         renderDialogs();
         stage.act(delta);
         stage.draw();
+
+        /**
+         * Update all Players
+         */
+
+        if(Connection.isUpdate()){
+
+            ArrayList<Player> players = Connection.convertConPlayersToPlayersUpdate();
+            MankomaniaGame.getInstance().getBoard().deleteAllPlayers();
+
+            for(Player p : players){
+                MankomaniaGame.getInstance().getBoard().addPlayer(p);
+            }
+
+            Connection.setUpdate(false);
+
+        }
+
+        if(Connection.getCurrentPlayer() != null){
+            showTurnDialog(Connection.getCurrentPlayer(), Connection.isYourTurn());
+        }
+
+
+
+
     }
 
     private void renderMovement(float delta) {
@@ -148,7 +271,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void renderDices(float delta, Board board) {
-        if (elapsed >= duration){
+        if (elapsed >= DURATION){
             diceAnimation.removeDice();
             diceAnimation.setDiceShown(false);
             movePlayer(diceAnimation.getDiceSum(), board.getCurrentPlayer());
@@ -219,10 +342,10 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void drawPlayerInformation() {
-        drawPlayerBox(0, 0, "P1", p1Card);
-        drawPlayerBox(0, Gdx.graphics.getHeight() - boxHeight, "P2", p2Card);
-        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, Gdx.graphics.getHeight() - boxHeight, "P3", p3Card);
-        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P4", p4Card);
+        drawPlayerBox(0, 0, "P2", p2Card);
+        drawPlayerBox(0, Gdx.graphics.getHeight() - boxHeight, "P3", p3Card);
+        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, Gdx.graphics.getHeight() - boxHeight, "P4", p4Card);
+        drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P1", p1Card);
         drawPlayerMetadata(100000);
     }
 
@@ -330,6 +453,5 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         inputMultiplexer.removeProcessor(stage);
-        this.dispose();
     }
 }

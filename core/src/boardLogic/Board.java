@@ -2,8 +2,6 @@ package boardLogic;
 
 import com.badlogic.gdx.Gdx;
 
-import org.graalvm.compiler.core.common.Fields;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +60,12 @@ public class Board {
     public void addPlayer(Player p){
         players.add(p);
     }
+
+    public void deleteAllPlayers(){
+        players.clear();
+    }
+
+
     //-----------------------
 
     // UI Methods

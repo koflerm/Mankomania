@@ -253,7 +253,6 @@ public class AuctionScreen extends ScreenAdapter {
     @Override
     public void render(float delta) {
         if (elapsed >= DURATION) {
-            //Go back to Gamescreen
             dispose();
         }
         super.render(delta);
