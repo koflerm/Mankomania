@@ -323,7 +323,9 @@ const navObj = (obj, currentKey, direction) => {
     }else{
         return (obj[Object.keys(obj)[0]]).socket
     }
-};
+}
+
+
 
 
 
@@ -388,6 +390,8 @@ io.on('connection', (socket) => {
     socket.on('NEXT_TURN', (room) =>{
         validateNextTurn(room, socket)
     })
+
+
 });
 
 

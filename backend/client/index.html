@@ -15,6 +15,7 @@
     let diceCounts = [];
     let players = {}
     let moveStatus = false;
+    let finalFieldStatus = true;
 
     socket.on("connect", () => {
         //clearDisplay()
@@ -124,6 +125,16 @@
         }
     })
 
+    socket.on('GET_MONEY', (socket,amount) =>{
+        players[socket.id].money += amount
+        displayMessage("Player: " + players[socket.id].playerIndex + " get money "  + amount + " Money: " + players[socket.id].money)
+    })
+
+    socket.on('LOSE_MONEY', (socket,amount) =>{
+        players[socket.id].money -= amount
+        displayMessage("Player: " + players[socket.id].playerIndex + " lose money "  + amount + " Money: " + players[socket.id].money)
+    })
+
 
 
     const messageInput = document.getElementById("message");
@@ -136,6 +147,10 @@
     const updateStockButton = document.getElementById("updateStock")
     const movePlayerButton = document.getElementById("movePlayer")
     const printPlayersButton = document.getElementById("printPlayers")
+    const getMoneyButton = document.getElementById("getMoney")
+    const loseMoneyButton = document.getElementById("loseMoney")
+
+
 
     printPlayersButton.addEventListener("click", (event)=>{
         console.log(players)
@@ -179,7 +194,6 @@
         diceCounts[1] = randomNumber(1,7)
         displayMessage("DiceCount 2: " + diceCounts[1])
         socket.emit('ROLE_THE_HIGHEST_DICE', lobby, diceCounts)
-
     })
 
 
@@ -211,9 +225,8 @@
                     if (players[socket.id].position === to) {
                         clearInterval(timerId);
                         displayMessage("Move finished successfully")
-
-                        socket.emit('NEXT_TURN', lobby)
-                        players[socket.id].yourTurn = false;
+                        moveStatus = false
+                        finalFieldStatus = true;
                     }
                 }
                 go();
@@ -223,6 +236,40 @@
 
         }else{
             alert("Move status false");
+        }
+    })
+
+    getMoneyButton.addEventListener("click", ()=>{
+        if(finalFieldStatus === true){
+            let amount = 10000;
+            displayMessage("Player: " + players[socket.id].playerIndex + " wins 10 000 Euros")
+            players[socket.id].money += amount;
+            socket.emit('GET_MONEY', lobby,amount)
+            finalFieldStatus = false;
+            displayMessage("Next Turn")
+            setTimeout(function(){
+                socket.emit('NEXT_TURN', lobby)
+                players[socket.id].yourTurn = false;
+            }, 2000);
+        }else{
+            alert("finalFieldStatus = false")
+        }
+    })
+
+    loseMoneyButton.addEventListener("click", ()=>{
+        if(finalFieldStatus === true){
+            let amount = 100000;
+            displayMessage("Player: " + players[socket.id].playerIndex + " lose 100 000 Euros")
+            players[socket.id].money -= amount;
+            socket.emit('LOSE_MONEY', lobby, amount)
+            finalFieldStatus = false
+            displayMessage("Next Turn")
+            setTimeout(function(){
+                socket.emit('NEXT_TURN', lobby)
+                players[socket.id].yourTurn = false;
+            }, 2000);
+        }else{
+            alert("finalFieldStatus = false")
         }
     })
 
@@ -254,7 +301,7 @@
 
     .wrapper{
         display:grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr ;
         margin: 10px;
     }
 </style>
@@ -297,6 +344,14 @@
 
     <div>
         <button class="btn" type="button" id="printPlayers">Print Player</button>
+    </div>
+
+    <div>
+        <button class="btn" type="button" id="getMoney">Get Money 10 000</button>
+    </div>
+
+    <div>
+        <button class="btn" type="button" id="loseMoney">Lose Money 100 000</button>
     </div>
 
 
