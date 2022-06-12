@@ -130,7 +130,7 @@ public class Connection {
     }
 
     public static void startGame(Emitter.Listener el) {
-        cs.on("START_GAME", el);
+        cs.once("START_GAME", el);
     }
 
     public static void closeConnection() {
@@ -181,7 +181,7 @@ public class Connection {
     }
 
     public static void startRound(Emitter.Listener el) {
-        cs.on("START_ROUND", el);
+        cs.once("START_ROUND", el);
     }
 
     public static void convertJsonToPlayer(String args) {
@@ -192,6 +192,7 @@ public class Connection {
          * Split Player-Array in multiple Player Strings
          */
 
+        //String[] players = args.split("\\},", 10);
         String[] players = args.split("},", 10);
 
         for (int i = 0; i < players.length; i++) {
@@ -227,18 +228,26 @@ public class Connection {
 
         ArrayList<String> stockAsString = new ArrayList<>();
 
+        for(String s : players){
+            System.out.println(s);
+        }
+
 
         for (int i = 0; i < players.length; i++) {
 
-            String[] stock = players[i].split(":\\{");
+            String[] stock = players[i].split("ShortCircuit_PLC");
+
+            System.out.println("Stock after split: " + stock[1]);
 
             String newStock = stock[1];
 
-            String newNewStock = "{";
+            String newNewStock = "{\"ShortCircuit_PLC";
 
             newNewStock += newStock;
 
             String finalStock = newNewStock.substring(0, newNewStock.length() - 1);
+
+            System.out.println("Stock Final: " + finalStock);
 
             stockAsString.add(finalStock);
         }

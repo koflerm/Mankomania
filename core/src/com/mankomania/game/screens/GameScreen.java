@@ -22,6 +22,7 @@ import com.mankomania.game.ConStock;
 import com.mankomania.game.Connection;
 import com.mankomania.game.MankomaniaGame;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class GameScreen extends ScreenAdapter {
     private final float boxHeight;
     private final Dialog turnDialog;
     private final Dialog intersectionDialog;
+    private boolean triggerTurnDialog;
 
     private InputMultiplexer inputMultiplexer;
     private Texture p1Card;
@@ -105,6 +107,7 @@ public class GameScreen extends ScreenAdapter {
         intersectionDialogIsShown = false;
         moveToIntersection = false;
         intersectionDecided = false;
+        triggerTurnDialog = false;
 
         movingPlayerCurrentSteps = 0;
         movingPlayerTargetSteps = 0;
@@ -121,10 +124,15 @@ public class GameScreen extends ScreenAdapter {
         }
 
         /**
-         * Debugging purpose
+         * Choose stocks (Debugging)
          */
 
         ConStock cStock = new ConStock(1, 1, 0);
+
+        MankomaniaGame.getInstance().setScreen(new StockSelectionScreen());
+
+        System.out.println("Short" + StockSelectionScreen.getShortCircuitCount() + " Dry" + StockSelectionScreen.getDryOilCount() + " Hard" + StockSelectionScreen.getHardSteelCount());
+
         Connection.emitStocks(cStock);
 
 
@@ -145,10 +153,20 @@ public class GameScreen extends ScreenAdapter {
                 Connection.setUpdate(true);
 
                 /**
-                 * Debug mode on:
+                 * Roll the dices
                  */
 
-                Connection.emitHighestDice(1, 1);
+                SecureRandom rand = new SecureRandom();
+
+                int dice1 = rand.nextInt((7-0+1)+0);
+
+                int dice2 = rand.nextInt((7-0+1)+0);
+
+                //Connection.emitHighestDice(dice1, dice2);
+
+                Connection.emitHighestDice(6, 6);
+
+                System.out.println("Dices rolled: " + dice1 + " " + dice2);
 
             }
         };
@@ -174,6 +192,7 @@ public class GameScreen extends ScreenAdapter {
                 for(Player p : players){
                     if(p.getPlayerSocketID().equals(args[1].toString())){
                         Connection.setCurrentPlayer(p);
+                        triggerTurnDialog = true;
                     }
                 }
 
@@ -245,8 +264,9 @@ public class GameScreen extends ScreenAdapter {
 
         }
 
-        if(Connection.getCurrentPlayer() != null){
+        if(Connection.getCurrentPlayer() != null && triggerTurnDialog){
             showTurnDialog(Connection.getCurrentPlayer(), Connection.isYourTurn());
+            triggerTurnDialog = false;
         }
 
 
