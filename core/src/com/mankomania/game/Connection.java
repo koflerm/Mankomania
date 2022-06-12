@@ -305,6 +305,8 @@ public class Connection {
 
         for (ConPlayer c : cp) {
 
+            System.out.println(c.getPlayerIndex());
+
             Field f = MankomaniaGame.getInstance().getBoard().getFieldByIndex(c.getPosition());
 
             Player p = new Player(f, c.getPlayerIndex(), c.getSocket());

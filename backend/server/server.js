@@ -271,6 +271,65 @@ const updateStock = (room, socket, stock)=>{
     }
 }
 
+/**
+ *
+ * @param room
+ * @param diceCount
+ * @param socket
+ */
+const updateDice = (room, diceCount, socket) =>{
+    //check param
+    rooms[room].players[socket.id].dice_1 = diceCount[0]
+    rooms[room].players[socket.id].dice_1 = diceCount[1]
+
+    socket.to(room).emit('UPDATE_DICE', socket.id, diceCount)
+}
+
+/**
+ *
+ * @param room
+ * @param position
+ * @param socket
+ */
+const updatePlayerPosition = (room, position, socket) =>{
+    //check param
+    rooms[room].players[socket.id].position = position;
+    socket.to(room).emit('UPDATE_PLAYER_POSITION', socket.id, position);
+}
+/**
+ *
+ * @param room
+ * @param socket
+ */
+const validateNextTurn = (room, socket) =>{
+    rooms[room].players[socket.id].yourTurn = false;
+    let nextPlayer = navObj(rooms[room].players, socket.id, 1)
+    console.log("Next Player " + nextPlayer)
+    rooms[room].players[nextPlayer].yourTurn = true;
+    socket.to(room).emit('NEXT_TURN', nextPlayer)
+}
+
+/**
+ *
+ * @param obj
+ * @param currentKey
+ * @param direction
+ * @returns {*}
+ */
+const navObj = (obj, currentKey, direction) => {
+    let next =  (Object.values(obj)[Object.keys(obj).indexOf(currentKey) + direction]);
+    if(next !== undefined){
+        return next.socket;
+    }else{
+        return (obj[Object.keys(obj)[0]]).socket
+    }
+}
+
+
+
+
+
+
 
 
 app.get('/', (req, res) =>{
@@ -319,6 +378,20 @@ io.on('connection', (socket) => {
     socket.on('ROLE_THE_HIGHEST_DICE_AGAIN', (room, diceCount, length) =>{
         saveDice(room, socket, diceCount, length)
     });
+
+    socket.on('ROLE_THE_DICE', (room, diceCount)=>{
+        updateDice(room, diceCount, socket)
+    })
+
+    socket.on('UPDATE_PLAYER_POSITION', (room, position) =>{
+      updatePlayerPosition(room, position, socket)
+    })
+
+    socket.on('NEXT_TURN', (room) =>{
+        validateNextTurn(room, socket)
+    })
+
+
 });
 
 

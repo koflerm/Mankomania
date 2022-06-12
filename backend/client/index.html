@@ -10,9 +10,12 @@
     import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
 
     const socket = io('http://localhost:3000');
-    //const socket = io('https://mankomania-backend.herokuapp.com');
+    //const socket = io('https://mankomania.herokuapp.com');
     let lobby;
     let diceCounts = [];
+    let players = {}
+    let moveStatus = false;
+    let finalFieldStatus = true;
 
     socket.on("connect", () => {
         //clearDisplay()
@@ -52,9 +55,84 @@
     })
 
     socket.on('START_ROUND', (data, winner) =>{
-        console.log(data)
-        console.log(winner)
-        displayMessage("Winner " +  winner)
+
+        players = data
+        let sockets = [];
+        for (const key in players) {
+            sockets.push(key)
+        }
+
+        let player1 = players[sockets[0]];
+        let player2 = players[sockets[1]];
+        let player3 = players[sockets[2]];
+        let player4 = players[sockets[3]];
+
+        console.log(player1)
+        console.log(player2)
+        console.log(player3)
+        console.log(player4)
+
+        if(data[socket.id].yourTurn === true){
+            displayMessage("Me " + data[winner].playerIndex)
+            diceCounts[0] = randomNumber(1,7)
+            displayMessage("DiceCount 1: " + diceCounts[0])
+            diceCounts[1] = randomNumber(1,7)
+            displayMessage("DiceCount 2: " + diceCounts[1])
+            socket.emit('ROLE_THE_DICE', lobby, diceCounts)
+            players[socket.id].dice_1 = diceCounts[0];
+            players[socket.id].dice_2 = diceCounts[1];
+            players[socket.id].diceCount =  players[socket.id].dice_1 + players[socket.id].dice_2
+            displayMessage("Total Dice Count " + players[socket.id].diceCount + ". Move Status true")
+            moveStatus = true
+
+
+        }else{
+            displayMessage("Winner " + data[winner].playerIndex)
+            displayMessage("Player " + data[winner].playerIndex + " has the turn")
+
+        }
+
+    })
+
+    socket.on('UPDATE_DICE', (socket, diceCounts) => {
+        players[socket].dice_1 = diceCounts[0]
+        players[socket].dice_2 = diceCounts[1]
+        displayMessage("Player " + players[socket].playerIndex + " rolled the dice. Dice 1: " +  players[socket].dice_1 + ", Dice 2: " + players[socket].dice_2)
+
+    })
+
+    socket.on('UPDATE_PLAYER_POSITION', (socket, position) =>{
+        players[socket].position = position
+        displayMessage("Player: " + players[socket].playerIndex + " is on Field " + players[socket].position)
+    })
+
+    socket.on('NEXT_TURN', (nextPlayer) =>{
+        if(nextPlayer === socket.id){
+            players[socket.id].yourTurn = true;
+            displayMessage(players[socket.id].playerIndex + " your Turn")
+            diceCounts[0] = randomNumber(1,7)
+            displayMessage("DiceCount 1: " + diceCounts[0])
+            diceCounts[1] = randomNumber(1,7)
+            displayMessage("DiceCount 2: " + diceCounts[1])
+            socket.emit('ROLE_THE_DICE', lobby, diceCounts)
+            players[socket.id].dice_1 = diceCounts[0];
+            players[socket.id].dice_2 = diceCounts[1];
+            players[socket.id].diceCount =  players[socket.id].dice_1 + players[socket.id].dice_2
+            displayMessage("Total Dice Count " + players[socket.id].diceCount + ". Move Status true")
+            moveStatus = true
+        }else{
+            displayMessage("Player " + players[nextPlayer].playerIndex + " has the turn")
+        }
+    })
+
+    socket.on('GET_MONEY', (socket,amount) =>{
+        players[socket.id].money += amount
+        displayMessage("Player: " + players[socket.id].playerIndex + " get money "  + amount + " Money: " + players[socket.id].money)
+    })
+
+    socket.on('LOSE_MONEY', (socket,amount) =>{
+        players[socket.id].money -= amount
+        displayMessage("Player: " + players[socket.id].playerIndex + " lose money "  + amount + " Money: " + players[socket.id].money)
     })
 
 
@@ -67,6 +145,16 @@
     const disconnectButton = document.getElementById("disconnect");
     const readyForGameButton = document.getElementById("readyForGame")
     const updateStockButton = document.getElementById("updateStock")
+    const movePlayerButton = document.getElementById("movePlayer")
+    const printPlayersButton = document.getElementById("printPlayers")
+    const getMoneyButton = document.getElementById("getMoney")
+    const loseMoneyButton = document.getElementById("loseMoney")
+
+
+
+    printPlayersButton.addEventListener("click", (event)=>{
+        console.log(players)
+    })
 
     updateStockButton.addEventListener("click", (event) =>{
         const stock = {
@@ -106,7 +194,6 @@
         diceCounts[1] = randomNumber(1,7)
         displayMessage("DiceCount 2: " + diceCounts[1])
         socket.emit('ROLE_THE_HIGHEST_DICE', lobby, diceCounts)
-
     })
 
 
@@ -127,6 +214,64 @@
         socket.emit('JOIN_ROOM', room);
     })
 
+    movePlayerButton.addEventListener("click", e =>{
+        if(moveStatus === true){
+            function printNumbers(from, to) {
+                function go() {
+                    players[socket.id].position++;
+                    socket.emit('UPDATE_PLAYER_POSITION',lobby, players[socket.id].position)
+
+                    displayMessage("Player: " + players[socket.id].playerIndex + " is on Field " + players[socket.id].position)
+                    if (players[socket.id].position === to) {
+                        clearInterval(timerId);
+                        displayMessage("Move finished successfully")
+                        moveStatus = false
+                        finalFieldStatus = true;
+                    }
+                }
+                go();
+                let timerId = setInterval(go, 2000);
+            }
+            printNumbers(players[socket.id].position, players[socket.id].position +  players[socket.id].diceCount );
+
+        }else{
+            alert("Move status false");
+        }
+    })
+
+    getMoneyButton.addEventListener("click", ()=>{
+        if(finalFieldStatus === true){
+            let amount = 10000;
+            displayMessage("Player: " + players[socket.id].playerIndex + " wins 10 000 Euros")
+            players[socket.id].money += amount;
+            socket.emit('GET_MONEY', lobby,amount)
+            finalFieldStatus = false;
+            displayMessage("Next Turn")
+            setTimeout(function(){
+                socket.emit('NEXT_TURN', lobby)
+                players[socket.id].yourTurn = false;
+            }, 2000);
+        }else{
+            alert("finalFieldStatus = false")
+        }
+    })
+
+    loseMoneyButton.addEventListener("click", ()=>{
+        if(finalFieldStatus === true){
+            let amount = 100000;
+            displayMessage("Player: " + players[socket.id].playerIndex + " lose 100 000 Euros")
+            players[socket.id].money -= amount;
+            socket.emit('LOSE_MONEY', lobby, amount)
+            finalFieldStatus = false
+            displayMessage("Next Turn")
+            setTimeout(function(){
+                socket.emit('NEXT_TURN', lobby)
+                players[socket.id].yourTurn = false;
+            }, 2000);
+        }else{
+            alert("finalFieldStatus = false")
+        }
+    })
 
 
     function displayMessage(message){
@@ -150,12 +295,13 @@
         margin: 10px;
         font-size: large;
         height:500px;
+        overflow-y: scroll;
 
     }
 
     .wrapper{
         display:grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr ;
         margin: 10px;
     }
 </style>
@@ -190,6 +336,22 @@
 
     <div>
         <button class="btn" type="button" id="updateStock">update Stock</button>
+    </div>
+
+    <div>
+        <button class="btn" type="button" id="movePlayer">Move</button>
+    </div>
+
+    <div>
+        <button class="btn" type="button" id="printPlayers">Print Player</button>
+    </div>
+
+    <div>
+        <button class="btn" type="button" id="getMoney">Get Money 10 000</button>
+    </div>
+
+    <div>
+        <button class="btn" type="button" id="loseMoney">Lose Money 100 000</button>
     </div>
 
 
