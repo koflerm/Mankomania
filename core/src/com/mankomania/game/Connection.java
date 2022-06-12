@@ -228,16 +228,11 @@ public class Connection {
 
         ArrayList<String> stockAsString = new ArrayList<>();
 
-        for(String s : players){
-            System.out.println(s);
-        }
 
 
         for (int i = 0; i < players.length; i++) {
 
             String[] stock = players[i].split("ShortCircuit_PLC");
-
-            System.out.println("Stock after split: " + stock[1]);
 
             String newStock = stock[1];
 
@@ -246,8 +241,6 @@ public class Connection {
             newNewStock += newStock;
 
             String finalStock = newNewStock.substring(0, newNewStock.length() - 1);
-
-            System.out.println("Stock Final: " + finalStock);
 
             stockAsString.add(finalStock);
         }
@@ -311,8 +304,6 @@ public class Connection {
         ArrayList<Player> pList = new ArrayList<>();
 
         for (ConPlayer c : cp) {
-
-            System.out.println(c.getPlayerIndex());
 
             Field f = MankomaniaGame.getInstance().getBoard().getFieldByIndex(c.getPosition());
 

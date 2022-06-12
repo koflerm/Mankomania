@@ -218,13 +218,11 @@ public class LobbyScreen extends ScreenAdapter{
             }
 
             MankomaniaGame.getInstance().disposeCurrentScreen();
-            MankomaniaGame.getInstance().setScreen(new GameScreen());
+            MankomaniaGame.getInstance().setScreen(new StockSelectionScreen());
         }
     }
 
     public void doDispose(){
-        MankomaniaGame.getInstance().disposeCurrentScreen();
-        MankomaniaGame.getInstance().setScreen(new GameScreen());
     }
 
     @Override

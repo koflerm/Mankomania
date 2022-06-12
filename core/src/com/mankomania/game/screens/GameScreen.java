@@ -124,17 +124,12 @@ public class GameScreen extends ScreenAdapter {
         }
 
         /**
-         * Choose stocks (Debugging)
+         * Choose stocks
          */
 
-        ConStock cStock = new ConStock(1, 1, 0);
-
-        MankomaniaGame.getInstance().setScreen(new StockSelectionScreen());
-
-        System.out.println("Short" + StockSelectionScreen.getShortCircuitCount() + " Dry" + StockSelectionScreen.getDryOilCount() + " Hard" + StockSelectionScreen.getHardSteelCount());
+        ConStock cStock = new ConStock(StockSelectionScreen.getShortCircuitCount(), StockSelectionScreen.getDryOilCount(), StockSelectionScreen.getHardSteelCount());
 
         Connection.emitStocks(cStock);
-
 
 
         /**
@@ -162,11 +157,7 @@ public class GameScreen extends ScreenAdapter {
 
                 int dice2 = rand.nextInt((7-0+1)+0);
 
-                //Connection.emitHighestDice(dice1, dice2);
-
-                Connection.emitHighestDice(6, 6);
-
-                System.out.println("Dices rolled: " + dice1 + " " + dice2);
+                Connection.emitHighestDice(dice1, dice2);
 
             }
         };
@@ -366,7 +357,7 @@ public class GameScreen extends ScreenAdapter {
         drawPlayerBox(0, Gdx.graphics.getHeight() - boxHeight, "P2", p2Card);
         drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, Gdx.graphics.getHeight() - boxHeight, "P3", p3Card);
         drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P4", p4Card);
-        drawPlayerMetadata(100000);
+        drawPlayerMetadata(100);
     }
 
     private float calcWidthFactor(float factor) {
