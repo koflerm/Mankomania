@@ -7,7 +7,8 @@
 <body>
 
 <script type="module">
-    import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
+
+    import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
     const socket = io('http://localhost:3000');
     //const socket = io('https://mankomania.herokuapp.com');
@@ -19,8 +20,9 @@
 
     socket.on("connect", () => {
         //clearDisplay()
-       displayMessage(`You connected with id: ${socket.id}`)
+        displayMessage(`You connected with id: ${socket.id}`)
     })
+
 
 
     socket.on('JOIN_ROOM', (room, id) =>{
@@ -28,7 +30,7 @@
         lobby = room;
     })
 
-    socket.on('START_GAME', (room, players) =>{
+    socket.on('START_GAME', (room) =>{
         displayMessage("Game starts " + room);
     })
 
@@ -126,14 +128,31 @@
     })
 
     socket.on('GET_MONEY', (socket,amount) =>{
+        console.log("GET_MONEY")
         players[socket.id].money += amount
         displayMessage("Player: " + players[socket.id].playerIndex + " get money "  + amount + " Money: " + players[socket.id].money)
     })
 
     socket.on('LOSE_MONEY', (socket,amount) =>{
+        console.log("LOSE_MONEY")
         players[socket.id].money -= amount
         displayMessage("Player: " + players[socket.id].playerIndex + " lose money "  + amount + " Money: " + players[socket.id].money)
     })
+
+    socket.on('PLAYER_COLLISION', (socket,collision) =>{
+        displayMessage("Collision")
+        players[socket.id].money -= 10000 * collision.length;
+        displayMessage("Player: " + players[socket.id].playerIndex + " lose money "  + 10000 * collision.length + " Money: " + players[socket.id].money)
+        for(let i of collision){
+            if (i !== socket.id){
+                players[i].money += 10000
+                displayMessage("Player: " + players[i].playerIndex + " get money "  + 10000 + " Money: " + players[i].money)
+            }
+
+        }
+    })
+
+
 
 
 
@@ -174,20 +193,20 @@
 
     })
 
-/*
-    sendMessageButton.addEventListener("click", e => {
-        e.preventDefault()
-        const message = messageInput.value;
-        const room = roomInput.value;
+    /*
+        sendMessageButton.addEventListener("click", e => {
+            e.preventDefault()
+            const message = messageInput.value;
+            const room = roomInput.value;
 
-        if(message === "")return
-        displayMessage(message);
+            if(message === "")return
+            displayMessage(message);
 
-        socket.emit('send-message', message, room);
-        messageInput.value = "";
+            socket.emit('send-message', message, room);
+            messageInput.value = "";
 
-    })
-    */
+        })
+        */
     randomNumberButton.addEventListener("click", e =>{
         diceCounts[0] = randomNumber(1,7)
         displayMessage("DiceCount 1: " + diceCounts[0])
@@ -227,10 +246,13 @@
                         displayMessage("Move finished successfully")
                         moveStatus = false
                         finalFieldStatus = true;
+                        //playersOnSameField()
+
+
                     }
                 }
                 go();
-                let timerId = setInterval(go, 2000);
+                let timerId = setInterval(go, 500);
             }
             printNumbers(players[socket.id].position, players[socket.id].position +  players[socket.id].diceCount );
 
@@ -238,6 +260,24 @@
             alert("Move status false");
         }
     })
+
+    const playersOnSameField = () =>{
+        let colArr = Object.keys(players).filter(type => players[type].position === players[socket.id].position)
+        if (colArr.length > 1){
+            displayMessage("Collision detected on Field " + players[socket.id].position)
+            players[socket.id].money -= 10000 * colArr.length
+            for(let i of colArr){
+                if (i !== socket.id)
+                    players[i].money += 10000
+            }
+            socket.emit('PLAYER_COLLISION',lobby, colArr);
+
+        }else{
+            displayMessage("No Collision detected on Field")
+        }
+    }
+
+
 
     getMoneyButton.addEventListener("click", ()=>{
         if(finalFieldStatus === true){
@@ -249,7 +289,7 @@
             displayMessage("Next Turn")
             setTimeout(function(){
                 socket.emit('NEXT_TURN', lobby)
-                players[socket.id].yourTurn = false;
+                //players[socket.id].yourTurn = false;
             }, 2000);
         }else{
             alert("finalFieldStatus = false")
@@ -264,9 +304,10 @@
             socket.emit('LOSE_MONEY', lobby, amount)
             finalFieldStatus = false
             displayMessage("Next Turn")
+
             setTimeout(function(){
                 socket.emit('NEXT_TURN', lobby)
-                players[socket.id].yourTurn = false;
+                //players[socket.id].yourTurn = false;
             }, 2000);
         }else{
             alert("finalFieldStatus = false")

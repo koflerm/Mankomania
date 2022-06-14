@@ -1,3 +1,5 @@
+
+
 let players = {
     "pTXmcVIA2UV_r7hJAAAJ": {
     "socket": "pTXmcVIA2UV_r7hJAAAJ",
@@ -48,7 +50,7 @@ let players = {
     "socket": "y94JPlkimCvbTaE1AAAP",
         "playerIndex": 4,
         "money": 1000000,
-        "position": 3,
+        "position": 10,
         "stocks": {
         "HardSteel_PLC": 2,
             "ShortCircuit_PLC": 0,
@@ -73,14 +75,19 @@ let player4 = players[sockets[3]];
 
 
 
-const navObj = (obj, currentKey, direction) => {
-    let temp = (Object.values(obj)[Object.keys(obj).indexOf(currentKey) + direction]);
-    if(temp !== undefined){
-        return temp.socket;
-    }else{
-        return (obj[Object.keys(obj)[0]]).socket;
-    }
-};
+
+let temp = Object.keys(players).filter(type => players[type].position === 1);
+for(let i of temp){
+    console.log(i)
+
+}
+if(temp.length !== 0) {
+    console.log("Collision")
+}else{
+    console.log("No Collision")
+}
+
+
 
 
 

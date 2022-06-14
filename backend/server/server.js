@@ -332,12 +332,9 @@ const navObj = (obj, currentKey, direction) => {
  * @param socket
  */
 const playerLoseMoney = (room, amount, socket) =>{
-    if(room || amount || socket === null){
-        io.to(socket.id).emit('ERROR', "Error in PlayerLoseMoney");
-    }else{
         rooms[room].players[socket.id].money -= amount;
         socket.to(room).emit('LOSE_MONEY', socket, amount);
-    }
+
 }
 
 /**
@@ -347,12 +344,20 @@ const playerLoseMoney = (room, amount, socket) =>{
  * @param socket
  */
 const playerGetMoney = (room, amount, socket) =>{
-    if(room || amount || socket === null){
-        io.to(socket.id).emit('ERROR', "Error in PlayerGetMoney");
-    }else{
         rooms[room].players[socket.id].money += amount;
         socket.to(room).emit('GET_MONEY', socket, amount);
-    }
+
+
+}
+
+const playerCollision = (room, collision, socket)=>{
+        rooms[room].players[socket.id].money -= 10000 * collision.length;
+        for(let element of collision){
+            if(element !== socket.id)
+                rooms[room].players[element].money += 10000;
+        }
+        socket.to(room).emit('PLAYER_COLLISION', socket, collision);
+
 
 }
 
@@ -423,6 +428,10 @@ io.on('connection', (socket) => {
 
     socket.on('GET_MONEY', (room, amount) =>{
         playerGetMoney(room, amount,socket)
+    })
+
+    socket.on('PLAYER_COLLISION', (room, collision) =>{
+        playerCollision(room, collision, socket)
     })
 
 
