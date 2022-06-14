@@ -223,6 +223,10 @@ public class GameScreen extends ScreenAdapter {
             }
         };
 
+        /**
+         * Update dices after roll listener
+         */
+
         Emitter.Listener updateDice = new Emitter.Listener() {
             @Override
             public void call(Object... args) {
@@ -243,6 +247,10 @@ public class GameScreen extends ScreenAdapter {
             }
         };
 
+        /**
+         * Gets next turn, when the current player has finished
+         */
+
         Emitter.Listener nextTurnListener = new Emitter.Listener() {
             @Override
             public void call(Object... args) {
@@ -261,6 +269,10 @@ public class GameScreen extends ScreenAdapter {
                 }
             }
         };
+
+        /**
+         * Update the position of the moving player
+         */
 
         Emitter.Listener updateMyPosition = new Emitter.Listener() {
             @Override
@@ -287,7 +299,6 @@ public class GameScreen extends ScreenAdapter {
         Connection.roleHighestDice(highestDiceListener);
 
         Connection.roleHighestDiceAgain(roleAgain);
-
     }
 
     @Override
