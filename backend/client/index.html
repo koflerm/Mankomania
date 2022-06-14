@@ -76,16 +76,26 @@
 
         if(data[socket.id].yourTurn === true){
             displayMessage("Me " + data[winner].playerIndex)
-            diceCounts[0] = randomNumber(1,7)
+            //diceCounts[0] = randomNumber(1,7)
+            diceCounts[0] = 6
+            diceCounts[1] = 6
             displayMessage("DiceCount 1: " + diceCounts[0])
-            diceCounts[1] = randomNumber(1,7)
+            //diceCounts[1] = randomNumber(1,7)
             displayMessage("DiceCount 2: " + diceCounts[1])
-            socket.emit('ROLE_THE_DICE', lobby, diceCounts)
             players[socket.id].dice_1 = diceCounts[0];
             players[socket.id].dice_2 = diceCounts[1];
             players[socket.id].diceCount =  players[socket.id].dice_1 + players[socket.id].dice_2
             displayMessage("Total Dice Count " + players[socket.id].diceCount + ". Move Status true")
             moveStatus = true
+            if(diceCounts[0] +  diceCounts[1] === 12){
+                displayMessage("6er Pasch")
+                players[socket.id].money -= 100000
+                socket.emit('ROLE_THE_DICE', lobby, diceCounts)
+            }else{
+
+                socket.emit('ROLE_THE_DICE', lobby, diceCounts,   )
+            }
+
 
 
         }else{
@@ -97,10 +107,17 @@
     })
 
     socket.on('UPDATE_DICE', (socket, diceCounts) => {
-        players[socket].dice_1 = diceCounts[0]
-        players[socket].dice_2 = diceCounts[1]
-        displayMessage("Player " + players[socket].playerIndex + " rolled the dice. Dice 1: " +  players[socket].dice_1 + ", Dice 2: " + players[socket].dice_2)
-
+        if(diceCounts[0] + diceCounts[1] === 12){
+            players[socket].dice_1 = diceCounts[0]
+            players[socket].dice_2 = diceCounts[1]
+            players[socket].money -= 100000
+            displayMessage("Player " + players[socket].playerIndex + " has an 6er Pasch")
+            displayMessage("Player " + players[socket].playerIndex + " rolled the dice. Dice 1: " +  players[socket].dice_1 + ", Dice 2: " + players[socket].dice_2)
+        }else{
+            players[socket].dice_1 = diceCounts[0]
+            players[socket].dice_2 = diceCounts[1]
+            displayMessage("Player " + players[socket].playerIndex + " rolled the dice. Dice 1: " +  players[socket].dice_1 + ", Dice 2: " + players[socket].dice_2)
+        }
     })
 
     socket.on('UPDATE_PLAYER_POSITION', (socket, position) =>{

@@ -76,17 +76,10 @@ let player4 = players[sockets[3]];
 
 
 
-let temp = Object.keys(players).filter(type => players[type].position === 1);
-for(let i of temp){
-    console.log(i)
+let temp = [6,6]
 
-}
-if(temp.length !== 0) {
-    console.log("Collision")
-}else{
-    console.log("No Collision")
-}
-
+if(temp[0] + temp[1] === 12){
+    console.log("Pasch")
 
 }
 
