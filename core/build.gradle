@@ -16,14 +16,4 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:3.+'
 }
 
-jacocoTestReport {
-    reports {
-        xml.enabled true
-    }
-}
-
-test {
-    useJUnit()
-}
-
 eclipse.project.name = appName + "-core"
