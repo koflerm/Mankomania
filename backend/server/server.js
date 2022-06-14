@@ -357,14 +357,12 @@ const playerGetMoney = (room, amount, socket) =>{
 }
 
 const playerCollision = (room, collision, socket)=>{
-        rooms[room].players[socket.id].money -= 10000 * collision.length;
+        rooms[room].players[socket.id].money -= 10000 * (collision.length -1);
         for(let element of collision){
             if(element !== socket.id)
                 rooms[room].players[element].money += 10000;
         }
         socket.to(room).emit('PLAYER_COLLISION', socket.id, collision);
-
-
 }
 
 

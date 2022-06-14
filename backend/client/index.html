@@ -141,10 +141,10 @@
 
     socket.on('PLAYER_COLLISION', (socket,collision) =>{
         displayMessage("Collision")
-        players[socket.id].money -= 10000 * collision.length;
-        displayMessage("Player: " + players[socket.id].playerIndex + " lose money "  + 10000 * collision.length + " Money: " + players[socket.id].money)
+        players[socket].money -= 10000 * (collision.length -1);
+        displayMessage("Player: " + players[socket].playerIndex + " lose money "  + 10000 * (collision.length -1) + " Money: " + players[socket].money)
         for(let i of collision){
-            if (i !== socket.id){
+            if (i !== socket){
                 players[i].money += 10000
                 displayMessage("Player: " + players[i].playerIndex + " get money "  + 10000 + " Money: " + players[i].money)
             }
@@ -168,7 +168,7 @@
     const printPlayersButton = document.getElementById("printPlayers")
     const getMoneyButton = document.getElementById("getMoney")
     const loseMoneyButton = document.getElementById("loseMoney")
-
+    const collisionButton = document.getElementById("collision")
 
 
     printPlayersButton.addEventListener("click", (event)=>{
@@ -193,20 +193,7 @@
 
     })
 
-    /*
-        sendMessageButton.addEventListener("click", e => {
-            e.preventDefault()
-            const message = messageInput.value;
-            const room = roomInput.value;
 
-            if(message === "")return
-            displayMessage(message);
-
-            socket.emit('send-message', message, room);
-            messageInput.value = "";
-
-        })
-        */
     randomNumberButton.addEventListener("click", e =>{
         diceCounts[0] = randomNumber(1,7)
         displayMessage("DiceCount 1: " + diceCounts[0])
@@ -214,8 +201,6 @@
         displayMessage("DiceCount 2: " + diceCounts[1])
         socket.emit('ROLE_THE_HIGHEST_DICE', lobby, diceCounts)
     })
-
-
 
     const randomNumber = (min, max)=>{
         return Math.floor(Math.random() * (max - min)) + min;
@@ -246,7 +231,7 @@
                         displayMessage("Move finished successfully")
                         moveStatus = false
                         finalFieldStatus = true;
-                        playersOnSameField()
+                        //playersOnSameField()
 
 
                     }
@@ -265,7 +250,7 @@
         let colArr = Object.keys(players).filter(type => players[type].position === players[socket.id].position)
         if (colArr.length > 1){
             displayMessage("Collision detected on Field " + players[socket.id].position)
-            players[socket.id].money -= 10000 * colArr.length
+            players[socket.id].money -= 10000 * (colArr.length -1)
             for(let i of colArr){
                 if (i !== socket.id)
                     players[i].money += 10000
@@ -276,6 +261,28 @@
             displayMessage("No Collision detected on Field")
         }
     }
+
+    collisionButton.addEventListener("click", (event)=>{
+        let pos = players[socket.id].position
+        let next =  (Object.values(players)[Object.keys(players).indexOf(socket.id) + 1]);
+        let nextPlayer;
+        if(next !== undefined){
+             nextPlayer = next.socket
+            players[nextPlayer].position = pos
+            console.log("My Position " + pos)
+            console.log("next Player " + nextPlayer)
+            console.log("next Player pos" +  players[nextPlayer].position)
+            playersOnSameField();
+        }else{
+           nextPlayer = (players[Object.keys(players)[0]]).socket;
+            players[nextPlayer].position = pos
+            console.log("My Position " + pos)
+            console.log("next Player " + nextPlayer)
+            console.log("next Player pos" +  players[nextPlayer].position)
+            playersOnSameField()
+        }
+    })
+
 
 
 
@@ -400,6 +407,10 @@
 
     <div>
         <button class="btn" type="button" id="loseMoney">Lose Money 100 000</button>
+    </div>
+
+    <div>
+        <button class="btn" type="button" id="collision">Collision</button>
     </div>
 
 
