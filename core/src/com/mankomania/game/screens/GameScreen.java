@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
+
 import diceLogic.DiceAnimation;
 
 
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import boardLogic.Board;
+import fieldLogic.Field;
 import io.socket.emitter.Emitter;
 import playerLogic.Player;
 
@@ -86,7 +88,8 @@ public class GameScreen extends ScreenAdapter {
         boxWidth = calcWidthFactor(BOARD_PLAYER_BOX_WIDTH_FACTOR);
         boxHeight = calcHeightFactor(BOARD_PLAYER_BOX_HEIGHT_FACTOR);
         turnDialogIsShown = false;
-        turnDialog = new Dialog("INFO", skin, "alt") {};
+        turnDialog = new Dialog("INFO", skin, "alt") {
+        };
         turnDialogNeeded = false;
         diceAnimation = new DiceAnimation();
         elapsed = 0;
@@ -96,7 +99,7 @@ public class GameScreen extends ScreenAdapter {
                 if ((Boolean) object) {
                     hideIntersectionDialog();
                     moveToIntersection = false;
-                }else{
+                } else {
                     hideIntersectionDialog();
                     moveToIntersection = true;
                 }
@@ -119,7 +122,7 @@ public class GameScreen extends ScreenAdapter {
         }
 
         players = MankomaniaGame.getInstance().getBoard().getPlayers();
-        for (int i = 0; i  < players.size(); i++) {
+        for (int i = 0; i < players.size(); i++) {
             stage.addActor(players.get(i));
         }
 
@@ -153,11 +156,16 @@ public class GameScreen extends ScreenAdapter {
 
                 SecureRandom rand = new SecureRandom();
 
-                int dice1 = rand.nextInt((7-0+1)+0);
+                int dice1 = rand.nextInt((7 - 0 + 1) + 0);
 
-                int dice2 = rand.nextInt((7-0+1)+0);
+                int dice2 = rand.nextInt((7 - 0 + 1) + 0);
 
-                Connection.emitHighestDice(dice1, dice2);
+                //Connection.emitHighestDice(dice1, dice2);
+
+                /**
+                 * DEBUG MODE ON
+                 */
+                Connection.emitHighestDice(6, 6);
 
 
             }
@@ -165,7 +173,7 @@ public class GameScreen extends ScreenAdapter {
 
         /**
          * Listener for "StartRound"
-         * Cheks if cLient can start
+         * Checks if Client can start
          */
 
         Emitter.Listener startRoundListener = new Emitter.Listener() {
@@ -174,21 +182,20 @@ public class GameScreen extends ScreenAdapter {
 
                 Connection.convertJsonToPlayer("" + args[0]);
 
-                if(args[1].toString().equals(Connection.getCs().id())){
+                if (args[1].toString().equals(Connection.getCs().id())) {
+                    //set Turn after the turn on false
                     Connection.setYourTurn(true);
-                }else{
+                } else {
                     Connection.setYourTurn(false);
                 }
 
 
-                for(Player p : players){
-                    if(p.getPlayerSocketID().equals(args[1].toString())){
+                for (Player p : players) {
+                    if (p.getPlayerSocketID().equals(args[1].toString())) {
                         Connection.setCurrentPlayer(p);
                         triggerTurnDialog = true;
                     }
                 }
-
-
 
 
                 Connection.setUpdate(true);
@@ -208,13 +215,72 @@ public class GameScreen extends ScreenAdapter {
 
                 Connection.setWinners(winners);
 
-                for(int i = 0; i < winners.length; i++){
-                    if(winners[i].equals(Connection.getCs().id())){
+                for (int i = 0; i < winners.length; i++) {
+                    if (winners[i].equals(Connection.getCs().id())) {
                         Connection.setRoleHighestDice(true);
                     }
                 }
             }
         };
+
+        Emitter.Listener updateDice = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                String socketID = args[0].toString();
+
+                String[] dices = args[1].toString().split(",");
+
+                int dice1 = Integer.parseInt(dices[0].substring(1));
+                int dice2 = Integer.parseInt(dices[1].substring(0, 1));
+
+                int totalDice = dice1 + dice2;
+
+                MankomaniaGame.getInstance().getBoard().getCurrentPlayer().setDices(totalDice);
+
+                System.out.println(MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getPlayerSocketID());
+
+            }
+        };
+
+        Emitter.Listener nextTurnListener = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                String nextPlayerSocket = args[0].toString();
+
+                List<Player> pList = MankomaniaGame.getInstance().getBoard().getPlayers();
+
+                for (Player p : pList) {
+                    if (p.getPlayerSocketID().equals(nextPlayerSocket)) {
+                        MankomaniaGame.getInstance().getBoard().setCurrentPlayerIndex(p.getPlayerIndex());
+                        if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
+                            Connection.setYourTurn(true);
+                        }
+                    }
+                }
+            }
+        };
+
+        Emitter.Listener updateMyPosition = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                String socketID = args[0].toString();
+                int fieldNumber = Integer.parseInt(args[1].toString());
+
+                Field f = MankomaniaGame.getInstance().getBoard().getFieldByIndex(fieldNumber);
+
+                MankomaniaGame.getInstance().getBoard().getCurrentPlayer().setCurrentFieldPosition(f);
+            }
+        };
+
+
+        Connection.updateMyPlayerPosition(updateMyPosition);
+
+        Connection.updateNextTurn(nextTurnListener);
+
+        Connection.updateDice(updateDice);
 
         Connection.startRound(startRoundListener);
 
@@ -243,12 +309,12 @@ public class GameScreen extends ScreenAdapter {
          * Update all Players
          */
 
-        if(Connection.isUpdate()){
+        if (Connection.isUpdate()) {
 
             ArrayList<Player> players = Connection.convertConPlayersToPlayersUpdate();
             MankomaniaGame.getInstance().getBoard().deleteAllPlayers();
 
-            for(Player p : players){
+            for (Player p : players) {
                 MankomaniaGame.getInstance().getBoard().addPlayer(p);
             }
 
@@ -256,13 +322,10 @@ public class GameScreen extends ScreenAdapter {
 
         }
 
-        if(Connection.getCurrentPlayer() != null && triggerTurnDialog){
+        if (Connection.getCurrentPlayer() != null && triggerTurnDialog) {
             showTurnDialog(Connection.getCurrentPlayer(), Connection.isYourTurn());
             triggerTurnDialog = false;
         }
-
-
-
 
     }
 
@@ -283,13 +346,13 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void renderDices(float delta, Board board) {
-        if (elapsed >= DURATION){
+        if (elapsed >= DURATION) {
             diceAnimation.removeDice();
             diceAnimation.setDiceShown(false);
             movePlayer(diceAnimation.getDiceSum(), board.getCurrentPlayer());
         }
-        if(diceAnimation.getDiceShown()){
-            elapsed+=delta;
+        if (diceAnimation.getDiceShown()) {
+            elapsed += delta;
         }
     }
 
@@ -320,7 +383,9 @@ public class GameScreen extends ScreenAdapter {
                 intersectionDecided = false;
             }
         }
+
         movingPlayerCurrentSteps++;
+
     }
 
     public void showTurnDialog(Player player, boolean isCurrentPlayer) {
@@ -452,7 +517,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
 
-    public ClickListener startTurnListener(){
+    public ClickListener startTurnListener() {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {

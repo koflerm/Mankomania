@@ -140,9 +140,6 @@ public class Connection {
         cs.close();
     }
 
-    /**
-     * new Methods
-     **/
 
     public static void emitStocks(ConStock s) {
 
@@ -183,6 +180,46 @@ public class Connection {
     public static void startRound(Emitter.Listener el) {
         cs.once("START_ROUND", el);
     }
+
+    /**
+     * new Methods
+     **/
+
+    public static void updateDice(Emitter.Listener el) {
+        cs.on("UPDATE_DICE", el);
+    }
+
+    public static void emitDices(int dice1, int dice2) {
+        int[] diceCount = new int[2];
+        diceCount[0] = dice1;
+        diceCount[1] = dice2;
+
+        cs.emit("ROLE_THE_DICE", lobbyID, diceCount);
+
+        System.out.println("Emit dices");
+    }
+
+    //Keine Ahnugn wo zu Implementieren
+    public static void emitPosition(Field f) {
+        int position = f.getFieldIndex();
+        cs.emit("UPDATE_PLAYER_POSITION", lobbyID, position);
+    }
+
+    //Keine Ahnugn wo zu Implementieren
+    public static void emitNextTurn() {
+        cs.emit("NEXT_TURN", lobbyID);
+        Connection.yourTurn = false;
+    }
+
+    public static void updateNextTurn(Emitter.Listener el) {
+        cs.on("NEXT_TURN", el);
+    }
+
+    public static void updateMyPlayerPosition(Emitter.Listener el) {
+        cs.on("UPDATE_PLAYER_POSITION", el);
+    }
+
+
 
     public static void convertJsonToPlayer(String args) {
 

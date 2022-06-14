@@ -21,6 +21,15 @@ public class Player extends Actor {
     private Field currentPosition;
     private HashMap<Share, Integer> shares;
     private Texture playerTexture;
+    private int dices = 0;
+
+    public int getDices() {
+        return dices;
+    }
+
+    public void setDices(int dices) {
+        this.dices = dices;
+    }
 
     public Player() {
         money = 1000000;
