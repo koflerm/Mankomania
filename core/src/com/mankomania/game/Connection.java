@@ -219,7 +219,98 @@ public class Connection {
         cs.on("UPDATE_PLAYER_POSITION", el);
     }
 
+    /**
+     * Field Actions
+     */
 
+    public static void determineFieldAction(Field f) {
+
+        int index = f.getFieldIndex();
+
+        if (index == 8 || index == 30 || index == 34 || index == 56) {
+            raceField();
+
+        } else if (index == 23) {
+            stockField();
+
+        } else if (index == 42) {
+            auctionField();
+
+        } else if (index == 1 || index == 11 || index == 38) {
+            getMoney(5000);
+
+        } else if (index == 2) {
+            loseMoney(170000);
+
+        } else if (index == 3 || index == 7 || index == 13 || index == 14 || index == 15 || index == 18 || index == 21 || index == 25 || index == 27 || index == 29 || index == 39 || index == 40 || index == 54 || index == 59 || index == 64 || index == 65) {
+            loseMoney(50000);
+
+        } else if (index == 4 || index == 6 || index == 12 || index == 17 || index == 24 || (index <= 52 && index >= 46) || index == 61 || index == 62 || index == 68) {
+            loseMoney(100000);
+
+        } else if (index == 5 || index == 9 || index == 22 || index == 36 || index == 55 || index == 57 || index == 67) {
+            getMoney(10000);
+
+        } else if (index == 10 || index == 16 || index == 20 || index == 32 || index == 37 || index == 44 || index == 45 || index == 60) {
+            getMoney(50);
+
+        } else if (index == 19) {
+            getMoney(50000);
+
+        } else if (index == 26) {
+            loseMoney(40000);
+
+        } else if (index == 28) {
+            loseMoney(70000);
+
+        } else if (index == 31) {
+            loseMoney(150000);
+
+        } else if (index == 33 || index == 35) {
+            loseMoney(30000);
+
+        } else if (index == 41 || index == 53 || index == 63) {
+            loseMoney(20000);
+
+        } else if (index == 43) {
+            loseMoney(80000);
+
+        } else if (index == 58) {
+            loseMoney(60000);
+
+        } else if (index == 66) {
+            loseMoney(10000);
+
+        } else {
+            /**
+             * Do nothing
+             */
+        }
+    }
+
+    public static void loseMoney(int amount) {
+        cs.emit("LOSE_MONEY", lobbyID, amount);
+    }
+
+    public static void getMoney(int amount) {
+        cs.emit("GET_MONEY", lobbyID, amount);
+    }
+
+    public static void raceField() {
+        cs.emit("RACE", lobbyID);
+    }
+
+    public static void stockField() {
+        cs.emit("STOCK", lobbyID);
+    }
+
+    public static void auctionField() {
+        cs.emit("AUCTION", lobbyID);
+    }
+
+    /**
+     * Converter methods
+     */
 
     public static void convertJsonToPlayer(String args) {
 
@@ -264,7 +355,6 @@ public class Connection {
          */
 
         ArrayList<String> stockAsString = new ArrayList<>();
-
 
 
         for (int i = 0; i < players.length; i++) {
@@ -373,10 +463,7 @@ public class Connection {
             p.setShares(c.getHardSteelPlc(), c.getShortCircuitPlc(), c.getDryOilPlc());
 
             pList.add(p);
-
         }
-
         return pList;
     }
-
 }
