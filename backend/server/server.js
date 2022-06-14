@@ -16,6 +16,7 @@ const { v4: uuidv4 } = require('uuid');
 const rooms = {};
 const START_MONEY = 1000000
 const MAX_LOBBY_SIZE = 4
+const moneyTransferByPlayerCollision = 10000
 
 
 
@@ -29,7 +30,6 @@ function validateRoom(socket, room){
         let roomID = searchEmptyRooms();
         if (roomID === undefined){
             joinRoom(socket, createRoom());
-
         }else{
             joinRoom(socket,roomID)
         }
@@ -71,7 +71,6 @@ function  createRoom () {
  * @returns {room}
  */
 function searchEmptyRooms(){
-    //console.log("Search")
     for (const id in rooms) {
         const room = rooms[id];
         if(room.sockets.length < MAX_LOBBY_SIZE && room.status === false){
@@ -279,10 +278,21 @@ const updateStock = (room, socket, stock)=>{
  */
 const updateDice = (room, diceCount, socket) =>{
     //check param
-    rooms[room].players[socket.id].dice_1 = diceCount[0]
-    rooms[room].players[socket.id].dice_1 = diceCount[1]
+    if(room === null || diceCount === null){
+        io.to(socket).emit('ERROR', "Error in roleTheDice");
+    }else{
+        rooms[room].players[socket.id].dice_1 = diceCount[0]
+        rooms[room].players[socket.id].dice_1 = diceCount[1]
 
-    socket.to(room).emit('UPDATE_DICE', socket.id, diceCount)
+        if(diceCount[0]  + diceCount[1] === 12){
+            rooms[room].players[socket.id].money -= 100000
+            socket.to(room).emit('UPDATE_DICE', socket.id, diceCount)
+        }else{
+            socket.to(room).emit('UPDATE_DICE', socket.id, diceCount)
+        }
+
+    }
+
 }
 
 /**
@@ -355,14 +365,23 @@ const playerGetMoney = (room, amount, socket) =>{
             socket.to(room).emit('GET_MONEY', socket.id, amount);
         }
 }
-
-const playerCollision = (room, collision, socket)=>{
-        rooms[room].players[socket.id].money -= 10000 * (collision.length -1);
-        for(let element of collision){
-            if(element !== socket.id)
-                rooms[room].players[element].money += 10000;
+/**
+ *
+ * @param room
+ * @param collision
+ * @param socket
+ */
+ const playerCollision =(room, collision, socket)=> {
+    if (room === null || collision === null) {
+        io.to(socket).emit('ERROR', "Error in playerCollision");
+    } else {
+        rooms[room].players[socket.id].money -= moneyTransferByPlayerCollision * (collision.length - 1);
+        for (let element of collision) {
+            if (element !== socket.id)
+                rooms[room].players[element].money += moneyTransferByPlayerCollision;
         }
         socket.to(room).emit('PLAYER_COLLISION', socket.id, collision);
+    }
 }
 
 
