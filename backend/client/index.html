@@ -130,13 +130,13 @@
     socket.on('GET_MONEY', (socket,amount) =>{
         console.log("GET_MONEY")
         players[socket.id].money += amount
-        displayMessage("Player: " + players[socket.id].playerIndex + " get money "  + amount + " Money: " + players[socket.id].money)
+        displayMessage("Player: " + players[socket].playerIndex + " get money "  + amount + " Money: " + players[socket].money)
     })
 
     socket.on('LOSE_MONEY', (socket,amount) =>{
         console.log("LOSE_MONEY")
-        players[socket.id].money -= amount
-        displayMessage("Player: " + players[socket.id].playerIndex + " lose money "  + amount + " Money: " + players[socket.id].money)
+        players[socket].money -= amount
+        displayMessage("Player: " + players[socket].playerIndex + " lose money "  + amount + " Money: " + players[socket].money)
     })
 
     socket.on('PLAYER_COLLISION', (socket,collision) =>{
@@ -246,7 +246,7 @@
                         displayMessage("Move finished successfully")
                         moveStatus = false
                         finalFieldStatus = true;
-                        //playersOnSameField()
+                        playersOnSameField()
 
 
                     }
@@ -289,7 +289,7 @@
             displayMessage("Next Turn")
             setTimeout(function(){
                 socket.emit('NEXT_TURN', lobby)
-                //players[socket.id].yourTurn = false;
+                players[socket.id].yourTurn = false;
             }, 2000);
         }else{
             alert("finalFieldStatus = false")
@@ -303,16 +303,23 @@
             players[socket.id].money -= amount;
             socket.emit('LOSE_MONEY', lobby, amount)
             finalFieldStatus = false
-            displayMessage("Next Turn")
 
+
+            displayMessage("Next Turn")
             setTimeout(function(){
                 socket.emit('NEXT_TURN', lobby)
-                //players[socket.id].yourTurn = false;
+                players[socket.id].yourTurn = false;
             }, 2000);
+
+
         }else{
             alert("finalFieldStatus = false")
         }
     })
+
+
+
+
 
 
     function displayMessage(message){
