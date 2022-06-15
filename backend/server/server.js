@@ -7,7 +7,7 @@ const io = new Server(server, { cors: { origin: '*'} });
 const PORT = process.env.PORT || 3000;
 const { v4: uuidv4 } = require('uuid');
 //const { instrument } = require("@socket.io/admin-ui");
-
+//sonar-scanner.bat -D"sonar.organization=koflerm" -D"sonar.projectKey=Mankomania_backend" -D"sonar.sources=." -D"sonar.host.url=https://sonarcloud.io"
 
 
 /**
