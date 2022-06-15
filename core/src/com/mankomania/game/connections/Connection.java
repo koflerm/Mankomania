@@ -1,8 +1,9 @@
-package com.mankomania.game;
+package com.mankomania.game.connections;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mankomania.game.MankomaniaGame;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -288,25 +289,46 @@ public class Connection {
         }
     }
 
+    //Aufrufen
     public static void loseMoney(int amount) {
         cs.emit("LOSE_MONEY", lobbyID, amount);
     }
-
     public static void getMoney(int amount) {
         cs.emit("GET_MONEY", lobbyID, amount);
     }
-
     public static void raceField() {
         cs.emit("RACE", lobbyID);
     }
-
     public static void stockField() {
         cs.emit("STOCK", lobbyID);
     }
-
     public static void auctionField() {
         cs.emit("AUCTION", lobbyID);
     }
+
+
+    public static void getMoneyUpdate(Emitter.Listener el){
+        cs.on("GET_MONEY", el);
+    }
+
+    public static void loseMoneyUpdate(Emitter.Listener el){
+        cs.on("LOSE_MONEY", el);
+    }
+
+
+    /**
+     * Player collision
+     */
+
+    public static void collision(Emitter.Listener el){
+        cs.on("PLAYER_COLLISION", el);
+    }
+
+    //Aufrufen
+    public static void collisionEmit(String[] players){
+        cs.emit("PLAYER_COLLISION", lobbyID, players);
+    }
+
 
     /**
      * Converter methods
