@@ -1,4 +1,4 @@
-package com.mankomania.game;
+package com.mankomania.game.connections;
 
 public class ConPlayer {
     private int dice2;

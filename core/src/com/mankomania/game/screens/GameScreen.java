@@ -19,8 +19,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import diceLogic.DiceAnimation;
 
 
-import com.mankomania.game.ConStock;
-import com.mankomania.game.Connection;
+import com.mankomania.game.connections.ConStock;
+import com.mankomania.game.connections.Connection;
 import com.mankomania.game.MankomaniaGame;
 
 import java.security.SecureRandom;
@@ -287,6 +287,89 @@ public class GameScreen extends ScreenAdapter {
             }
         };
 
+        /**
+         * Get money listener
+         */
+
+        Emitter.Listener getMoneyUpdateListener = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                String socketID = args[0].toString();
+
+                int amount = Integer.parseInt(args[1].toString());
+
+                List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
+
+                for(Player p : pl){
+                    if(p.getPlayerSocketID().equals(socketID)){
+                        int temp = p.getMoney();
+                        p.setMoney(temp + amount);
+                    }
+                }
+            }
+        };
+
+
+        /**
+         * Lose money listener
+         */
+
+        Emitter.Listener loseMoneyUpdateListener = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                String socketID = args[0].toString();
+
+                int amount = Integer.parseInt(args[1].toString());
+
+                List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
+
+                for(Player p : pl){
+                    if(p.getPlayerSocketID().equals(socketID)){
+                        int temp = p.getMoney();
+                        p.setMoney(temp - amount);
+                    }
+                }
+            }
+        };
+
+        /**
+         * Listener for players on the same filed (collision)
+         * Notwendig?
+         */
+
+        Emitter.Listener collisionListener = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                System.out.println(args[1].toString());
+
+                String[] players = args[1].toString().split(",");
+
+                players[0] = players[0].substring(1);
+
+                players[players.length-1] = players[players.length-1].substring(0, players[players.length-1].length()-1);
+
+                int decrease = players.length * 10000;
+
+                int temp = MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getMoney();
+
+                MankomaniaGame.getInstance().getBoard().getCurrentPlayer().setMoney(temp - decrease);
+
+                List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
+
+                for(Player p : pl){
+                    for(String id : players){
+                        if(p.getPlayerSocketID().equals(id)){
+                            int temp2 = p.getMoney();
+                            p.setMoney(temp2 + 10000);
+                        }
+                    }
+                }
+            }
+        };
+
 
         Connection.updateMyPlayerPosition(updateMyPosition);
 
@@ -299,6 +382,12 @@ public class GameScreen extends ScreenAdapter {
         Connection.roleHighestDice(highestDiceListener);
 
         Connection.roleHighestDiceAgain(roleAgain);
+
+        Connection.getMoneyUpdate(getMoneyUpdateListener);
+
+        Connection.loseMoneyUpdate(loseMoneyUpdateListener);
+
+        Connection.collision(collisionListener);
     }
 
     @Override
