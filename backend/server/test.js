@@ -63,27 +63,14 @@ let players = {
 }
 }
 
-let sockets = [];
-for (const key in players) {
-    sockets.push(key)
-}
-
-let player1 = players[sockets[0]];
-let player2 = players[sockets[1]];
-let player3 = players[sockets[2]];
-let player4 = players[sockets[3]];
+Object.keys(players).forEach((key =>{
+    players[key].dice_1 = 0
+    players[key].dice_2 = 0
+    players[key].dice_Count = 0
+}))
 
 
-
-
-let temp = [6,6]
-
-if(temp[0] + temp[1] === 12){
-    console.log("Pasch")
-
-}
-
-
+console.log(players)
 
 
 

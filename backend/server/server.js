@@ -246,11 +246,13 @@ const validateHighestDice = (room) =>{
  * @param room An object that represents a room from the `rooms` instance variable object
  */
 const resetPlayersDice = (room) =>{
-    Object.values(rooms[room].players).map(a=>a.dice_1= 0);
-    Object.values(rooms[room].players).map(a=>a.dice_2 = 0);
-    Object.values(rooms[room].players).map(a=>a. dice_Count = 0);
+    let players = rooms[room].players;
+    Object.keys(players).forEach((key =>{
+        players[key].dice_1 = 0
+        players[key].dice_2 = 0
+        players[key].dice_Count = 0
+    }))
     rooms[room].counterForDice = 0
-    console.log(rooms[room])
 }
 
 /**
@@ -408,7 +410,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('JOIN_ROOM', (room) => {
-        validateRoom(socket, room, io);
+        validateRoom(socket, room);
     });
 
     socket.on('READY_FOR_GAME', (room) =>{
