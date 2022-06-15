@@ -35,7 +35,6 @@ function validateRoom(socket, room){
         }
 
     }else{
-        //ToDo private Game
     }
 }
 
@@ -147,7 +146,7 @@ const stocks = ()=> {
  * @param socket A connected socket.io socket
  * @param io io server instance
  */
-function leaveRooms(socket, io){
+function leaveRooms(socket){
     const roomsToDelete = [];
     // check to see if the socket is in the current room
     for(const id in rooms){
@@ -178,7 +177,7 @@ function leaveRooms(socket, io){
  * @param room room An object that represents a room from the `rooms` instance variable object
  * @param io io server instance
  */
-function increaseReadyCounterForRoom(socket, room, io){
+function increaseReadyCounterForRoom(socket, room){
     if(rooms[room] !== undefined){
         rooms[room].ready++;
         if(rooms[room].ready === rooms[room].sockets.length && rooms[room].sockets.length >= 2){
@@ -387,7 +386,7 @@ const playerGetMoney = (room, amount, socket) =>{
 
 
 
-app.get('/', (req, res) =>{
+app.get('/', (_req, res) =>{
     res.write(`<h1>Socket IO Start on Port : ${PORT}</h1>`)
     res.end();
 })
@@ -413,20 +412,20 @@ io.on('connection', (socket) => {
     });
 
     socket.on('READY_FOR_GAME', (room) =>{
-        increaseReadyCounterForRoom(socket, room, io);
+        increaseReadyCounterForRoom(socket, room);
     });
 
     socket.on('LEAVE_ROOM', () => {
-        leaveRooms(socket,io);
+        leaveRooms(socket);
     });
 
     socket.on('disconnect', () => {
         console.log('user disconnected');
-        leaveRooms(socket,io);
+        leaveRooms(socket);
     });
     socket.on('disconnecting', () => {
         console.log('user disconnected');
-        leaveRooms(socket,io);
+        leaveRooms(socket);
     });
 
     socket.on('ROLE_THE_HIGHEST_DICE_AGAIN', (room, diceCount, length) =>{
@@ -461,13 +460,6 @@ io.on('connection', (socket) => {
 
 
 });
-
-
-/*
-instrument(io, {
-    auth: false
-});
-*/
 
 
 
