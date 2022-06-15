@@ -61,6 +61,5 @@ public class MankomaniaGame extends Game {
 
     @Override
     public void dispose() {
-        this.dispose();
     }
 }
