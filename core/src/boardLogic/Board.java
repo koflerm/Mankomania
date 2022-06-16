@@ -14,7 +14,7 @@ public class Board {
     private int[] startingFieldIndexes;
     //private Lottery lottery;                      //To comment out when merged
     private List<Player> players;
-    private int currentPlayerIndex;
+    private Player currentPlayer;
     //private StockExchange stockExchangeData;      //To comment out when merged
     private float x;
     private float y;
@@ -34,27 +34,21 @@ public class Board {
        // stockExchangeData = new StockExchange();  //To comment out when merged
       // lottery = new Lottery();                   //To comment out when merged
       // lottery.setLotteryAmount(0);               //To comment out when merged
-        currentPlayerIndex = 0;
     }
 
     //-------GETTERS---------
-    public int getCurrentPlayerIndex(){return currentPlayerIndex;}
+
     //public StockExchange getStockExchangeData(){return stockExchangeData;}     //To comment out when merged
-    public Field getCurrentPlayerField(){return players.get(currentPlayerIndex).getCurrentPosition();}
     public int[] getStartingFieldIndexes(){return startingFieldIndexes;}
-    public Player getCurrentPlayer(){return players.get(currentPlayerIndex);}
+    public Player getCurrentPlayer(){return currentPlayer;}
     public List<Player> getPlayers(){return players;}
     public Field getFieldByIndex(int fieldIndex){return fields[fieldIndex];}
     public Field[] getFields(){return fields;}
     //-----------------------
 
     //------SETTERS----------
-    public void setNextPlayerIndex(){
-        setCurrentPlayerIndex((getCurrentPlayerIndex() + 1) % players.size());
-    }
-
-    public void setCurrentPlayerIndex(int index) {
-        this.currentPlayerIndex = index;
+    public void setCurrentPlayer(Player player) {
+        this.currentPlayer = player;
     }
 
     public void addPlayer(Player p){
@@ -62,6 +56,9 @@ public class Board {
     }
 
     public void deleteAllPlayers(){
+        for (Player p: players)
+            p.dispose();
+
         players.clear();
     }
 

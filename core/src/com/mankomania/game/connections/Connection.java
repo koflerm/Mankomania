@@ -57,6 +57,7 @@ public class Connection {
 
     public static void setCurrentPlayer(Player currentPlayer) {
         Connection.currentPlayer = currentPlayer;
+        MankomaniaGame.getInstance().getBoard().setCurrentPlayer(currentPlayer);
     }
 
     public static String[] getWinners() {
