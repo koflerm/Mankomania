@@ -162,12 +162,12 @@ public class GameScreen extends ScreenAdapter {
 
                 int dice2 = rand.nextInt((7 - 0 + 1) + 0);
 
-                //Connection.emitHighestDice(dice1, dice2);
+                Connection.emitHighestDice(dice1, dice2);
 
                 /**
                  * DEBUG MODE ON
                  */
-                Connection.emitHighestDice(6, 6);
+                //Connection.emitHighestDice(6, 6);
 
 
             }
@@ -282,13 +282,18 @@ public class GameScreen extends ScreenAdapter {
             public void call(Object... args) {
 
                 System.out.println("Update my own position (received from server)");
+                GameScreen gs = (GameScreen) MankomaniaGame.getInstance().getScreen();
+                gs.hideTurnDialog();
 
                 int fieldNumber = Integer.parseInt(args[1].toString());
 
                 Field nextField = MankomaniaGame.getInstance().getBoard().getFieldByIndex(fieldNumber);
 
                 Player currentPlayer = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
-                currentPlayer.moveForward(nextField.getFieldIndex() == currentPlayer.getCurrentPosition().getOptionalNextField().getFieldIndex());
+                if (currentPlayer.getCurrentPosition().getOptionalNextField() != null)
+                    currentPlayer.moveForward(nextField.getFieldIndex() == currentPlayer.getCurrentPosition().getOptionalNextField().getFieldIndex());
+                else
+                    currentPlayer.moveForward(false);
             }
         };
 
@@ -523,6 +528,7 @@ public class GameScreen extends ScreenAdapter {
                 if (movingPlayerCurrentSteps < movingPlayerTargetSteps) {
                     movePlayerForward();
                 } else {
+                    System.out.println("MOVING FINISHED IN UI");
                     movingPlayer = null;
                     movingPlayerTargetSteps = 0;
                     Connection.emitNextTurn();
@@ -535,13 +541,13 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void renderDices(float delta, Board board) {
-        if (elapsed >= DURATION) {
+        if (diceAnimation.getDiceShown() && elapsed < DURATION)
+            elapsed += delta;
+        else if (diceAnimation.getDiceShown() && elapsed >= DURATION) {
             diceAnimation.removeDice();
             diceAnimation.setDiceShown(false);
+            System.out.println("[RENDERDICE] CALLING MOVE PLAYER");
             movePlayer(diceAnimation.getDiceSum(), MankomaniaGame.getInstance().getBoard().getCurrentPlayer());
-        }
-        if (diceAnimation.getDiceShown()) {
-            elapsed += delta;
         }
     }
 
@@ -557,6 +563,7 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void movePlayer(int steps, Player player) {
+        System.out.println("CALLED MOVE PLAYER");
         movingPlayer = player;
         movingPlayerTargetSteps = steps;
     }
