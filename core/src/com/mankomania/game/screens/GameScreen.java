@@ -243,9 +243,6 @@ public class GameScreen extends ScreenAdapter {
                 int totalDice = dice1 + dice2;
 
                 MankomaniaGame.getInstance().getBoard().getCurrentPlayer().setDices(totalDice);
-
-                System.out.println(MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getPlayerSocketID());
-
             }
         };
 
@@ -256,11 +253,7 @@ public class GameScreen extends ScreenAdapter {
         Emitter.Listener nextTurnListener = new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-
-                System.out.println("Receive NEXT_TURN");
-
                 String nextPlayerSocket = args[0].toString();
-
                 List<Player> pList = MankomaniaGame.getInstance().getBoard().getPlayers();
 
                 for (Player p : pList) {
@@ -517,8 +510,6 @@ public class GameScreen extends ScreenAdapter {
         }
 
         if (Connection.getCurrentPlayer() != null && triggerTurnDialog) {
-            System.out.println("Current Player: P" + Connection.getCurrentPlayer().getPlayerIndex());
-            System.out.println(Connection.isYourTurn());
             showTurnDialog(Connection.getCurrentPlayer(), Connection.isYourTurn());
             triggerTurnDialog = false;
         }
@@ -531,7 +522,6 @@ public class GameScreen extends ScreenAdapter {
                 if (movingPlayerCurrentSteps < movingPlayerTargetSteps) {
                     movePlayerForward();
                 } else {
-                    System.out.println("MOVING FINISHED IN UI");
                     movingPlayer = null;
                     movingPlayerCurrentSteps = 0;
                     movingPlayerTargetSteps = 0;
@@ -564,7 +554,6 @@ public class GameScreen extends ScreenAdapter {
             diceAnimation.removeDice();
             diceAnimation.setDiceShown(false);
             elapsed = 0;
-            System.out.println("[RENDERDICE] CALLING MOVE PLAYER");
             movePlayer(diceAnimation.getDiceSum(), MankomaniaGame.getInstance().getBoard().getCurrentPlayer());
         }
     }
@@ -581,7 +570,6 @@ public class GameScreen extends ScreenAdapter {
     }
 
     public void movePlayer(int steps, Player player) {
-        System.out.println("CALLED MOVE PLAYER");
         movingPlayer = player;
         movingPlayerTargetSteps = steps;
     }
@@ -591,17 +579,15 @@ public class GameScreen extends ScreenAdapter {
             intersectionDialogNeeded = true;
         } else if (movingPlayer.getCurrentPosition().isIntersection() && intersectionDecided) {
             movingPlayer.moveForward(moveToIntersection);
+            movingPlayerCurrentSteps++;
             Connection.emitPosition(movingPlayer.getCurrentPosition());
         } else {
             movingPlayer.moveForward(false);
+            movingPlayerCurrentSteps++;
             Connection.emitPosition(movingPlayer.getCurrentPosition());
-            if (intersectionDecided) {
+            if (intersectionDecided)
                 intersectionDecided = false;
-            }
         }
-
-        movingPlayerCurrentSteps++;
-
     }
 
     public void showTurnDialog(Player player, boolean isCurrentPlayer) {
