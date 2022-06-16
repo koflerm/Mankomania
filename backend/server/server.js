@@ -17,6 +17,7 @@ const rooms = {};
 const START_MONEY = 1000000
 const MAX_LOBBY_SIZE = 4
 const moneyTransferByPlayerCollision = 10000
+const moneyMinigameStock = 20000
 
 
 
@@ -385,6 +386,26 @@ const playerGetMoney = (room, amount, socket) =>{
     }
 }
 
+const stockMiniGame = (room, stock, socket)=>{
+     if(room === null || stock === null){
+         io.to(socket).emit('ERROR', "Error in stockMiniGame");
+     }else{
+         let players = rooms[room].players
+         Object.keys(players).forEach((key =>{
+             if(players[key].stocks[stock.stockName] > 0){
+                if (stock.status === true){
+                    rooms[room].players[key].money +=  players[key].stocks[stock.stockName] * moneyMinigameStock
+                }else{
+                    rooms[room].players[key].money -=  players[key].stocks[stock.stockName] * moneyMinigameStock
+                }
+             }
+
+         }))
+         socket.to(room).emit('STOCK', socket.id, stock)
+
+     }
+}
+
 
 
 
@@ -456,6 +477,10 @@ io.on('connection', (socket) => {
 
     socket.on('PLAYER_COLLISION', (room, collision) =>{
         playerCollision(room, collision, socket)
+    })
+
+    socket.on('STOCK', (room, stock) =>{
+        stockMiniGame(room, stock, socket)
     })
 
 
