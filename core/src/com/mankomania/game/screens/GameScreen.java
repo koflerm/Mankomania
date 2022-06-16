@@ -199,7 +199,6 @@ public class GameScreen extends ScreenAdapter {
                     }
                 }
 
-
                 Connection.setUpdate(true);
 
             }
@@ -284,12 +283,12 @@ public class GameScreen extends ScreenAdapter {
 
                 System.out.println("Update my own position (received from server)");
 
-                String socketID = args[0].toString();
                 int fieldNumber = Integer.parseInt(args[1].toString());
 
-                Field f = MankomaniaGame.getInstance().getBoard().getFieldByIndex(fieldNumber);
+                Field nextField = MankomaniaGame.getInstance().getBoard().getFieldByIndex(fieldNumber);
 
-                MankomaniaGame.getInstance().getBoard().getCurrentPlayer().setCurrentFieldPosition(f);
+                Player currentPlayer = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
+                currentPlayer.moveForward(nextField.getFieldIndex() == currentPlayer.getCurrentPosition().getOptionalNextField().getFieldIndex());
             }
         };
 
@@ -526,6 +525,7 @@ public class GameScreen extends ScreenAdapter {
                 } else {
                     movingPlayer = null;
                     movingPlayerTargetSteps = 0;
+                    Connection.emitNextTurn();
                 }
                 movingElapsed = 0;
             } else {
@@ -566,8 +566,10 @@ public class GameScreen extends ScreenAdapter {
             intersectionDialogNeeded = true;
         } else if (movingPlayer.getCurrentPosition().isIntersection() && intersectionDecided) {
             movingPlayer.moveForward(moveToIntersection);
+            Connection.emitPosition(movingPlayer.getCurrentPosition());
         } else {
             movingPlayer.moveForward(false);
+            Connection.emitPosition(movingPlayer.getCurrentPosition());
             if (intersectionDecided) {
                 intersectionDecided = false;
             }
