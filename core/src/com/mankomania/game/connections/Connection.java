@@ -150,7 +150,9 @@ public class Connection {
             JSONObject mJSONObject = new JSONObject(jsonInString);
             cs.emit("CHOSE_STOCKS", lobbyID, mJSONObject);
         } catch (JSONException e) {
-            e.printStackTrace();
+            /**
+             * Error
+             */
         }
     }
 
@@ -364,7 +366,9 @@ public class Connection {
             cs.emit("STOCK", lobbyID, mJSONObject);
             System.out.println("Emit stock minigame result");
         } catch (JSONException e) {
-            e.printStackTrace();
+            /**
+             * Error
+             */
         }
     }
 

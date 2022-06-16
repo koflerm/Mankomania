@@ -484,7 +484,7 @@ public class GameScreen extends ScreenAdapter {
 
             for (Player p : players) {
                 for (Player gp: MankomaniaGame.getInstance().getBoard().getPlayers()) {
-                    if (p.getPlayerSocketID() == gp.getPlayerSocketID()) {
+                    if (p.getPlayerSocketID().equals(gp.getPlayerSocketID())) {
                         int hardSteel = 0;
                         int shortCircuit = 0;
                         int dryOil = 0;
