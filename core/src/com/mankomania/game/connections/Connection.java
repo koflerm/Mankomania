@@ -203,6 +203,7 @@ public class Connection {
     //Keine Ahnugn wo zu Implementieren
     public static void emitPosition(Field f) {
         int position = f.getFieldIndex();
+        System.out.println("Emit position: " + position);
         cs.emit("UPDATE_PLAYER_POSITION", lobbyID, position);
     }
 
@@ -210,6 +211,7 @@ public class Connection {
     public static void emitNextTurn() {
         cs.emit("NEXT_TURN", lobbyID);
         Connection.yourTurn = false;
+        System.out.println("Emit NEXT_TURN");
     }
 
     public static void updateNextTurn(Emitter.Listener el) {
@@ -292,18 +294,23 @@ public class Connection {
     //Aufrufen
     public static void loseMoney(int amount) {
         cs.emit("LOSE_MONEY", lobbyID, amount);
+        System.out.println("Emit loseMoney");
     }
     public static void getMoney(int amount) {
         cs.emit("GET_MONEY", lobbyID, amount);
+        System.out.println("Emit getMoney");
     }
     public static void raceField() {
         cs.emit("RACE", lobbyID);
+        System.out.println("Emit RACE");
     }
     public static void stockField() {
         cs.emit("STOCK", lobbyID);
+        System.out.println("Emit STOCK");
     }
     public static void auctionField() {
         cs.emit("AUCTION", lobbyID);
+        System.out.println("Emit AUCTION");
     }
 
 
@@ -327,6 +334,7 @@ public class Connection {
     //Aufrufen
     public static void collisionEmit(String[] players){
         cs.emit("PLAYER_COLLISION", lobbyID, players);
+        System.out.println("Emit collision");
     }
 
 
