@@ -296,29 +296,33 @@ public class Connection {
         cs.emit("LOSE_MONEY", lobbyID, amount);
         System.out.println("Emit loseMoney");
     }
+
     public static void getMoney(int amount) {
         cs.emit("GET_MONEY", lobbyID, amount);
         System.out.println("Emit getMoney");
     }
+
     public static void raceField() {
         cs.emit("RACE", lobbyID);
         System.out.println("Emit RACE");
     }
+
     public static void stockField() {
         cs.emit("STOCK", lobbyID);
         System.out.println("Emit STOCK");
     }
+
     public static void auctionField() {
         cs.emit("AUCTION", lobbyID);
         System.out.println("Emit AUCTION");
     }
 
 
-    public static void getMoneyUpdate(Emitter.Listener el){
+    public static void getMoneyUpdate(Emitter.Listener el) {
         cs.on("GET_MONEY", el);
     }
 
-    public static void loseMoneyUpdate(Emitter.Listener el){
+    public static void loseMoneyUpdate(Emitter.Listener el) {
         cs.on("LOSE_MONEY", el);
     }
 
@@ -327,15 +331,47 @@ public class Connection {
      * Player collision
      */
 
-    public static void collision(Emitter.Listener el){
+    public static void collision(Emitter.Listener el) {
         cs.on("PLAYER_COLLISION", el);
     }
 
     //Aufrufen
-    public static void collisionEmit(String[] players){
+    public static void collisionEmit(String[] players) {
         cs.emit("PLAYER_COLLISION", lobbyID, players);
         System.out.println("Emit collision");
     }
+
+
+    /**
+     * Minigames
+     */
+
+    //Aufrufen
+    public static void auction(int difference) {
+        cs.emit("PLAYER_COLLISION", lobbyID, difference);
+        System.out.println("Emit auction money difference");
+    }
+
+    //Aufrufen
+    public static void stockMiniagmeEmit(String stock, boolean black) {
+
+        StockMinigame sm = new StockMinigame(stock, black);
+
+        String jsonInString = new Gson().toJson(sm);
+        try {
+            JSONObject mJSONObject = new JSONObject(jsonInString);
+            cs.emit("STOCK", lobbyID, mJSONObject);
+            System.out.println("Emit stock minigame result");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void stockMinigameUpdate(Emitter.Listener el) {
+        cs.on("STOCK", el);
+    }
+
+
 
 
     /**

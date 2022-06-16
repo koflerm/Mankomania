@@ -31,6 +31,7 @@ import boardLogic.Board;
 import fieldLogic.Field;
 import io.socket.emitter.Emitter;
 import playerLogic.Player;
+import shareLogic.Share;
 
 public class GameScreen extends ScreenAdapter {
     private final Texture gameBoard;
@@ -307,8 +308,8 @@ public class GameScreen extends ScreenAdapter {
 
                 List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
 
-                for(Player p : pl){
-                    if(p.getPlayerSocketID().equals(socketID)){
+                for (Player p : pl) {
+                    if (p.getPlayerSocketID().equals(socketID)) {
                         int temp = p.getMoney();
                         p.setMoney(temp + amount);
                     }
@@ -333,8 +334,8 @@ public class GameScreen extends ScreenAdapter {
 
                 List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
 
-                for(Player p : pl){
-                    if(p.getPlayerSocketID().equals(socketID)){
+                for (Player p : pl) {
+                    if (p.getPlayerSocketID().equals(socketID)) {
                         int temp = p.getMoney();
                         p.setMoney(temp - amount);
                     }
@@ -359,7 +360,7 @@ public class GameScreen extends ScreenAdapter {
 
                 players[0] = players[0].substring(1);
 
-                players[players.length-1] = players[players.length-1].substring(0, players[players.length-1].length()-1);
+                players[players.length - 1] = players[players.length - 1].substring(0, players[players.length - 1].length() - 1);
 
                 int decrease = players.length * 10000;
 
@@ -369,14 +370,69 @@ public class GameScreen extends ScreenAdapter {
 
                 List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
 
-                for(Player p : pl){
-                    for(String id : players){
-                        if(p.getPlayerSocketID().equals(id)){
+                for (Player p : pl) {
+                    for (String id : players) {
+                        if (p.getPlayerSocketID().equals(id)) {
                             int temp2 = p.getMoney();
                             p.setMoney(temp2 + 10000);
                         }
                     }
                 }
+            }
+        };
+
+        /**
+         * StockMinigame Update Listener
+         */
+
+        Emitter.Listener stockUpdateListener = new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+
+                System.out.println("Receive Stock Minigame Update");
+
+                String minigameActPlayer = args[0].toString();
+
+                System.out.println(args[1]);
+
+                /**
+                 * weitere bearbeitung
+                 */
+
+                String stock = "";
+                boolean black = false;
+
+                List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
+
+                Share s;
+
+
+                if (stock.equals("HARD_STEEL_PLC")) {
+                    s = Share.HARD_STEEL_PLC;
+                } else if (stock.equals("SHORT_CIRCUIT_PLC")) {
+                    s = Share.SHORT_CIRCUIT_PLC;
+                } else {
+                    s = Share.DRY_OIL_PLC;
+                }
+
+                /**
+                 * Money Update --> Ewi oder Client?
+                 */
+                for (Player p : pl) {
+                    int amountOfStock = p.getAmountOfShare(s);
+                    if (amountOfStock > 0) {
+                        int temp = p.getMoney();
+                        if (black) {
+                            p.setMoney(temp - (20000 * amountOfStock));
+
+                        } else {
+                            p.setMoney(temp + (20000 * amountOfStock));
+
+                        }
+                    }
+                }
+
+
             }
         };
 
@@ -398,6 +454,8 @@ public class GameScreen extends ScreenAdapter {
         Connection.loseMoneyUpdate(loseMoneyUpdateListener);
 
         Connection.collision(collisionListener);
+
+        Connection.stockMinigameUpdate(stockUpdateListener);
     }
 
     @Override
