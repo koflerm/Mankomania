@@ -223,6 +223,7 @@ public class LobbyScreen extends ScreenAdapter{
     }
 
     public void doDispose(){
+        this.dispose();
     }
 
     @Override
