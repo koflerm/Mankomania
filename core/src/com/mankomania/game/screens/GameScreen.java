@@ -160,12 +160,12 @@ public class GameScreen extends ScreenAdapter {
 
                 int dice2 = rand.nextInt((7 - 0 + 1) + 0);
 
-                //Connection.emitHighestDice(dice1, dice2);
+                Connection.emitHighestDice(dice1, dice2);
 
                 /**
                  * DEBUG MODE ON
                  */
-                Connection.emitHighestDice(6, 6);
+                //Connection.emitHighestDice(6, 6);
 
 
             }
@@ -255,6 +255,8 @@ public class GameScreen extends ScreenAdapter {
             @Override
             public void call(Object... args) {
 
+                System.out.println("Receive NEXT_TURN");
+
                 String nextPlayerSocket = args[0].toString();
 
                 List<Player> pList = MankomaniaGame.getInstance().getBoard().getPlayers();
@@ -278,6 +280,8 @@ public class GameScreen extends ScreenAdapter {
             @Override
             public void call(Object... args) {
 
+                System.out.println("Update my own position (received from server)");
+
                 String socketID = args[0].toString();
                 int fieldNumber = Integer.parseInt(args[1].toString());
 
@@ -294,6 +298,8 @@ public class GameScreen extends ScreenAdapter {
         Emitter.Listener getMoneyUpdateListener = new Emitter.Listener() {
             @Override
             public void call(Object... args) {
+
+                System.out.println("Receive getMoney");
 
                 String socketID = args[0].toString();
 
@@ -319,6 +325,8 @@ public class GameScreen extends ScreenAdapter {
             @Override
             public void call(Object... args) {
 
+                System.out.println("Receive loseMoney");
+
                 String socketID = args[0].toString();
 
                 int amount = Integer.parseInt(args[1].toString());
@@ -335,13 +343,15 @@ public class GameScreen extends ScreenAdapter {
         };
 
         /**
-         * Listener for players on the same filed (collision)
+         * Listener for players on the same field (collision)
          * Notwendig?
          */
 
         Emitter.Listener collisionListener = new Emitter.Listener() {
             @Override
             public void call(Object... args) {
+
+                System.out.println("Received a collision");
 
                 System.out.println(args[1].toString());
 
