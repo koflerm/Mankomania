@@ -533,9 +533,20 @@ public class GameScreen extends ScreenAdapter {
                 } else {
                     System.out.println("MOVING FINISHED IN UI");
                     movingPlayer = null;
+                    movingPlayerCurrentSteps = 0;
                     movingPlayerTargetSteps = 0;
-                    Connection.setCurrentPlayer(null);
-                    MankomaniaGame.getInstance().getBoard().setCurrentPlayer(null);
+
+                    Player currentPlayer = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
+                    int nextPlayerID = 1;
+
+                    if (currentPlayer.getPlayerIndex() != 4)
+                        nextPlayerID = currentPlayer.getPlayerIndex()+1;
+
+                    Player nextPlayer = MankomaniaGame.getInstance().getBoard().getPlayerByIndex(nextPlayerID);
+                    Connection.setCurrentPlayer(nextPlayer);
+                    MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
+                    triggerTurnDialog = true;
+
                     Connection.setYourTurn(false);
                     Connection.emitNextTurn();
                 }
@@ -552,6 +563,7 @@ public class GameScreen extends ScreenAdapter {
         else if (diceAnimation.getDiceShown() && elapsed >= DURATION) {
             diceAnimation.removeDice();
             diceAnimation.setDiceShown(false);
+            elapsed = 0;
             System.out.println("[RENDERDICE] CALLING MOVE PLAYER");
             movePlayer(diceAnimation.getDiceSum(), MankomaniaGame.getInstance().getBoard().getCurrentPlayer());
         }
@@ -603,6 +615,7 @@ public class GameScreen extends ScreenAdapter {
         this.turnDialogNeeded = false;
         this.turnDialogIsShown = false;
         this.turnDialog.getContentTable().clear();
+        this.turnDialog.getButtonTable().clear();
         this.turnDialog.remove();
     }
 

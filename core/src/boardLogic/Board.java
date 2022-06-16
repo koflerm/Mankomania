@@ -42,6 +42,13 @@ public class Board {
     public int[] getStartingFieldIndexes(){return startingFieldIndexes;}
     public Player getCurrentPlayer(){return currentPlayer;}
     public List<Player> getPlayers(){return players;}
+    public Player getPlayerByIndex(int playerIndex){
+        for (Player p: players) {
+            if (p.getPlayerIndex() == playerIndex)
+                return p;
+        }
+        return null;
+    }
     public Field getFieldByIndex(int fieldIndex){return fields[fieldIndex];}
     public Field[] getFields(){return fields;}
     //-----------------------
