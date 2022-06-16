@@ -194,6 +194,7 @@ public class GameScreen extends ScreenAdapter {
 
                 for (Player p : players) {
                     if (p.getPlayerSocketID().equals(args[1].toString())) {
+                        MankomaniaGame.getInstance().getBoard().setCurrentPlayer(p);
                         Connection.setCurrentPlayer(p);
                         triggerTurnDialog = true;
                     }
@@ -265,6 +266,8 @@ public class GameScreen extends ScreenAdapter {
                 for (Player p : pList) {
                     if (p.getPlayerSocketID().equals(nextPlayerSocket)) {
                         MankomaniaGame.getInstance().getBoard().setCurrentPlayer(p);
+                        Connection.setCurrentPlayer(p);
+                        triggerTurnDialog = true;
                         if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
                             Connection.setYourTurn(true);
                         }
@@ -531,6 +534,9 @@ public class GameScreen extends ScreenAdapter {
                     System.out.println("MOVING FINISHED IN UI");
                     movingPlayer = null;
                     movingPlayerTargetSteps = 0;
+                    Connection.setCurrentPlayer(null);
+                    MankomaniaGame.getInstance().getBoard().setCurrentPlayer(null);
+                    Connection.setYourTurn(false);
                     Connection.emitNextTurn();
                 }
                 movingElapsed = 0;
@@ -596,6 +602,7 @@ public class GameScreen extends ScreenAdapter {
     public void hideTurnDialog() {
         this.turnDialogNeeded = false;
         this.turnDialogIsShown = false;
+        this.turnDialog.getContentTable().clear();
         this.turnDialog.remove();
     }
 
