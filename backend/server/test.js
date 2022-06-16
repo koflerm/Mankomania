@@ -63,14 +63,24 @@ let players = {
 }
 }
 
+let stock = {
+    stockName: "HardSteel_PLC",
+    status: true
+}
+
+console.log(players["y94JPlkimCvbTaE1AAAP"].stocks[stock.stockName])
+
 Object.keys(players).forEach((key =>{
-    players[key].dice_1 = 0
-    players[key].dice_2 = 0
-    players[key].dice_Count = 0
+    if(players[key].stocks[stock.stockName] > 0){
+        console.log(true)
+    }else{
+        console.log(false)
+    }
+
 }))
 
 
-console.log(players)
+//console.log(players["y94JPlkimCvbTaE1AAAP"].stocks.DryOil_PLC)
 
 
 
