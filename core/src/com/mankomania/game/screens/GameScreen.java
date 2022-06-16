@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -161,12 +162,12 @@ public class GameScreen extends ScreenAdapter {
 
                 int dice2 = rand.nextInt((7 - 0 + 1) + 0);
 
-                Connection.emitHighestDice(dice1, dice2);
+                //Connection.emitHighestDice(dice1, dice2);
 
                 /**
                  * DEBUG MODE ON
                  */
-                //Connection.emitHighestDice(6, 6);
+                Connection.emitHighestDice(6, 6);
 
 
             }
@@ -264,7 +265,7 @@ public class GameScreen extends ScreenAdapter {
 
                 for (Player p : pList) {
                     if (p.getPlayerSocketID().equals(nextPlayerSocket)) {
-                        MankomaniaGame.getInstance().getBoard().setCurrentPlayerIndex(p.getPlayerIndex());
+                        MankomaniaGame.getInstance().getBoard().setCurrentPlayer(p);
                         if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
                             Connection.setYourTurn(true);
                         }
@@ -478,12 +479,30 @@ public class GameScreen extends ScreenAdapter {
          */
 
         if (Connection.isUpdate()) {
-
             ArrayList<Player> players = Connection.convertConPlayersToPlayersUpdate();
-            MankomaniaGame.getInstance().getBoard().deleteAllPlayers();
+            //MankomaniaGame.getInstance().getBoard().deleteAllPlayers();
 
             for (Player p : players) {
-                MankomaniaGame.getInstance().getBoard().addPlayer(p);
+                for (Player gp: MankomaniaGame.getInstance().getBoard().getPlayers()) {
+                    if (p.getPlayerSocketID() == gp.getPlayerSocketID()) {
+                        int hardSteel = 0;
+                        int shortCircuit = 0;
+                        int dryOil = 0;
+
+                        for (Share s: Share.values()) {
+                            if (s.getName().equals(Share.HARD_STEEL_PLC.getName()))
+                                hardSteel = p.getAmountOfShare(s);
+                            else if (s.getName().equals(Share.SHORT_CIRCUIT_PLC.getName()))
+                                shortCircuit = p.getAmountOfShare(s);
+                            else if (s.getName().equals(Share.DRY_OIL_PLC.getName()))
+                                dryOil = p.getAmountOfShare(s);
+                        }
+
+                        gp.setShares(hardSteel, shortCircuit, dryOil);
+                    }
+                }
+                //MankomaniaGame.getInstance().getBoard().addPlayer(p);
+                //stage.addActor(p);
             }
 
             Connection.setUpdate(false);
@@ -491,6 +510,8 @@ public class GameScreen extends ScreenAdapter {
         }
 
         if (Connection.getCurrentPlayer() != null && triggerTurnDialog) {
+            System.out.println("Current Player: P" + Connection.getCurrentPlayer().getPlayerIndex());
+            System.out.println(Connection.isYourTurn());
             showTurnDialog(Connection.getCurrentPlayer(), Connection.isYourTurn());
             triggerTurnDialog = false;
         }
@@ -517,7 +538,7 @@ public class GameScreen extends ScreenAdapter {
         if (elapsed >= DURATION) {
             diceAnimation.removeDice();
             diceAnimation.setDiceShown(false);
-            movePlayer(diceAnimation.getDiceSum(), board.getCurrentPlayer());
+            movePlayer(diceAnimation.getDiceSum(), MankomaniaGame.getInstance().getBoard().getCurrentPlayer());
         }
         if (diceAnimation.getDiceShown()) {
             elapsed += delta;
