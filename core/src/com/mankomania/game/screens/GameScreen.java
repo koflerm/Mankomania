@@ -30,6 +30,7 @@ import java.util.List;
 
 import boardLogic.Board;
 import fieldLogic.Field;
+import fieldLogic.FieldAction;
 import io.socket.emitter.Emitter;
 import playerLogic.Player;
 import shareLogic.Share;
@@ -63,9 +64,11 @@ public class GameScreen extends ScreenAdapter {
     private static final String BOARD_TEXT_STYLE = "title";
     private static final String BOARD_MODAL_BUTTON_STYLE = "default";
     private static final float DURATION = 3;
+    private static final float FIELD_ACTION_DURATION = 6;
 
     private DiceAnimation diceAnimation;
     private float elapsed;
+    private float elapsedFieldAction;
 
     private boolean intersectionDialogNeeded;
     private boolean intersectionDialogIsShown;
@@ -77,6 +80,8 @@ public class GameScreen extends ScreenAdapter {
     private int movingPlayerCurrentSteps;
     private float movingElapsed;
     private List<Player> players;
+
+    private FieldAction fieldAction;
 
     public GameScreen() {
         stage = new Stage();
@@ -94,7 +99,9 @@ public class GameScreen extends ScreenAdapter {
         };
         turnDialogNeeded = false;
         diceAnimation = new DiceAnimation();
+        fieldAction = new FieldAction();
         elapsed = 0;
+        elapsedFieldAction = 0;
         intersectionDialog = new Dialog("", skin, "alt") {
             @Override
             protected void result(Object object) {
@@ -464,13 +471,14 @@ public class GameScreen extends ScreenAdapter {
         stage.getBatch().begin();
         ScreenUtils.clear(0.9f, 0.9f, 0.9f, 1);
         Board board = MankomaniaGame.getInstance().getBoard();
-        renderMovement(delta);
+        renderMovement(delta, board);
         renderDices(delta, board);
         drawGameBoard(board);
         drawPlayerInformation();
         stage.getBatch().end();
 
         renderDialogs();
+        renderFieldActionDialog(delta);
         stage.act(delta);
         stage.draw();
 
@@ -516,7 +524,7 @@ public class GameScreen extends ScreenAdapter {
 
     }
 
-    private void renderMovement(float delta) {
+    private void renderMovement(float delta, Board board) {
         if (movingPlayer != null && !intersectionDialogIsShown) {
             if (movingElapsed >= 0.5) {
                 if (movingPlayerCurrentSteps < movingPlayerTargetSteps) {
@@ -526,19 +534,12 @@ public class GameScreen extends ScreenAdapter {
                     movingPlayerCurrentSteps = 0;
                     movingPlayerTargetSteps = 0;
 
-                    Player currentPlayer = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
-                    int nextPlayerID = 1;
+                    int currentField = board.getCurrentPlayer().getCurrentPosition().getFieldIndex();
+                    if(currentField == 8 || currentField == 23 || currentField == 34 || currentField == 42 || currentField == 56){
 
-                    if (currentPlayer.getPlayerIndex() != 4)
-                        nextPlayerID = currentPlayer.getPlayerIndex()+1;
-
-                    Player nextPlayer = MankomaniaGame.getInstance().getBoard().getPlayerByIndex(nextPlayerID);
-                    Connection.setCurrentPlayer(nextPlayer);
-                    MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
-                    triggerTurnDialog = true;
-
-                    Connection.setYourTurn(false);
-                    Connection.emitNextTurn();
+                    }else{
+                        fieldAction.drawFieldActionDialog(stage, board.getCurrentPlayer());
+                    }
                 }
                 movingElapsed = 0;
             } else {
@@ -567,6 +568,30 @@ public class GameScreen extends ScreenAdapter {
             drawIntersectionDialog();
             intersectionDialogIsShown = true;
         }
+    }
+
+    private void renderFieldActionDialog(float delta){
+        if(elapsedFieldAction >= FIELD_ACTION_DURATION && fieldAction.getFieldActionDialogIsShown()){
+            elapsedFieldAction = 0;
+            fieldAction.removeFieldActionDialog();
+            fieldAction.setFieldActionDialogIsShown(false);
+
+            Player currentPlayer = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
+            int nextPlayerID = 1;
+
+            if (currentPlayer.getPlayerIndex() != 4)
+                nextPlayerID = currentPlayer.getPlayerIndex()+1;
+
+            Player nextPlayer = MankomaniaGame.getInstance().getBoard().getPlayerByIndex(nextPlayerID);
+            Connection.setCurrentPlayer(nextPlayer);
+            MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
+            triggerTurnDialog = true;
+
+            Connection.setYourTurn(false);
+            Connection.emitNextTurn();
+        }
+        else if(fieldAction.getFieldActionDialogIsShown())
+            elapsedFieldAction+=delta;
     }
 
     public void movePlayer(int steps, Player player) {
