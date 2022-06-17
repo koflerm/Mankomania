@@ -386,10 +386,15 @@ public class Connection {
         }
     }
 
+    //Machen
     public static void stockMinigameUpdate(Emitter.Listener el) {
         cs.on("STOCK", el);
     }
 
+    //Machen
+    public static void auctionMinigameUpdate(Emitter.Listener el){
+        cs.on("AUCTION", el);
+    }
 
 
 

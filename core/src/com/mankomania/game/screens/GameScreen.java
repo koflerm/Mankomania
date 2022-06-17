@@ -418,9 +418,6 @@ public class GameScreen extends ScreenAdapter {
                     s = Share.DRY_OIL_PLC;
                 }
 
-                /**
-                 * Money Update --> Ewi oder Client?
-                 */
                 for (Player p : pl) {
                     int amountOfStock = p.getAmountOfShare(s);
                     if (amountOfStock > 0) {
@@ -429,12 +426,9 @@ public class GameScreen extends ScreenAdapter {
 
                         } else {
                             p.addMoney(20000 * amountOfStock);
-
                         }
                     }
                 }
-
-
             }
         };
 
