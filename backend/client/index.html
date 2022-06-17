@@ -20,6 +20,7 @@
     let horseRaceStatus = false;
     let horseGameField = [];
     let horseFinish = false
+    let winnerStatus = false
 
     socket.on("connect", () => {
         //clearDisplay()
@@ -149,19 +150,23 @@
 
     socket.on('GET_MONEY', (socket,amount) =>{
         console.log("GET_MONEY")
-        players[socket.id].money += amount
+        players[socket].money += amount
         displayMessage("Player: " + players[socket].playerIndex + " get money "  + amount + " Money: " + players[socket].money)
+        checkMoneyWithoutCallback()
+
     })
 
     socket.on('LOSE_MONEY', (socket,amount) =>{
         console.log("LOSE_MONEY")
         players[socket].money -= amount
         displayMessage("Player: " + players[socket].playerIndex + " lose money "  + amount + " Money: " + players[socket].money)
+        checkMoneyWithoutCallback()
     })
 
     socket.on('PLAYER_COLLISION', (socket,collision) =>{
         displayMessage("Collision")
         players[socket].money -= 10000 * (collision.length -1);
+        checkMoneyWithoutCallback()
         displayMessage("Player: " + players[socket].playerIndex + " lose money "  + 10000 * (collision.length -1) + " Money: " + players[socket].money)
         for(let i of collision){
             if (i !== socket){
@@ -179,6 +184,7 @@
                     players[key].money +=  players[key].stocks[stock.stockName] * 20000
                 }else{
                     players[key].money -=  players[key].stocks[stock.stockName] * 20000
+                    checkMoneyWithoutCallback()
                 }
             }
 
@@ -189,12 +195,15 @@
         displayMessage("Player: "  + players[socket].playerIndex + " activated Auction Minigame")
         players[socket].money = auctionObject.moneyToSet;
         displayMessage("Itemprice: " + auctionObject.itemprice + " Multiplicator: " + auctionObject.multiplicator + " MoneyFromTheBank: " + auctionObject.moneyFromTheBank + " Difference: " + auctionObject.difference + "MoneyToSet: " + auctionObject.moneyToSet)
+        checkMoneyWithoutCallback()
+
     })
 
     socket.on('RACE', (socketID) =>{
         displayMessage("Player: " + players[socketID].playerIndex + " triggered HorseRace")
         displayMessage("Open HorseRace")
         socket.emit('RACE_READY', lobby)
+
     })
 
     socket.on('HORSE_START', () =>{
@@ -211,9 +220,6 @@
 
             displayMessage("Begin to move horses")
             let intervalID
-
-
-
 
                 intervalID = setInterval(function(){
                     let horse = randomNumber(1,5)
@@ -237,6 +243,7 @@
                                 displayMessage("Winner: Player" + players[key].playerIndex)
                             }else{
                                 players[key].money -= 50000
+                                checkMoneyWithoutCallback()
                             }
 
                         }))
@@ -287,18 +294,19 @@
                         displayMessage("Winner: Player" + players[key].playerIndex)
                     }else{
                         players[key].money -= 50000
+                        checkMoneyWithoutCallback()
                     }
 
                 }))
             }
-
         }else{
             horseGameField[horseObject.horseIndex -1].field += horseObject.movedSteps
             displayMessage("Horse:" + horseObject.horseIndex + " moves: " + horseObject.movedSteps + " Position: " +  horseGameField[horseObject.horseIndex -1].field)
-
         }
+    })
 
-
+    socket.on('WINNER', (socketID)=>{
+      displayMessage("Player: "  + players[socketID].playerIndex + " wins the game")
     })
 
 
@@ -321,6 +329,34 @@
     const stockButton = document.getElementById("stock")
     const raceButton = document.getElementById("race")
     const auctionButton = document.getElementById("auction")
+    const loseAllButton = document.getElementById("loseAll")
+
+    loseAllButton.addEventListener("click", ()=>{
+        displayMessage("Player: "  + players[socket.id].playerIndex + " wins the game")
+       players[socket.id].money = 0;
+       socket.emit("WINNER", lobby)
+    })
+
+    const checkMoney = (callback) =>{
+        if (players[socket.id].money <=0){
+            displayMessage("Player: "  + players[socket.id].playerIndex + " wins the game")
+            socket.emit("WINNER", lobby)
+            winnerStatus = true
+        }else{
+            callback();
+        }
+    }
+
+    const checkMoneyWithoutCallback = () => {
+        if (players[socket.id].money <= 0) {
+            displayMessage("Player: " + players[socket.id].playerIndex + " wins the game")
+            socket.emit("WINNER", lobby)
+            winnerStatus = true
+
+        }
+    }
+
+
 
     stockButton.addEventListener("click", ()=>{
         if(finalFieldStatus === true){
@@ -360,11 +396,15 @@
             }))
 
         socket.emit('STOCK', lobby, stock)
-            displayMessage("Next Turn")
-            setTimeout(function(){
-                socket.emit('NEXT_TURN', lobby)
-                players[socket.id].yourTurn = false;
-            }, 2000);
+            const nextTurn = ()=>{
+                displayMessage("Next Turn")
+                setTimeout(function(){
+                    socket.emit('NEXT_TURN', lobby)
+                    players[socket.id].yourTurn = false;
+                }, 2000);
+            }
+            checkMoney(nextTurn)
+
 
         }else{
             alert("finalFieldStatus = false")
@@ -433,11 +473,14 @@
                 moneyToSet:  players[socket.id].money
             }
             socket.emit('AUCTION' , lobby, auctionObject)
-            displayMessage("Next Turn")
-            setTimeout(function(){
-                socket.emit('NEXT_TURN', lobby)
-                players[socket.id].yourTurn = false;
-            }, 2000);
+            const nextTurn = ()=>{
+                displayMessage("Next Turn")
+                setTimeout(function(){
+                    socket.emit('NEXT_TURN', lobby)
+                    players[socket.id].yourTurn = false;
+                }, 2000);
+            }
+            checkMoney(nextTurn)
 
 
         }else{
@@ -506,9 +549,7 @@
                         displayMessage("Move finished successfully")
                         moveStatus = false
                         finalFieldStatus = true;
-                        //playersOnSameField()
-
-
+                        playersOnSameField()
                     }
                 }
                 go();
@@ -531,6 +572,7 @@
                     players[i].money += 10000
             }
             socket.emit('PLAYER_COLLISION',lobby, colArr);
+            checkMoney()
 
         }else{
             displayMessage("No Collision detected on Field")
@@ -566,13 +608,21 @@
             let amount = 10000;
             displayMessage("Player: " + players[socket.id].playerIndex + " wins 10 000 Euros")
             players[socket.id].money += amount;
+
+
             socket.emit('GET_MONEY', lobby,amount)
             finalFieldStatus = false;
-            displayMessage("Next Turn")
-            setTimeout(function(){
-                socket.emit('NEXT_TURN', lobby)
-                players[socket.id].yourTurn = false;
-            }, 2000);
+
+
+            const nextTurn = ()=>{
+                displayMessage("Next Turn")
+                setTimeout(function(){
+                    socket.emit('NEXT_TURN', lobby)
+                    players[socket.id].yourTurn = false;
+                }, 2000);
+            }
+            checkMoney(nextTurn)
+
         }else{
             alert("finalFieldStatus = false")
         }
@@ -580,19 +630,22 @@
 
     loseMoneyButton.addEventListener("click", ()=>{
         if(finalFieldStatus === true){
-            let amount = 100000;
-            displayMessage("Player: " + players[socket.id].playerIndex + " lose 100 000 Euros")
+            let amount = 500000;
+            displayMessage("Player: " + players[socket.id].playerIndex + " lose 500 000 Euros")
             players[socket.id].money -= amount;
+
             socket.emit('LOSE_MONEY', lobby, amount)
             finalFieldStatus = false
 
 
-            displayMessage("Next Turn")
-            setTimeout(function(){
-                socket.emit('NEXT_TURN', lobby)
-                players[socket.id].yourTurn = false;
-            }, 2000);
-
+            const nextTurn = ()=>{
+                displayMessage("Next Turn")
+                setTimeout(function(){
+                    socket.emit('NEXT_TURN', lobby)
+                    players[socket.id].yourTurn = false;
+                }, 2000);
+            }
+            checkMoney(nextTurn)
 
         }else{
             alert("finalFieldStatus = false")
@@ -600,22 +653,12 @@
     })
 
 
-
-
-
-
     function displayMessage(message){
-
         const div = document.createElement("div")
         div.textContent = message;
         document.getElementById("txt").append(div);
-
     }
 
-    function clearDisplay(){
-        const div = document.createElement("div")
-        div.empty();
-    }
 </script>
 
 <style>
@@ -698,6 +741,10 @@
 
     <div>
         <button class="btn" type="button" id="auction">Auction</button>
+    </div>
+
+    <div>
+        <button class="btn" type="button" id="loseAll">loseAll</button>
     </div>
 
 

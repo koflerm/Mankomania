@@ -468,6 +468,14 @@ const validateWinnerRaceMiniGame =(room, horseObject, socket)=>{
     }
 }
 
+const validateWinner =(room, socket)=>{
+    if(room === null){
+        io.to(socket).emit('ERROR', "Error in validateWinner");
+    }else{
+        socket.to(room).emit('WINNER', socket.id)
+    }
+}
+
 app.get('/', (_req, res) =>{
     res.write(`<h1>Socket IO Start on Port : ${PORT}</h1>`)
     res.end();
@@ -554,6 +562,10 @@ io.on('connection', (socket) => {
 
     socket.on('RACE_MOVE', (room, horseObject) =>{
         validateWinnerRaceMiniGame(room, horseObject, socket)
+    })
+
+    socket.on('WINNER', (room)=>{
+        validateWinner(room, socket)
     })
 
 });
