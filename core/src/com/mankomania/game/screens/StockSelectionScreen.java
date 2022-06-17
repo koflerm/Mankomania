@@ -32,20 +32,19 @@ public class StockSelectionScreen extends ScreenAdapter {
     private final Dialog shareSelectionDialog;
     private final ArrayList<TextureRegionDrawable> shareList;
     private final Skin skin;
-    private final Table tab;
     private ImageButton dryOilButton;
     private ImageButton hardSteelButton;
     private ImageButton shortCircuitButton;
     private TextButton resetButton;
     private TextButton readyButton;
+    private boolean dialogDrawn;
     private static int dryOilCount;
     private static int hardSteelCount;
     private static int shortCircuitCount;
     private Label dryOilLabel;
     private Label hardSteelLabel;
     private Label shortCircuitLabel;
-    private InputMultiplexer inputMultiplexer;
-    private boolean playerReady;
+    private final InputMultiplexer inputMultiplexer;
 
     public StockSelectionScreen(){
         skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
@@ -53,24 +52,25 @@ public class StockSelectionScreen extends ScreenAdapter {
         background = new Texture("background.jpg");
         batch = new SpriteBatch();
         shareList = new ArrayList<>();
-        tab = new Table();
-        tab.align(Align.center);
+        dialogDrawn = false;
+
         dryOilCount = 0;
         hardSteelCount = 0;
         shortCircuitCount = 0;
-        playerReady = false;
         shareSelectionDialog = new Dialog("",skin, "alt");
         inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
         if (!inputMultiplexer.getProcessors().contains(stage, true)) {
             inputMultiplexer.addProcessor(stage);
         }
         initImages();
-        drawImages();
     }
 
     private void drawImages(){
-        float scale = Gdx.graphics.getWidth() / 2800f;
+        Table tab = new Table();
+        tab.align(Align.center);
+        float scale = 0.7f;
         Label label = new Label("Select two shares", skin, "title");
+        shareSelectionDialog.setWidth(Gdx.graphics.getWidth() * scale);
         shareSelectionDialog.text(label).padTop(20f);
 
         dryOilButton = new ImageButton(shareList.get(0));
@@ -113,9 +113,15 @@ public class StockSelectionScreen extends ScreenAdapter {
 
         shareSelectionDialog.getButtonTable().add(tab);
         shareSelectionDialog.setScale(scale);
-
         shareSelectionDialog.show(stage);
+
+        shareSelectionDialog.setWidth(Gdx.graphics.getWidth() / scale);
+        shareSelectionDialog.setY(1000);
+
+        dialogDrawn = true;
     }
+
+
 
     private void initImages(){
         Texture share1 = new Texture(Gdx.files.internal("shares/dryOil.png"));
@@ -200,7 +206,6 @@ public class StockSelectionScreen extends ScreenAdapter {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
                 resetButton.setTouchable(Touchable.disabled);
-                playerReady = true;
                 dispose();
             }
         };
@@ -214,7 +219,10 @@ public class StockSelectionScreen extends ScreenAdapter {
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
+        if (!dialogDrawn)
+            drawImages();
         stage.draw();
+
 
     }
 
@@ -229,24 +237,12 @@ public class StockSelectionScreen extends ScreenAdapter {
         return dryOilCount;
     }
 
-    public static void setDryOilCount(int dryOilCount) {
-        StockSelectionScreen.dryOilCount = dryOilCount;
-    }
-
     public static int getHardSteelCount() {
         return hardSteelCount;
     }
 
-    public static void setHardSteelCount(int hardSteelCount) {
-        StockSelectionScreen.hardSteelCount = hardSteelCount;
-    }
-
     public static int getShortCircuitCount() {
         return shortCircuitCount;
-    }
-
-    public static void setShortCircuitCount(int shortCircuitCount) {
-        StockSelectionScreen.shortCircuitCount = shortCircuitCount;
     }
 }
 
