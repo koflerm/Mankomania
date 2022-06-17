@@ -270,6 +270,7 @@ public class GameScreen extends ScreenAdapter {
                         triggerTurnDialog = true;
                         if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
                             Connection.setYourTurn(true);
+                            Gdx.input.vibrate(new long[] {0, 90, 90, 90},-1);
                         }
                     }
                 }
@@ -534,8 +535,8 @@ public class GameScreen extends ScreenAdapter {
                     movingPlayerCurrentSteps = 0;
                     movingPlayerTargetSteps = 0;
 
-                    int currentField = board.getCurrentPlayer().getCurrentPosition().getFieldIndex();
-                    if(currentField == 8 || currentField == 23 || currentField == 34 || currentField == 42 || currentField == 56){
+                    int currentFieldIndex = board.getCurrentPlayer().getCurrentPosition().getFieldIndex();
+                    if(currentFieldIndex == 8 || currentFieldIndex == 23 || currentFieldIndex == 34 || currentFieldIndex == 42 || currentFieldIndex == 56){
 
                     }else{
                         fieldAction.drawFieldActionDialog(stage, board.getCurrentPlayer());
