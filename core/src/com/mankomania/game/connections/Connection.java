@@ -203,14 +203,14 @@ public class Connection {
         System.out.println("Emit dices");
     }
 
-    //Keine Ahnugn wo zu Implementieren
+    //Aufrufen
     public static void emitPosition(Field f) {
         int position = f.getFieldIndex();
         System.out.println("Emit position: " + position);
         cs.emit("UPDATE_PLAYER_POSITION", lobbyID, position);
     }
 
-    //Keine Ahnugn wo zu Implementieren
+    //Aufrufen
     public static void emitNextTurn() {
         cs.emit("NEXT_TURN", lobbyID);
         Connection.yourTurn = false;
@@ -229,6 +229,7 @@ public class Connection {
      * Field Actions
      */
 
+    //Aufrufen und money berechnen
     public static void determineFieldAction(Field f) {
 
         int index = f.getFieldIndex();
@@ -294,7 +295,7 @@ public class Connection {
         }
     }
 
-    //Aufrufen
+
     public static void loseMoney(int amount) {
         cs.emit("LOSE_MONEY", lobbyID, amount);
         System.out.println("Emit loseMoney");
@@ -430,15 +431,13 @@ public class Connection {
 
         for (int i = 0; i < players.length; i++) {
 
-            String[] stock = players[i].split("ShortCircuit_PLC");
+            System.out.println(players[i]);
+
+            String[] stock = players[i].split("stocks\":");
 
             String newStock = stock[1];
 
-            String newNewStock = "{\"ShortCircuit_PLC";
-
-            newNewStock += newStock;
-
-            String finalStock = newNewStock.substring(0, newNewStock.length() - 1);
+            String finalStock = newStock.substring(0, newStock.length() - 1);
 
             stockAsString.add(finalStock);
         }
