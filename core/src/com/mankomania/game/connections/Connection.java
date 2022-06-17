@@ -203,14 +203,12 @@ public class Connection {
         System.out.println("Emit dices");
     }
 
-    //Aufrufen
     public static void emitPosition(Field f) {
         int position = f.getFieldIndex();
         System.out.println("Emit position: " + position);
         cs.emit("UPDATE_PLAYER_POSITION", lobbyID, position);
     }
 
-    //Aufrufen
     public static void emitNextTurn() {
         cs.emit("NEXT_TURN", lobbyID);
         Connection.yourTurn = false;
@@ -229,7 +227,6 @@ public class Connection {
      * Field Actions
      */
 
-    //Aufrufen und money berechnen
     public static void determineFieldAction(Field f) {
 
         int index = f.getFieldIndex();
@@ -356,7 +353,6 @@ public class Connection {
         cs.on("PLAYER_COLLISION", el);
     }
 
-    //Aufrufen
     public static void collisionEmit(String[] players) {
         cs.emit("PLAYER_COLLISION", lobbyID, players);
         System.out.println("Emit collision");
@@ -368,7 +364,7 @@ public class Connection {
      */
 
     //Aufrufen
-    public static void auction(int difference) {
+    public static void auctionEmit(int difference) {
         cs.emit("PLAYER_COLLISION", lobbyID, difference);
         System.out.println("Emit auction money difference");
     }
