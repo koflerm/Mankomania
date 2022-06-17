@@ -10,13 +10,16 @@
 
     import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
-    //const socket = io('http://localhost:3000');
-    const socket = io('https://mankomania.herokuapp.com');
+    const socket = io('http://localhost:3000');
+    //const socket = io('https://mankomania.herokuapp.com');
     let lobby;
     let diceCounts = [];
     let players = {}
     let moveStatus = false;
     let finalFieldStatus = true;
+    let horseRaceStatus = false;
+    let horseGameField = [];
+    let horseFinish = false
 
     socket.on("connect", () => {
         //clearDisplay()
@@ -188,6 +191,116 @@
         displayMessage("Itemprice: " + auctionObject.itemprice + " Multiplicator: " + auctionObject.multiplicator + " MoneyFromTheBank: " + auctionObject.moneyFromTheBank + " Difference: " + auctionObject.difference + "MoneyToSet: " + auctionObject.moneyToSet)
     })
 
+    socket.on('RACE', (socketID) =>{
+        displayMessage("Player: " + players[socketID].playerIndex + " triggered HorseRace")
+        displayMessage("Open HorseRace")
+        socket.emit('RACE_READY', lobby)
+    })
+
+    socket.on('HORSE_START', () =>{
+        if(horseRaceStatus === true){
+
+            const horse1 = {index: 1, field : 0}
+            const horse2= {index: 2, field : 0}
+            const horse3 = {index: 3, field : 0}
+            const horse4 = {index: 4, field : 0}
+            horseGameField.push(horse1)
+            horseGameField.push(horse2)
+            horseGameField.push(horse3)
+            horseGameField.push(horse4)
+
+            displayMessage("Begin to move horses")
+            let intervalID
+
+
+
+
+                intervalID = setInterval(function(){
+                    let horse = randomNumber(1,5)
+                    let steps = randomNumber(1,3)
+
+                    let horseObject = {
+                        horseIndex: horse,
+                        movedSteps: steps,
+                        winner: false
+                    }
+
+                    if(horseGameField[horseObject.horseIndex -1].field + steps  >= 9){
+                        horseGameField[horseObject.horseIndex -1].field = 9
+                        displayMessage("Horse:" + horse + " moves: " + steps + " Position: " +  horseGameField[horseObject.horseIndex -1].field)
+                        horseFinish = true
+                        horseObject.winner = true;
+                        socket.emit('RACE_MOVE', lobby, horseObject);
+                        Object.keys(players).forEach((key =>{
+                            if(players[key].playerIndex === horseObject.horseIndex){
+                                players[key].money += 50000
+                                displayMessage("Winner: Player" + players[key].playerIndex)
+                            }else{
+                                players[key].money -= 50000
+                            }
+
+                        }))
+
+                        stop()
+
+                    }else{
+                        horseGameField[horseObject.horseIndex -1].field += horseObject.movedSteps
+                        displayMessage("Horse:" + horse + " moves: " + steps + " Position: " +  horseGameField[horseObject.horseIndex -1].field)
+                        socket.emit('RACE_MOVE', lobby, horseObject);
+
+                    }
+
+                }, 500);
+            function stop(){
+                clearInterval(intervalID);
+                if(horseFinish === true) {
+                    displayMessage("Next Turn")
+
+                    setTimeout(function(){
+                        socket.emit('NEXT_TURN', lobby)
+                        players[socket.id].yourTurn = false;
+                    }, 2000);
+
+                }
+            }
+        }else{
+            const horse1 = {index: 1, field : 0}
+            const horse2= {index: 2, field : 0}
+            const horse3 = {index: 3, field : 0}
+            const horse4 = {index: 4, field : 0}
+            horseGameField.push(horse1)
+            horseGameField.push(horse2)
+            horseGameField.push(horse3)
+            horseGameField.push(horse4)
+        }
+    })
+
+    socket.on('RACE_MOVE', (horseObject)=>{
+        console.log(horseObject)
+        if(horseGameField[horseObject.horseIndex -1].field + horseObject.movedSteps  >= 9){
+            horseGameField[horseObject.horseIndex -1].field = 9
+            displayMessage("Horse:" + horseObject.horseIndex + " moves: " + horseObject.movedSteps + " Position: " +  horseGameField[horseObject.horseIndex -1].field)
+            if(horseObject.winner === true){
+                Object.keys(players).forEach((key =>{
+                    if(players[key].playerIndex === horseObject.horseIndex){
+                        players[key].money += 50000
+                        displayMessage("Winner: Player" + players[key].playerIndex)
+                    }else{
+                        players[key].money -= 50000
+                    }
+
+                }))
+            }
+
+        }else{
+            horseGameField[horseObject.horseIndex -1].field += horseObject.movedSteps
+            displayMessage("Horse:" + horseObject.horseIndex + " moves: " + horseObject.movedSteps + " Position: " +  horseGameField[horseObject.horseIndex -1].field)
+
+        }
+
+
+    })
+
 
 
 
@@ -261,6 +374,9 @@
 
     raceButton.addEventListener("click", ()=>{
         if(finalFieldStatus === true){
+        displayMessage("Player " + players[socket.id].playerIndex + " started Horse Race")
+            socket.emit('RACE', lobby)
+            horseRaceStatus = true;
 
         }else{
             alert("finalFieldStatus = false")
