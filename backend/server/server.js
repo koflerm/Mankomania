@@ -6,7 +6,7 @@ const {Server} = require("socket.io");
 const io = new Server(server, { cors: { origin: '*'} });
 const PORT = process.env.PORT || 3000;
 const { v4: uuidv4 } = require('uuid');
-//const { instrument } = require("@socket.io/admin-ui");
+const {instrument} = require("@socket.io/admin-ui");
 //sonar-scanner.bat -D"sonar.organization=koflerm" -D"sonar.projectKey=Mankomania_backend" -D"sonar.sources=." -D"sonar.host.url=https://sonarcloud.io"
 
 
@@ -385,7 +385,12 @@ const playerGetMoney = (room, amount, socket) =>{
         socket.to(room).emit('PLAYER_COLLISION', socket.id, collision);
     }
 }
-
+/**
+ *
+ * @param room
+ * @param stock
+ * @param socket
+ */
 const stockMiniGame = (room, stock, socket)=>{
      if(room === null || stock === null){
          io.to(socket).emit('ERROR', "Error in stockMiniGame");
@@ -404,7 +409,12 @@ const stockMiniGame = (room, stock, socket)=>{
 
      }
 }
-
+/**
+ *
+ * @param room
+ * @param auctionObject
+ * @param socket
+ */
 const  auctionMiniGame = (room, auctionObject, socket)=>{
      if(room === null || auctionObject === null){
          io.to(socket).emit('ERROR', "Error in auctionMiniGame");
@@ -448,11 +458,9 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        console.log('user disconnected');
         leaveRooms(socket);
     });
     socket.on('disconnecting', () => {
-        console.log('user disconnected');
         leaveRooms(socket);
     });
 
@@ -492,12 +500,11 @@ io.on('connection', (socket) => {
         auctionMiniGame(room, auctionObject, socket)
     })
 
-
-
-
 });
 
-
+instrument(io, {
+    auth: false
+});
 
 
 
