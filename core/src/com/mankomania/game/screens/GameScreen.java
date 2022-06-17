@@ -319,8 +319,7 @@ public class GameScreen extends ScreenAdapter {
 
                 for (Player p : pl) {
                     if (p.getPlayerSocketID().equals(socketID)) {
-                        int temp = p.getMoney();
-                        p.setMoney(temp + amount);
+                        p.addMoney(amount);
                     }
                 }
             }
@@ -345,8 +344,7 @@ public class GameScreen extends ScreenAdapter {
 
                 for (Player p : pl) {
                     if (p.getPlayerSocketID().equals(socketID)) {
-                        int temp = p.getMoney();
-                        p.setMoney(temp - amount);
+                        p.loseMoney(amount);
                     }
                 }
             }
@@ -354,7 +352,6 @@ public class GameScreen extends ScreenAdapter {
 
         /**
          * Listener for players on the same field (collision)
-         * Notwendig?
          */
 
         Emitter.Listener collisionListener = new Emitter.Listener() {
@@ -373,17 +370,14 @@ public class GameScreen extends ScreenAdapter {
 
                 int decrease = players.length * 10000;
 
-                int temp = MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getMoney();
-
-                MankomaniaGame.getInstance().getBoard().getCurrentPlayer().setMoney(temp - decrease);
+                MankomaniaGame.getInstance().getBoard().getCurrentPlayer().loseMoney(decrease);
 
                 List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
 
                 for (Player p : pl) {
                     for (String id : players) {
                         if (p.getPlayerSocketID().equals(id)) {
-                            int temp2 = p.getMoney();
-                            p.setMoney(temp2 + 10000);
+                            p.addMoney(10000);
                         }
                     }
                 }
@@ -430,12 +424,11 @@ public class GameScreen extends ScreenAdapter {
                 for (Player p : pl) {
                     int amountOfStock = p.getAmountOfShare(s);
                     if (amountOfStock > 0) {
-                        int temp = p.getMoney();
                         if (black) {
-                            p.setMoney(temp - (20000 * amountOfStock));
+                            p.loseMoney(20000 * amountOfStock);
 
                         } else {
-                            p.setMoney(temp + (20000 * amountOfStock));
+                            p.addMoney(20000 * amountOfStock);
 
                         }
                     }
@@ -489,7 +482,6 @@ public class GameScreen extends ScreenAdapter {
 
         if (Connection.isUpdate()) {
             ArrayList<Player> players = Connection.convertConPlayersToPlayersUpdate();
-            //MankomaniaGame.getInstance().getBoard().deleteAllPlayers();
 
             for (Player p : players) {
                 for (Player gp: MankomaniaGame.getInstance().getBoard().getPlayers()) {
@@ -510,8 +502,6 @@ public class GameScreen extends ScreenAdapter {
                         gp.setShares(hardSteel, shortCircuit, dryOil);
                     }
                 }
-                //MankomaniaGame.getInstance().getBoard().addPlayer(p);
-                //stage.addActor(p);
             }
 
             Connection.setUpdate(false);
@@ -587,6 +577,21 @@ public class GameScreen extends ScreenAdapter {
             Connection.setCurrentPlayer(nextPlayer);
             MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
             triggerTurnDialog = true;
+
+            Field f = MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getCurrentPosition();
+
+            Connection.determineFieldAction(f);
+
+            List<String> playerCollision = new ArrayList<>();
+
+            for(Player p : players){
+                if(p.getPlayerSocketID() != currentPlayer.getPlayerSocketID() && currentPlayer.getCurrentPosition().equals(p.getCurrentPosition())){
+                    playerCollision.add(p.getPlayerSocketID());
+                }
+            }
+            if(playerCollision != null && playerCollision.size() > 0){
+                Connection.collisionEmit((String[]) playerCollision.toArray());
+            }
 
             Connection.setYourTurn(false);
             Connection.emitNextTurn();
