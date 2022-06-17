@@ -107,6 +107,8 @@ public class Player extends Actor {
 
         }
     }
+
+
     public void setShares(int hardSteel, int shortCircuit, int dryOil) {
         shares.clear();
         shares.put(Share.HARD_STEEL_PLC, hardSteel);
