@@ -56,7 +56,8 @@ function  createRoom () {
             this.counterForStocks++
         },
         counterForStocks : 0,
-        counterForDice: 0
+        counterForDice: 0,
+        counterForHorseRace: 0
     };
     rooms[room.id] = room;
     // have the socket join the room they've just created.
@@ -424,6 +425,49 @@ const  auctionMiniGame = (room, auctionObject, socket)=>{
      }
 }
 
+const raceMiniGame = (room, socket) =>{
+    if(room === null){
+        io.to(socket).emit('ERROR', "Error in raceMiniGame");
+    }else{
+        rooms[room].counterForHorseRace++;
+        socket.to(room).emit('RACE', socket.id)
+    }
+}
+
+const validateRaceMiniGame = (room) =>{
+    if(room === null){
+        io.to(socket).emit('ERROR', "Error in validateRaceMiniGame");
+    }else{
+        rooms[room].counterForHorseRace++;
+        if(rooms[room].counterForHorseRace === rooms[room].sockets.length){
+            io.in(room).emit('HORSE_START')
+
+        }
+    }
+}
+
+const validateWinnerRaceMiniGame =(room, horseObject, socket)=>{
+    if(room === null || horseObject === null){
+        io.to(socket).emit('ERROR', "Error in validateRaceMiniGame");
+    }else{
+        if(horseObject.winner === true){
+            socket.to(room).emit('RACE_MOVE', horseObject)
+            let players = rooms[room].players
+            Object.keys(players).forEach((key =>{
+                if(players[key].playerIndex === horseObject.horseIndex){
+                    players[key].money += 50000
+                }else{
+                    players[key].money -= 50000
+                }
+
+            }))
+
+        }else{
+            socket.to(room).emit('RACE_MOVE', horseObject)
+        }
+    }
+}
+
 app.get('/', (_req, res) =>{
     res.write(`<h1>Socket IO Start on Port : ${PORT}</h1>`)
     res.end();
@@ -498,6 +542,18 @@ io.on('connection', (socket) => {
 
     socket.on('AUCTION', (room, auctionObject) =>{
         auctionMiniGame(room, auctionObject, socket)
+    })
+
+    socket.on('RACE', (room)=>{
+        raceMiniGame(room, socket)
+    })
+
+    socket.on('RACE_READY', (room)=>{
+        validateRaceMiniGame(room)
+    })
+
+    socket.on('RACE_MOVE', (room, horseObject) =>{
+        validateWinnerRaceMiniGame(room, horseObject, socket)
     })
 
 });

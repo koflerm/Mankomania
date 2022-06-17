@@ -63,24 +63,19 @@ let players = {
 }
 }
 
-let stock = {
-    stockName: "HardSteel_PLC",
-    status: true
-}
-
-console.log(players["y94JPlkimCvbTaE1AAAP"].stocks[stock.stockName])
-
-Object.keys(players).forEach((key =>{
-    if(players[key].stocks[stock.stockName] > 0){
-        console.log(true)
-    }else{
-        console.log(false)
-    }
-
-}))
 
 
-//console.log(players["y94JPlkimCvbTaE1AAAP"].stocks.DryOil_PLC)
+let horseGameField = []
+const horse1 = {index: 1, field : 0}
+const horse2= {index: 2, field : 0}
+const horse3 = {index: 3, field : 0}
+const horse4 = {index: 4, field : 0}
+horseGameField.push(horse1)
+horseGameField.push(horse2)
+horseGameField.push(horse3)
+horseGameField.push(horse4)
+
+console.log(horseGameField[1].index)
 
 
 
