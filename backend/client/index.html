@@ -180,9 +180,12 @@
             }
 
         }))
+    })
 
-        displayMessage()
-
+    socket.on('AUCTION', (socket, auctionObject) =>{
+        displayMessage("Player: "  + players[socket].playerIndex + " activated Auction Minigame")
+        players[socket].money = auctionObject.moneyToSet;
+        displayMessage("Itemprice: " + auctionObject.itemprice + " Multiplicator: " + auctionObject.multiplicator + " MoneyFromTheBank: " + auctionObject.moneyFromTheBank + " Difference: " + auctionObject.difference + "MoneyToSet: " + auctionObject.moneyToSet)
     })
 
 
@@ -244,6 +247,11 @@
             }))
 
         socket.emit('STOCK', lobby, stock)
+            displayMessage("Next Turn")
+            setTimeout(function(){
+                socket.emit('NEXT_TURN', lobby)
+                players[socket.id].yourTurn = false;
+            }, 2000);
 
         }else{
             alert("finalFieldStatus = false")
@@ -259,8 +267,62 @@
         }
     })
 
+
     auctionButton.addEventListener("click", ()=>{
         if(finalFieldStatus === true){
+            let itemprice = 100000
+            players[socket.id].money -= itemprice
+            let multiplicator;
+            let moneyFromTheBank;
+            let temp = randomNumber(1,7)
+            switch (temp){
+                case 1:
+                    multiplicator = 1
+                    moneyFromTheBank = itemprice * multiplicator
+                    break;
+                case 2:
+                    multiplicator = 2
+                    moneyFromTheBank = itemprice * multiplicator
+                    break;
+
+                case 3:
+                    multiplicator = 0.5
+                    moneyFromTheBank = itemprice * multiplicator
+                    break;
+
+                case 4:
+                    multiplicator = 0.25
+                    moneyFromTheBank = itemprice * multiplicator
+                    break;
+
+                case 5:
+                    multiplicator = 0.5
+                    moneyFromTheBank = itemprice * multiplicator
+                    break;
+
+                case 6:
+                    multiplicator = 0.5
+                    moneyFromTheBank = itemprice * multiplicator
+                    break;
+            }
+
+            players[socket.id].money += moneyFromTheBank
+
+            displayMessage("Player " + players[socket.id].playerIndex + " Itemprice to pay: " + itemprice + " Multiplicator: " + multiplicator + " Difference " + moneyFromTheBank)
+            let auctionObject = {
+                itemprice: itemprice,
+                multiplicator: multiplicator,
+                moneyFromTheBank: moneyFromTheBank,
+                difference: -itemprice + moneyFromTheBank,
+                moneyToSet:  players[socket.id].money
+            }
+            socket.emit('AUCTION' , lobby, auctionObject)
+            displayMessage("Next Turn")
+            setTimeout(function(){
+                socket.emit('NEXT_TURN', lobby)
+                players[socket.id].yourTurn = false;
+            }, 2000);
+
 
         }else{
             alert("finalFieldStatus = false")

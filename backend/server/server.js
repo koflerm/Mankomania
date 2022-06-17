@@ -399,15 +399,20 @@ const stockMiniGame = (room, stock, socket)=>{
                     rooms[room].players[key].money -=  players[key].stocks[stock.stockName] * moneyMinigameStock
                 }
              }
-
          }))
          socket.to(room).emit('STOCK', socket.id, stock)
 
      }
 }
 
-
-
+const  auctionMiniGame = (room, auctionObject, socket)=>{
+     if(room === null || auctionObject === null){
+         io.to(socket).emit('ERROR', "Error in auctionMiniGame");
+     }else{
+        rooms[room].players[socket.id].money  =auctionObject.moneyToSet
+         socket.to(room).emit('AUCTION', socket.id, auctionObject)
+     }
+}
 
 app.get('/', (_req, res) =>{
     res.write(`<h1>Socket IO Start on Port : ${PORT}</h1>`)
@@ -481,6 +486,10 @@ io.on('connection', (socket) => {
 
     socket.on('STOCK', (room, stock) =>{
         stockMiniGame(room, stock, socket)
+    })
+
+    socket.on('AUCTION', (room, auctionObject) =>{
+        auctionMiniGame(room, auctionObject, socket)
     })
 
 
