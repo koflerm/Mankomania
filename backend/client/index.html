@@ -630,8 +630,8 @@
 
     loseMoneyButton.addEventListener("click", ()=>{
         if(finalFieldStatus === true){
-            let amount = 500000;
-            displayMessage("Player: " + players[socket.id].playerIndex + " lose 500 000 Euros")
+            let amount = 100000;
+            displayMessage("Player: " + players[socket.id].playerIndex + " lose 100 000 Euros")
             players[socket.id].money -= amount;
 
             socket.emit('LOSE_MONEY', lobby, amount)
