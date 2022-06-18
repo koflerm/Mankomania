@@ -17,6 +17,7 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import playerLogic.Player;
+import shareLogic.Share;
 
 public class Connection {
     private static final String SERVER = "https://mankomania.herokuapp.com/";
@@ -364,13 +365,47 @@ public class Connection {
      */
 
     //Aufrufen
-    public static void auctionEmit(int difference) {
-        cs.emit("PLAYER_COLLISION", lobbyID, difference);
-        System.out.println("Emit auction money difference");
+    public static void auctionEmit(int itemprice, int multiplicator, int moneyFromBank, int currentPlayerNewMoney) {
+
+        int difference = moneyFromBank - itemprice;
+
+        ConAuction ca = new ConAuction(itemprice, multiplicator, moneyFromBank, difference, currentPlayerNewMoney);
+
+        String jsonInString = new Gson().toJson(ca);
+        try {
+            JSONObject caJSONObject = new JSONObject(jsonInString);
+            cs.emit("AUCTION", lobbyID, caJSONObject);
+            System.out.println("Emit auction money difference");
+        } catch (JSONException e) {
+            /**
+             * Error
+             */
+        }
     }
 
     //Aufrufen
-    public static void stockMiniagmeEmit(String stock, boolean black) {
+    public static void stockMiniagmeEmit(String stock, boolean black, Player current) {
+
+        Share s;
+
+        if (stock.equals("HARD_STEEL_PLC")) {
+            s = Share.HARD_STEEL_PLC;
+        } else if (stock.equals("SHORT_CIRCUIT_PLC")) {
+            s = Share.SHORT_CIRCUIT_PLC;
+        } else {
+            s = Share.DRY_OIL_PLC;
+        }
+
+
+        int amountOfStock = current.getAmountOfShare(s);
+        if (amountOfStock > 0) {
+            if (black) {
+                current.loseMoney(20000 * amountOfStock);
+            } else {
+                current.addMoney(20000 * amountOfStock);
+            }
+        }
+
 
         StockMinigame sm = new StockMinigame(stock, black);
 
@@ -386,16 +421,25 @@ public class Connection {
         }
     }
 
-    //Machen
     public static void stockMinigameUpdate(Emitter.Listener el) {
         cs.on("STOCK", el);
     }
 
-    //Machen
-    public static void auctionMinigameUpdate(Emitter.Listener el){
+    public static void auctionMinigameUpdate(Emitter.Listener el) {
         cs.on("AUCTION", el);
     }
 
+    /**
+     * Money check <= 0
+     */
+
+    public static void emitWinner() {
+        cs.emit("WINNER", lobbyID);
+    }
+
+    public static void winnerUpdate(Emitter.Listener el) {
+        cs.once("WINNER", el);
+    }
 
 
     /**
