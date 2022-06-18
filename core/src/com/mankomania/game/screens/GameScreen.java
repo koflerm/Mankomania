@@ -143,355 +143,6 @@ public class GameScreen extends ScreenAdapter {
 
         Connection.emitStocks(cStock);
 
-
-        /**
-         * Listener for "RoleHighestDice"
-         * Set roleDice to true
-         */
-
-        Emitter.Listener highestDiceListener = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-
-                Connection.convertJsonToPlayer("" + args[0]);
-
-                Connection.setRoleHighestDice(true);
-
-                Connection.setUpdate(true);
-
-                /**
-                 * Roll the dices
-                 */
-
-                SecureRandom rand = new SecureRandom();
-
-                int dice1 = rand.nextInt((7 - 0 + 1) + 0);
-
-                int dice2 = rand.nextInt((7 - 0 + 1) + 0);
-
-                Connection.emitHighestDice(dice1, dice2);
-
-                /**
-                 * DEBUG MODE ON
-                 */
-                //Connection.emitHighestDice(6, 6);
-
-
-            }
-        };
-
-        /**
-         * Listener for "StartRound"
-         * Checks if Client can start
-         */
-
-        Emitter.Listener startRoundListener = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-
-                Connection.convertJsonToPlayer("" + args[0]);
-
-                if (args[1].toString().equals(Connection.getCs().id())) {
-                    //set Turn after the turn on false
-                    Connection.setYourTurn(true);
-                } else {
-                    Connection.setYourTurn(false);
-                }
-
-
-                for (Player p : players) {
-                    if (p.getPlayerSocketID().equals(args[1].toString())) {
-                        MankomaniaGame.getInstance().getBoard().setCurrentPlayer(p);
-                        Connection.setCurrentPlayer(p);
-                        triggerTurnDialog = true;
-                    }
-                }
-
-                Connection.setUpdate(true);
-
-            }
-        };
-
-        /**
-         * Role Highest Dice Again Listener
-         */
-
-        Emitter.Listener roleAgain = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-
-                String[] winners = args[1].toString().split(",");
-
-                Connection.setWinners(winners);
-
-                for (int i = 0; i < winners.length; i++) {
-                    if (winners[i].equals(Connection.getCs().id())) {
-                        Connection.setRoleHighestDice(true);
-                    }
-                }
-            }
-        };
-
-        /**
-         * Update dices after roll listener
-         */
-
-        Emitter.Listener updateDice = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-
-                String socketID = args[0].toString();
-
-                String[] dices = args[1].toString().split(",");
-
-                int dice1 = Integer.parseInt(dices[0].substring(1));
-                int dice2 = Integer.parseInt(dices[1].substring(0, 1));
-
-                int totalDice = dice1 + dice2;
-
-                MankomaniaGame.getInstance().getBoard().getCurrentPlayer().setDices(totalDice);
-            }
-        };
-
-        /**
-         * Gets next turn, when the current player has finished
-         */
-
-        Emitter.Listener nextTurnListener = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                String nextPlayerSocket = args[0].toString();
-                List<Player> pList = MankomaniaGame.getInstance().getBoard().getPlayers();
-
-                for (Player p : pList) {
-                    if (p.getPlayerSocketID().equals(nextPlayerSocket)) {
-                        MankomaniaGame.getInstance().getBoard().setCurrentPlayer(p);
-                        Connection.setCurrentPlayer(p);
-                        triggerTurnDialog = true;
-                        if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
-                            Connection.setYourTurn(true);
-                            Gdx.input.vibrate(new long[]{0, 90, 90, 90}, -1);
-                        }
-                    }
-                }
-            }
-        };
-
-        /**
-         * Update the position of the moving player
-         */
-
-        Emitter.Listener updateMyPosition = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-
-                System.out.println("Update my own position (received from server)");
-                GameScreen gs = (GameScreen) MankomaniaGame.getInstance().getScreen();
-                gs.hideTurnDialog();
-
-                int fieldNumber = Integer.parseInt(args[1].toString());
-
-                Field nextField = MankomaniaGame.getInstance().getBoard().getFieldByIndex(fieldNumber);
-
-                Player currentPlayer = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
-                if (currentPlayer.getCurrentPosition().getOptionalNextField() != null)
-                    currentPlayer.moveForward(nextField.getFieldIndex() == currentPlayer.getCurrentPosition().getOptionalNextField().getFieldIndex());
-                else
-                    currentPlayer.moveForward(false);
-            }
-        };
-
-        /**
-         * Get money listener
-         */
-
-        Emitter.Listener getMoneyUpdateListener = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-
-                System.out.println("Receive getMoney");
-
-                String socketID = args[0].toString();
-
-                int amount = Integer.parseInt(args[1].toString());
-
-                List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
-
-                for (Player p : pl) {
-                    if (p.getPlayerSocketID().equals(socketID)) {
-                        p.addMoney(amount);
-                    }
-                }
-            }
-        };
-
-
-        /**
-         * Lose money listener
-         */
-
-        Emitter.Listener loseMoneyUpdateListener = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-
-                System.out.println("Receive loseMoney");
-
-                String socketID = args[0].toString();
-
-                int amount = Integer.parseInt(args[1].toString());
-
-                List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
-
-                for (Player p : pl) {
-                    if (p.getPlayerSocketID().equals(socketID)) {
-                        p.loseMoney(amount);
-                    }
-                }
-            }
-        };
-
-        /**
-         * Listener for players on the same field (collision)
-         */
-
-        Emitter.Listener collisionListener = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-
-                System.out.println("Received a collision");
-
-                System.out.println(args[1].toString());
-
-                String[] players = args[1].toString().split(",");
-
-                players[0] = players[0].substring(1);
-
-                players[players.length - 1] = players[players.length - 1].substring(0, players[players.length - 1].length() - 1);
-
-                int decrease = players.length * 10000;
-
-                MankomaniaGame.getInstance().getBoard().getCurrentPlayer().loseMoney(decrease);
-
-                List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
-
-                for (Player p : pl) {
-                    for (String id : players) {
-                        if (p.getPlayerSocketID().equals(id)) {
-                            p.addMoney(10000);
-                        }
-                    }
-                }
-            }
-        };
-
-        /**
-         * StockMinigame Update Listener
-         */
-
-        Emitter.Listener stockUpdateListener = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-
-                System.out.println("Receive Stock Minigame Update");
-
-                String minigameActPlayer = args[0].toString();
-
-                System.out.println(args[1]);
-
-                String[] params = args[1].toString().split(",");
-
-
-                String stock = params[0].substring(12, params[0].length() - 1);
-
-                String blackAsString = params[1].substring(7, params[1].length() - 1);
-
-                boolean black;
-
-                if (blackAsString.equals("true")) {
-                    black = true;
-                } else {
-                    black = false;
-                }
-
-
-                List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
-
-                Share s;
-
-                if (stock.equals("HARD_STEEL_PLC")) {
-                    s = Share.HARD_STEEL_PLC;
-                } else if (stock.equals("SHORT_CIRCUIT_PLC")) {
-                    s = Share.SHORT_CIRCUIT_PLC;
-                } else {
-                    s = Share.DRY_OIL_PLC;
-                }
-
-                for (Player p : pl) {
-                    if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
-                        int amountOfStock = p.getAmountOfShare(s);
-                        if (amountOfStock > 0) {
-                            if (black) {
-                                p.loseMoney(20000 * amountOfStock);
-
-                            } else {
-                                p.addMoney(20000 * amountOfStock);
-                            }
-                        }
-                    }
-                }
-            }
-        };
-
-
-        /**
-         * Auction Minigame Update Listener
-         */
-
-        Emitter.Listener auctionUpdateListener = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-
-                String currentPlayerSocketID = args[0].toString();
-
-                System.out.println("Auction Update Listener: " + args[1].toString());
-
-                String[] splitAuctionObject = args[1].toString().split("moneyToSet:");
-
-                String moneyToSetAsString = splitAuctionObject[1].substring(0, splitAuctionObject[1].length() - 1);
-
-                int moneyToSet = Integer.parseInt(moneyToSetAsString);
-
-                for (Player p : players) {
-                    if (p.getPlayerSocketID().equals(currentPlayerSocketID)) {
-                        p.setMoney(moneyToSet);
-                    }
-                }
-            }
-        };
-
-
-        /**
-         * Listener if one player wins
-         */
-
-        Emitter.Listener winnerListener = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-
-                String winnerSocket = args[0].toString();
-
-                System.out.println("The winner is: " + winnerSocket);
-
-                for (Player p : players) {
-                    if (p.getPlayerSocketID().equals(winnerSocket)) {
-                        System.out.println("The winner is: " + p.getPlayerIndex());
-                    }
-                }
-
-            }
-        };
-
-
         Connection.updateMyPlayerPosition(updateMyPosition);
 
         Connection.updateNextTurn(nextTurnListener);
@@ -516,6 +167,8 @@ public class GameScreen extends ScreenAdapter {
 
         Connection.winnerUpdate(winnerListener);
     }
+
+
 
     @Override
     public void render(float delta) {
@@ -644,7 +297,8 @@ public class GameScreen extends ScreenAdapter {
 
             Field f = MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getCurrentPosition();
 
-            Connection.determineFieldAction(f);
+            System.out.println("Det field");
+            Connection.determineFieldAction(f, MankomaniaGame.getInstance().getBoard().getCurrentPlayer());
 
             List<String> playerCollision = new ArrayList<>();
 
@@ -721,7 +375,17 @@ public class GameScreen extends ScreenAdapter {
         drawPlayerBox(0, Gdx.graphics.getHeight() - boxHeight, "P3", p3Card);
         drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, Gdx.graphics.getHeight() - boxHeight, "P4", p4Card);
         drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P1", p1Card);
-        drawPlayerMetadata(MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getMoney());
+
+        if (players != null) {
+            for (Player p : players) {
+                if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
+                    drawPlayerMetadata(p.getMoney());
+                }
+            }
+
+        } else {
+            drawPlayerMetadata(100000);
+        }
     }
 
     private float calcWidthFactor(float factor) {
@@ -829,4 +493,353 @@ public class GameScreen extends ScreenAdapter {
     public void dispose() {
         inputMultiplexer.removeProcessor(stage);
     }
+
+    /**
+     * Listener for "RoleHighestDice"
+     * Set roleDice to true
+     */
+
+    Emitter.Listener highestDiceListener = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            Connection.convertJsonToPlayer("" + args[0]);
+
+            Connection.setRoleHighestDice(true);
+
+            Connection.setUpdate(true);
+
+            /**
+             * Roll the dices
+             */
+
+            SecureRandom rand = new SecureRandom();
+
+            int dice1 = rand.nextInt((7 - 0 + 1) + 0);
+
+            int dice2 = rand.nextInt((7 - 0 + 1) + 0);
+
+            Connection.emitHighestDice(dice1, dice2);
+
+            /**
+             * DEBUG MODE ON
+             */
+            //Connection.emitHighestDice(6, 6);
+
+
+        }
+    };
+
+    /**
+     * Listener for "StartRound"
+     * Checks if Client can start
+     */
+
+    Emitter.Listener startRoundListener = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            Connection.convertJsonToPlayer("" + args[0]);
+
+            if (args[1].toString().equals(Connection.getCs().id())) {
+                //set Turn after the turn on false
+                Connection.setYourTurn(true);
+            } else {
+                Connection.setYourTurn(false);
+            }
+
+
+            for (Player p : players) {
+                if (p.getPlayerSocketID().equals(args[1].toString())) {
+                    MankomaniaGame.getInstance().getBoard().setCurrentPlayer(p);
+                    Connection.setCurrentPlayer(p);
+                    triggerTurnDialog = true;
+                }
+            }
+
+            Connection.setUpdate(true);
+
+        }
+    };
+
+    /**
+     * Gets next turn, when the current player has finished
+     */
+
+    Emitter.Listener nextTurnListener = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            String nextPlayerSocket = args[0].toString();
+            List<Player> pList = MankomaniaGame.getInstance().getBoard().getPlayers();
+
+            for (Player p : pList) {
+                if (p.getPlayerSocketID().equals(nextPlayerSocket)) {
+                    MankomaniaGame.getInstance().getBoard().setCurrentPlayer(p);
+                    Connection.setCurrentPlayer(p);
+                    triggerTurnDialog = true;
+                    if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
+                        Connection.setYourTurn(true);
+                        Gdx.input.vibrate(new long[]{0, 90, 90, 90}, -1);
+                    }
+                }
+            }
+        }
+    };
+
+    /**
+     * Role Highest Dice Again Listener
+     */
+
+    Emitter.Listener roleAgain = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            String[] winners = args[1].toString().split(",");
+
+            Connection.setWinners(winners);
+
+            for (int i = 0; i < winners.length; i++) {
+                if (winners[i].equals(Connection.getCs().id())) {
+                    Connection.setRoleHighestDice(true);
+                }
+            }
+        }
+    };
+
+    /**
+     * Update dices after roll listener
+     */
+
+    Emitter.Listener updateDice = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            String socketID = args[0].toString();
+
+            String[] dices = args[1].toString().split(",");
+
+            int dice1 = Integer.parseInt(dices[0].substring(1));
+            int dice2 = Integer.parseInt(dices[1].substring(0, 1));
+
+            int totalDice = dice1 + dice2;
+
+            MankomaniaGame.getInstance().getBoard().getCurrentPlayer().setDices(totalDice);
+        }
+    };
+
+
+    /**
+     * Update the position of the moving player
+     */
+
+    Emitter.Listener updateMyPosition = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            System.out.println("Update my own position (received from server)");
+            GameScreen gs = (GameScreen) MankomaniaGame.getInstance().getScreen();
+            gs.hideTurnDialog();
+
+            int fieldNumber = Integer.parseInt(args[1].toString());
+
+            Field nextField = MankomaniaGame.getInstance().getBoard().getFieldByIndex(fieldNumber);
+
+            Player currentPlayer = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
+            if (currentPlayer.getCurrentPosition().getOptionalNextField() != null)
+                currentPlayer.moveForward(nextField.getFieldIndex() == currentPlayer.getCurrentPosition().getOptionalNextField().getFieldIndex());
+            else
+                currentPlayer.moveForward(false);
+        }
+    };
+
+    /**
+     * Get money listener
+     */
+
+    Emitter.Listener getMoneyUpdateListener = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            System.out.println("Receive getMoney");
+
+            String socketID = args[0].toString();
+
+            int amount = Integer.parseInt(args[1].toString());
+
+            List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
+
+            for (Player p : pl) {
+                if (p.getPlayerSocketID().equals(socketID)) {
+                    p.addMoney(amount);
+                }
+            }
+        }
+    };
+
+
+    /**
+     * Lose money listener
+     */
+
+    Emitter.Listener loseMoneyUpdateListener = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            System.out.println("Receive loseMoney");
+
+            String socketID = args[0].toString();
+
+            int amount = Integer.parseInt(args[1].toString());
+
+            List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
+
+            for (Player p : pl) {
+                if (p.getPlayerSocketID().equals(socketID)) {
+                    p.loseMoney(amount);
+                }
+            }
+        }
+    };
+
+    /**
+     * Listener for players on the same field (collision)
+     */
+
+    Emitter.Listener collisionListener = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            System.out.println("Received a collision");
+
+            System.out.println(args[1].toString());
+
+            String[] players = args[1].toString().split(",");
+
+            players[0] = players[0].substring(1);
+
+            players[players.length - 1] = players[players.length - 1].substring(0, players[players.length - 1].length() - 1);
+
+            int decrease = players.length * 10000;
+
+            MankomaniaGame.getInstance().getBoard().getCurrentPlayer().loseMoney(decrease);
+
+            List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
+
+            for (Player p : pl) {
+                for (String id : players) {
+                    if (p.getPlayerSocketID().equals(id)) {
+                        p.addMoney(10000);
+                    }
+                }
+            }
+        }
+    };
+
+    /**
+     * StockMinigame Update Listener
+     */
+
+    Emitter.Listener stockUpdateListener = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            System.out.println("Receive Stock Minigame Update");
+
+            String minigameActPlayer = args[0].toString();
+
+            System.out.println(args[1]);
+
+            String[] params = args[1].toString().split(",");
+
+
+            String stock = params[0].substring(12, params[0].length() - 1);
+
+            String blackAsString = params[1].substring(7, params[1].length() - 1);
+
+            boolean black;
+
+            if (blackAsString.equals("true")) {
+                black = true;
+            } else {
+                black = false;
+            }
+
+
+            List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
+
+            Share s;
+
+            if (stock.equals("HARD_STEEL_PLC")) {
+                s = Share.HARD_STEEL_PLC;
+            } else if (stock.equals("SHORT_CIRCUIT_PLC")) {
+                s = Share.SHORT_CIRCUIT_PLC;
+            } else {
+                s = Share.DRY_OIL_PLC;
+            }
+
+            for (Player p : pl) {
+                if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
+                    int amountOfStock = p.getAmountOfShare(s);
+                    if (amountOfStock > 0) {
+                        if (black) {
+                            p.loseMoney(20000 * amountOfStock);
+
+                        } else {
+                            p.addMoney(20000 * amountOfStock);
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+
+    /**
+     * Auction Minigame Update Listener
+     */
+
+    Emitter.Listener auctionUpdateListener = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            String currentPlayerSocketID = args[0].toString();
+
+            System.out.println("Auction Update Listener: " + args[1].toString());
+
+            String[] splitAuctionObject = args[1].toString().split("moneyToSet:");
+
+            String moneyToSetAsString = splitAuctionObject[1].substring(0, splitAuctionObject[1].length() - 1);
+
+            int moneyToSet = Integer.parseInt(moneyToSetAsString);
+
+            for (Player p : players) {
+                if (p.getPlayerSocketID().equals(currentPlayerSocketID)) {
+                    p.setMoney(moneyToSet);
+                }
+            }
+        }
+    };
+
+
+    /**
+     * Listener if one player wins
+     */
+
+    Emitter.Listener winnerListener = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+            String winnerSocket = args[0].toString();
+
+            System.out.println("The winner is: " + winnerSocket);
+
+            for (Player p : players) {
+                if (p.getPlayerSocketID().equals(winnerSocket)) {
+                    System.out.println("The winner is: " + p.getPlayerIndex());
+                }
+            }
+
+        }
+    };
+
 }
