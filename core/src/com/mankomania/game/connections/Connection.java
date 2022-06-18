@@ -234,6 +234,8 @@ public class Connection {
 
         int index = f.getFieldIndex();
 
+        System.out.println("Money before action: " + p.getMoney());
+
         if (index == 8 || index == 30 || index == 34 || index == 56) {
             raceField();
 

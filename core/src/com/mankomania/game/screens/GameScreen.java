@@ -218,8 +218,8 @@ public class GameScreen extends ScreenAdapter {
 
         }
 
-        if (Connection.getCurrentPlayer() != null && triggerTurnDialog) {
-            showTurnDialog(Connection.getCurrentPlayer(), Connection.isYourTurn());
+        if (MankomaniaGame.getInstance().getBoard().getCurrentPlayer() != null && triggerTurnDialog) {
+            showTurnDialog(MankomaniaGame.getInstance().getBoard().getCurrentPlayer(), Connection.isYourTurn());
             triggerTurnDialog = false;
         }
 
@@ -376,15 +376,14 @@ public class GameScreen extends ScreenAdapter {
         drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, Gdx.graphics.getHeight() - boxHeight, "P4", p4Card);
         drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P1", p1Card);
 
-        if (players != null) {
-            for (Player p : players) {
+        if (MankomaniaGame.getInstance().getBoard().getPlayers() != null) {
+            for (Player p : MankomaniaGame.getInstance().getBoard().getPlayers() ) {
                 if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
                     drawPlayerMetadata(p.getMoney());
                 }
             }
-
         } else {
-            drawPlayerMetadata(100000);
+            drawPlayerMetadata(0);
         }
     }
 
