@@ -78,7 +78,7 @@ public class BoardFields {
                 new Field(62, "Spendiere einem Spieler deiner Wahl eine Verjüngerungskur Zahle 100.000 Euro.",boardX + (boardLength / 1.255f), boardLength / 2.43f),
                 new Field(63, "Du versenkst deine Yacht in Lignano. Zahle 200.000 Euro.",boardX + (boardLength / 1.255f), boardLength / 2.85f),
                 new Field(64, "Verwöhne dein Pony mit Beinwärmern aus Kaschmir! Zahle 50.000 Euro.",boardX + (boardLength / 1.17f), boardLength / 2.9f),
-                new Field(65, "Gönne dir eine goldene Handyhülle. Zahle 50.000 Euro.",boardX + (boardLength / 1.1f), boardLength / 3.3f),
+                new Field(65, "Kaufe Kinder. Zahle 50.000 Euro.",boardX + (boardLength / 1.1f), boardLength / 3.3f),
                 new Field(66, "Heute ist nicht dein Tag! Zahle 10.000 Euro.",boardX + (boardLength / 1.06f), boardLength / 4f),
                 new Field(67, "Dein Hamster stirbt und die Nagetierversicherung zahlt. Kassiere 10.000 Euro",boardX + (boardLength / 1.055f), boardLength / 5.5f),
                 new Field(68, "Du kaufst nutzlose Aktien. Zahle 100.000 Euro.",boardX + (boardLength / 1.08f), boardLength / 9f)
