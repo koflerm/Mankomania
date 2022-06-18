@@ -169,7 +169,6 @@ public class GameScreen extends ScreenAdapter {
     }
 
 
-
     @Override
     public void render(float delta) {
         stage.getBatch().begin();
@@ -224,10 +223,8 @@ public class GameScreen extends ScreenAdapter {
         }
 
         for (Player p : players) {
-            if (p.getMoney() <= 0) {
-                if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
-                    Connection.emitWinner();
-                }
+            if (p.getMoney() <= 0 && p.getPlayerSocketID().equals(Connection.getCs().id())) {
+                Connection.emitWinner();
             }
         }
     }
@@ -303,12 +300,12 @@ public class GameScreen extends ScreenAdapter {
             List<String> playerCollision = new ArrayList<>();
 
             for (Player p : players) {
-                if (p.getPlayerSocketID() != currentPlayer.getPlayerSocketID() && currentPlayer.getCurrentPosition().equals(p.getCurrentPosition())) {
+                if (!(p.getPlayerSocketID().equals(currentPlayer.getPlayerSocketID())) && currentPlayer.getCurrentPosition().equals(p.getCurrentPosition())) {
                     playerCollision.add(p.getPlayerSocketID());
                 }
             }
-            if (playerCollision != null && playerCollision.size() > 0) {
-                Connection.collisionEmit((String[]) playerCollision.toArray());
+            if (playerCollision.size() > 0) {
+                Connection.collisionEmit(playerCollision.toArray(new String[0]));
             }
 
             Connection.setYourTurn(false);
@@ -377,7 +374,7 @@ public class GameScreen extends ScreenAdapter {
         drawPlayerBox(Gdx.graphics.getWidth() - boxWidth, 0, "P1", p1Card);
 
         if (MankomaniaGame.getInstance().getBoard().getPlayers() != null) {
-            for (Player p : MankomaniaGame.getInstance().getBoard().getPlayers() ) {
+            for (Player p : MankomaniaGame.getInstance().getBoard().getPlayers()) {
                 if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
                     drawPlayerMetadata(p.getMoney());
                 }
@@ -829,8 +826,6 @@ public class GameScreen extends ScreenAdapter {
         public void call(Object... args) {
 
             String winnerSocket = args[0].toString();
-
-            System.out.println("The winner is: " + winnerSocket);
 
             for (Player p : players) {
                 if (p.getPlayerSocketID().equals(winnerSocket)) {
