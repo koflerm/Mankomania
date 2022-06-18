@@ -228,11 +228,11 @@ public class Connection {
      * Field Actions
      */
 
-    public static void determineFieldAction(Field f) {
+    public static void determineFieldAction(Field f, Player p) {
+
+        System.out.println("Det field");
 
         int index = f.getFieldIndex();
-
-        Player p = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
 
         if (index == 8 || index == 30 || index == 34 || index == 56) {
             raceField();
