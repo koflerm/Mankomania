@@ -201,19 +201,16 @@ public class Connection {
 
         cs.emit("ROLE_THE_DICE", lobbyID, diceCount);
 
-        System.out.println("Emit dices");
     }
 
     public static void emitPosition(Field f) {
         int position = f.getFieldIndex();
-        System.out.println("Emit position: " + position);
         cs.emit("UPDATE_PLAYER_POSITION", lobbyID, position);
     }
 
     public static void emitNextTurn() {
         cs.emit("NEXT_TURN", lobbyID);
         Connection.yourTurn = false;
-        System.out.println("Emit NEXT_TURN");
     }
 
     public static void updateNextTurn(Emitter.Listener el) {
@@ -230,20 +227,16 @@ public class Connection {
 
     public static void determineFieldAction(Field f, Player p) {
 
-        System.out.println("Det field");
-
         int index = f.getFieldIndex();
 
-        System.out.println("Money before action: " + p.getMoney());
-
         if (index == 8 || index == 30 || index == 34 || index == 56) {
-            raceField();
+            //Race
 
         } else if (index == 23) {
-            stockField();
+            //Stock-Wheel
 
         } else if (index == 42) {
-            auctionField();
+            //Auction
 
         } else if (index == 1 || index == 11 || index == 38) {
             getMoney(5000);
@@ -315,12 +308,10 @@ public class Connection {
 
     public static void loseMoney(int amount) {
         cs.emit("LOSE_MONEY", lobbyID, amount);
-        System.out.println("Emit loseMoney");
     }
 
     public static void getMoney(int amount) {
         cs.emit("GET_MONEY", lobbyID, amount);
-        System.out.println("Emit getMoney");
     }
 
     public static void raceField() {
@@ -328,15 +319,7 @@ public class Connection {
         System.out.println("Emit RACE");
     }
 
-    public static void stockField() {
-        cs.emit("STOCK", lobbyID);
-        System.out.println("Emit STOCK");
-    }
 
-    public static void auctionField() {
-        cs.emit("AUCTION", lobbyID);
-        System.out.println("Emit AUCTION");
-    }
 
 
     public static void getMoneyUpdate(Emitter.Listener el) {
@@ -495,8 +478,6 @@ public class Connection {
 
         for (int i = 0; i < players.length; i++) {
 
-            System.out.println(players[i]);
-
             String[] stock = players[i].split("stocks\":");
 
             String newStock = stock[1];
@@ -565,8 +546,6 @@ public class Connection {
         ArrayList<Player> pList = new ArrayList<>();
 
         for (ConPlayer c : cp) {
-
-            System.out.println(c.getPlayerIndex());
 
             Field f = MankomaniaGame.getInstance().getBoard().getFieldByIndex(c.getPosition());
 
