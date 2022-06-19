@@ -54,6 +54,7 @@ public class FieldAction extends ScreenAdapter {
 
     public void removeFieldActionDialog(){
         fieldActionDialog.remove();
+        fieldActionDialog.clear();
     }
 }
 

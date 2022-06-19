@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mankomania.game.connections.Connection;
 
 import java.security.SecureRandom;
 
@@ -100,6 +101,7 @@ public class StockScreen extends ScreenAdapter {
     @Override
     public void render(float delta){
     if(elapsed >= DURATION){
+        Connection.stockMinigameEmit(share, isRising);
             dispose();
         }
         super.render(delta);

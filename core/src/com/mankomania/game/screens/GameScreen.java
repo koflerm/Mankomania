@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -240,7 +241,11 @@ public class GameScreen extends ScreenAdapter {
                     movingPlayerTargetSteps = 0;
 
                     int currentFieldIndex = board.getCurrentPlayer().getCurrentPosition().getFieldIndex();
-                    if (currentFieldIndex == 8 || currentFieldIndex == 23 || currentFieldIndex == 34 || currentFieldIndex == 42 || currentFieldIndex == 56) {
+                    if (currentFieldIndex == 23) {
+
+                        MankomaniaGame.getInstance().setScreen(new StockScreen());
+
+                    }else if(currentFieldIndex == 42) {
 
                     } else {
                         fieldAction.drawFieldActionDialog(stage, board.getCurrentPlayer());
@@ -282,15 +287,6 @@ public class GameScreen extends ScreenAdapter {
             fieldAction.setFieldActionDialogIsShown(false);
 
             Player currentPlayer = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
-            int nextPlayerID = 1;
-
-            if (currentPlayer.getPlayerIndex() != 4)
-                nextPlayerID = currentPlayer.getPlayerIndex() + 1;
-
-            Player nextPlayer = MankomaniaGame.getInstance().getBoard().getPlayerByIndex(nextPlayerID);
-            Connection.setCurrentPlayer(nextPlayer);
-            MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
-            triggerTurnDialog = true;
 
             Field f = MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getCurrentPosition();
 
@@ -307,6 +303,18 @@ public class GameScreen extends ScreenAdapter {
             if (playerCollision.size() > 0) {
                 Connection.collisionEmit(playerCollision.toArray(new String[0]));
             }
+
+            int nextPlayerID = 1;
+
+            if (currentPlayer.getPlayerIndex() != 4)
+                nextPlayerID = currentPlayer.getPlayerIndex() + 1;
+
+            Player nextPlayer = MankomaniaGame.getInstance().getBoard().getPlayerByIndex(nextPlayerID);
+            Connection.setCurrentPlayer(nextPlayer);
+            MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
+            triggerTurnDialog = true;
+
+
 
             Connection.setYourTurn(false);
             Connection.emitNextTurn();
@@ -400,6 +408,11 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void drawPlayerMetadata(int money) {
+        for(Actor a : stage.getActors()){
+            if(a.getClass() == Label.class){
+                a.addAction(Actions.removeActor());
+            }
+        }
         float labelHeight = calcHeightFactor(BOARD_PLAYER_MONEY_FACTOR);
         Label label = new Label("$ " + money, skin, BOARD_TEXT_STYLE);
         label.setFontScale(labelHeight / 200f);

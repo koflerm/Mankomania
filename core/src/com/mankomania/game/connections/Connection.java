@@ -283,8 +283,8 @@ public class Connection {
             p.loseMoney(30000);
 
         } else if (index == 41 || index == 53 || index == 63) {
-            loseMoney(20000);
-            p.loseMoney(20000);
+            loseMoney(200000);
+            p.loseMoney(200000);
 
         } else if (index == 43) {
             loseMoney(80000);
@@ -307,10 +307,14 @@ public class Connection {
 
 
     public static void loseMoney(int amount) {
+        System.out.println("lose Money emit");
+
         cs.emit("LOSE_MONEY", lobbyID, amount);
     }
 
     public static void getMoney(int amount) {
+
+        System.out.println("getmoney emit");
         cs.emit("GET_MONEY", lobbyID, amount);
     }
 
@@ -369,13 +373,15 @@ public class Connection {
     }
 
     //Aufrufen
-    public static void stockMiniagmeEmit(String stock, boolean black, Player current) {
+    public static void stockMinigameEmit(String stock, boolean black) {
+
+        Player current = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
 
         Share s;
 
-        if (stock.equals("HARD_STEEL_PLC")) {
+        if (stock.equals("HardSteel")) {
             s = Share.HARD_STEEL_PLC;
-        } else if (stock.equals("SHORT_CIRCUIT_PLC")) {
+        } else if (stock.equals("Shortcircuit")) {
             s = Share.SHORT_CIRCUIT_PLC;
         } else {
             s = Share.DRY_OIL_PLC;

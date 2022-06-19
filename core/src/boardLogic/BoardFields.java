@@ -52,7 +52,7 @@ public class BoardFields {
                 new Field(38, "Spendierhosen in der Bar! Zahle 5.000 Euro",boardX + (boardLength / 3.33f), boardLength / 1.105f),
                 new Field(39, "Kaufe Anteile an einem Rennpferd! Zahle 50.000 Euro.",boardX + (boardLength / 2.90f), boardLength / 1.17f),
                 new Field(40, "Kaufe Anteile an nachhaltigen Kohlebergwerken! Zahle 50.000 Euro.",boardX + (boardLength / 2.83f), boardLength / 1.26f),
-                new Field(41, "Du verletzt dich bei einem Wrestlingmatch! Du erhälst 20.000 Euro.",boardX + (boardLength / 2.90f), boardLength / 1.36f),
+                new Field(41, "Du verletzt dich bei einem Wrestlingmatch! Du erhälst 200.000 Euro.",boardX + (boardLength / 2.90f), boardLength / 1.36f),
                 // MINIGAME AUKTIONSHAUS
                 new Field(42, "Aktionshaus",boardX + (boardLength / 3.25f), boardLength / 1.455f),
                 new Field(43, "Deine Oma benötigt ein neues Facelifting. Zahle 80.000 Euro",boardX + (boardLength / 3.9f), boardLength / 1.52f),
@@ -65,7 +65,7 @@ public class BoardFields {
                 new Field(50, "Du steckst deine Ersparnisse in DogeCoin. Zahle 100.000 Euro.",boardX + (boardLength / 1.45f), boardLength / 1.105f),
                 new Field(51, "Du steckst deine Ersparnisse in NFTs. Zahle 100.000 Euro.",boardX + (boardLength / 1.33f), boardLength / 1.06f),
                 new Field(52, "Du steckst deine Ersparnisse in ein Schneeballsystem. Zahle 100.000 Euro.",boardX + (boardLength / 1.22f), boardLength / 1.05f),
-                new Field(53, "Deine Mutter klaut dein Geld für eine neue Handtasche. Zahle 20.000 Euro.",boardX + (boardLength / 1.14f), boardLength / 1.08f),
+                new Field(53, "Deine Mutter klaut dein Geld für eine neue Handtasche. Zahle 200.000 Euro.",boardX + (boardLength / 1.14f), boardLength / 1.08f),
                 new Field(54, "Verwöhne dein Pony mit Beinwärmern aus Kaschmir! Zahle 50.000 Euro.",boardX + (boardLength / 1.055f), boardLength / 1.22f),
                 new Field(55, "Du verkaufst deine Kinder. Bekomme 70.000 Euro.",boardX + (boardLength / 1.06f), boardLength / 1.33f),
                 // MINIGAME RENNSTRECKE
