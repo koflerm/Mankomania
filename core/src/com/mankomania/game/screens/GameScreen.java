@@ -1,5 +1,6 @@
 package com.mankomania.game.screens;
 
+import android.app.Activity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
@@ -533,28 +534,35 @@ public class GameScreen extends ScreenAdapter {
 
     Emitter.Listener startRoundListener = new Emitter.Listener() {
         @Override
-        public void call(Object... args) {
+        public void call(final Object... args) {
 
-            Connection.convertJsonToPlayer("" + args[0]);
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
 
-            if (args[1].toString().equals(Connection.getCs().id())) {
-                //set Turn after the turn on false
-                Connection.setYourTurn(true);
-            } else {
-                Connection.setYourTurn(false);
-            }
+                    System.out.println("Start");
+
+                    Connection.convertJsonToPlayer("" + args[0]);
+
+                    if (args[1].toString().equals(Connection.getCs().id())) {
+                        //set Turn after the turn on false
+                        Connection.setYourTurn(true);
+                    } else {
+                        Connection.setYourTurn(false);
+                    }
 
 
-            for (Player p : players) {
-                if (p.getPlayerSocketID().equals(args[1].toString())) {
-                    MankomaniaGame.getInstance().getBoard().setCurrentPlayer(p);
-                    Connection.setCurrentPlayer(p);
-                    triggerTurnDialog = true;
+                    for (Player p : players) {
+                        if (p.getPlayerSocketID().equals(args[1].toString())) {
+                            MankomaniaGame.getInstance().getBoard().setCurrentPlayer(p);
+                            Connection.setCurrentPlayer(p);
+                            triggerTurnDialog = true;
+                        }
+                    }
+
+                    Connection.setUpdate(true);
                 }
-            }
-
-            Connection.setUpdate(true);
-
+                });
         }
     };
 
@@ -565,6 +573,9 @@ public class GameScreen extends ScreenAdapter {
     Emitter.Listener nextTurnListener = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
+
+            System.out.println("Next");
+
             String nextPlayerSocket = args[0].toString();
             List<Player> pList = MankomaniaGame.getInstance().getBoard().getPlayers();
 

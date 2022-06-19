@@ -133,6 +133,7 @@ public class Connection {
     }
 
     public static void startGame(Emitter.Listener el) {
+        System.out.println("StartGame");
         cs.once("START_GAME", el);
     }
 
@@ -145,6 +146,8 @@ public class Connection {
 
 
     public static void emitStocks(ConStock s) {
+
+        System.out.println("Emit Stocks");
 
         String jsonInString = new Gson().toJson(s);
         try {
@@ -162,6 +165,8 @@ public class Connection {
     }
 
     public static void emitHighestDice(int dice1, int dice2) {
+
+        System.out.println("Emit Dices");
 
         int[] diceCount = new int[2];
         diceCount[0] = dice1;
@@ -185,10 +190,6 @@ public class Connection {
     public static void startRound(Emitter.Listener el) {
         cs.once("START_ROUND", el);
     }
-
-    /**
-     * new Methods
-     **/
 
     public static void updateDice(Emitter.Listener el) {
         cs.on("UPDATE_DICE", el);
@@ -439,8 +440,8 @@ public class Connection {
          * Split Player-Array in multiple Player Strings
          */
 
-        //String[] players = args.split("\\},", 10);
-        String[] players = args.split("},", 10);
+        String[] players = args.split("dice_Count\":0\\},");
+        // PC: String[] players = args.split("},", 10);
 
         for (int i = 0; i < players.length; i++) {
 
@@ -451,12 +452,14 @@ public class Connection {
             if (i == 0) {
 
                 newString = temp.substring(24);
-                newString += "}";
+                //PC: newString += "}";
+                newString += "dice_Count\":0}";
                 players[i] = newString;
             } else if (i < (players.length - 1)) {
 
                 newString = temp.substring(23);
-                newString += "}";
+                // PC: newString += "}";
+                newString += "dice_Count\":0}";
 
                 players[i] = newString;
 
@@ -483,6 +486,10 @@ public class Connection {
             String newStock = stock[1];
 
             String finalStock = newStock.substring(0, newStock.length() - 1);
+
+            //Only for android:
+            String[] android = finalStock.split(",\"yourTurn");
+            finalStock = android[0];
 
             stockAsString.add(finalStock);
         }
