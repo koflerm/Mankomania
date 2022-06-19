@@ -125,10 +125,6 @@ public class LobbyScreen extends ScreenAdapter{
         backButton.getLabel().setFontScale(Gdx.graphics.getHeight() / 400f);
         backButton.addListener(backListener());
 
-        TextButton startButton = new TextButton("START", skin, "default");
-        startButton.getLabel().setFontScale(Gdx.graphics.getHeight() / 400f);
-        startButton.addListener(startListener());
-
         Texture lobbyText = new Texture(Gdx.files.internal("text-field-lobby.png"));
         Image lobbyImage = new Image(lobbyText);
 
@@ -150,7 +146,6 @@ public class LobbyScreen extends ScreenAdapter{
         tab.row();
 
         tab.add(backButton).expandX().left().padLeft(20).padBottom(20).width(Gdx.graphics.getWidth() / 5f).height(Gdx.graphics.getHeight() / 6f);
-        tab.add(startButton).expandX().bottom().right().padRight(20).padBottom(20).width(Gdx.graphics.getWidth() / 5f).height(Gdx.graphics.getHeight() / 6f);
 
         stage.addActor(tab);
     }
@@ -185,20 +180,6 @@ public class LobbyScreen extends ScreenAdapter{
                 MankomaniaGame.getInstance().setScreen(new StartScreen());
 
                 Connection.closeConnection();
-
-            }
-        };
-    }
-
-    public ClickListener startListener() {
-        return new ClickListener() {
-            @Override
-            public void clicked(InputEvent inputEvent, float x, float y) {
-
-                if(Connection.getStart()){
-                    MankomaniaGame.getInstance().disposeCurrentScreen();
-                    MankomaniaGame.getInstance().setScreen(new GameScreen());
-                }
 
             }
         };

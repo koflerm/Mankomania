@@ -43,6 +43,7 @@ public class GameScreen extends ScreenAdapter {
     private final float boxWidth;
     private final float boxHeight;
     private final Dialog turnDialog;
+    private final Dialog winnerDialog;
     private final Dialog intersectionDialog;
     private boolean triggerTurnDialog;
 
@@ -75,11 +76,15 @@ public class GameScreen extends ScreenAdapter {
     private boolean intersectionDialogIsShown;
     private boolean moveToIntersection;
     private boolean intersectionDecided;
+    private boolean gotWinner;
+    private Player winningPlayer;
+    private boolean winnerDialogShown;
 
     private Player movingPlayer;
     private int movingPlayerTargetSteps;
     private int movingPlayerCurrentSteps;
     private float movingElapsed;
+    private float winnerElapsed;
     private List<Player> players;
 
     private FieldAction fieldAction;
@@ -96,7 +101,9 @@ public class GameScreen extends ScreenAdapter {
         boxWidth = calcWidthFactor(BOARD_PLAYER_BOX_WIDTH_FACTOR);
         boxHeight = calcHeightFactor(BOARD_PLAYER_BOX_HEIGHT_FACTOR);
         turnDialogIsShown = false;
-        turnDialog = new Dialog("INFO", skin, "alt") {
+        turnDialog = new Dialog("", skin, "alt") {
+        };
+        winnerDialog = new Dialog("", skin, "alt") {
         };
         turnDialogNeeded = false;
         diceAnimation = new DiceAnimation();
@@ -121,6 +128,8 @@ public class GameScreen extends ScreenAdapter {
         moveToIntersection = false;
         intersectionDecided = false;
         triggerTurnDialog = false;
+        gotWinner = false;
+        winnerDialogShown = false;
 
         movingPlayerCurrentSteps = 0;
         movingPlayerTargetSteps = 0;
@@ -181,11 +190,6 @@ public class GameScreen extends ScreenAdapter {
         drawPlayerInformation();
         stage.getBatch().end();
 
-        renderDialogs();
-        renderFieldActionDialog(delta);
-        stage.act(delta);
-        stage.draw();
-
         /**
          * Update all Players
          */
@@ -223,11 +227,58 @@ public class GameScreen extends ScreenAdapter {
             triggerTurnDialog = false;
         }
 
-        for (Player p : players) {
-            if (p.getMoney() <= 0 && p.getPlayerSocketID().equals(Connection.getCs().id())) {
-                Connection.emitWinner();
+        if (!gotWinner) {
+            checkForWinner();
+        }
+
+        renderDialogs();
+        renderFieldActionDialog(delta);
+        renderWinnerDialog(delta);
+
+        stage.act(delta);
+        stage.draw();
+    }
+
+    private void renderWinnerDialog(float delta) {
+        if (gotWinner && !winnerDialogShown) {
+            drawWinnerDialog();
+            winnerDialogShown = true;
+        } else if (gotWinner) {
+            if (winnerElapsed >= DURATION) {
+                this.winnerDialog.remove();
+                this.winnerDialog.clear();
+                winnerElapsed = 0;
+                gotWinner = false;
+                winningPlayer = null;
+                MankomaniaGame.getInstance().disposeCurrentScreen();
+                MankomaniaGame.getInstance().setScreen(new StartScreen());
+                inputMultiplexer.removeProcessor(stage);
+            } else {
+                winnerElapsed += delta;
             }
         }
+    }
+
+    private void drawWinnerDialog() {
+        float scale = Gdx.graphics.getWidth() / 1000f;
+
+        Table tab = new Table();
+        tab.align(Align.center);
+        Label nextTurnLabel = new Label("And the winner is:", skin, BOARD_TEXT_STYLE);
+        Label playerNameLabel = new Label("P" + winningPlayer.getPlayerIndex(), skin, BOARD_TEXT_STYLE);
+
+        tab.add(nextTurnLabel).row();
+        tab.add(playerNameLabel).row();
+        tab.pad(20);
+
+        winnerDialog.getContentTable().add(tab);
+        winnerDialog.setScale(scale);
+        winnerDialog.show(stage);
+
+        float dialogXPosition = (Gdx.graphics.getWidth() / 2f) - ((winnerDialog.getWidth() * scale) / 2f);
+        float dialogYPosition = (Gdx.graphics.getHeight() / 2f) - ((winnerDialog.getHeight() * scale) / 2f);
+
+        winnerDialog.setPosition(dialogXPosition, dialogYPosition);
     }
 
     private void renderMovement(float delta, Board board) {
@@ -281,6 +332,18 @@ public class GameScreen extends ScreenAdapter {
         }
     }
 
+    private boolean checkForWinner() {
+        for (Player p : players) {
+            if (p.getMoney() <= 0 && p.getPlayerSocketID().equals(Connection.getCs().id())) {
+                Connection.emitWinner();
+                gotWinner = true;
+                winningPlayer = p;
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void renderFieldActionDialog(float delta) {
         if (elapsedFieldAction >= FIELD_ACTION_DURATION && fieldAction.getFieldActionDialogIsShown()) {
             elapsedFieldAction = 0;
@@ -293,6 +356,8 @@ public class GameScreen extends ScreenAdapter {
 
             System.out.println("Det field");
             Connection.determineFieldAction(f, MankomaniaGame.getInstance().getBoard().getCurrentPlayer());
+            if (checkForWinner())
+                return;
 
             List<String> playerCollision = new ArrayList<>();
 
@@ -314,8 +379,6 @@ public class GameScreen extends ScreenAdapter {
             Connection.setCurrentPlayer(nextPlayer);
             MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
             triggerTurnDialog = true;
-
-
 
             Connection.setYourTurn(false);
             Connection.emitNextTurn();
@@ -849,6 +912,8 @@ public class GameScreen extends ScreenAdapter {
 
             for (Player p : players) {
                 if (p.getPlayerSocketID().equals(winnerSocket)) {
+                    gotWinner = true;
+                    winningPlayer = p;
                     System.out.println("The winner is: " + p.getPlayerIndex());
                 }
             }

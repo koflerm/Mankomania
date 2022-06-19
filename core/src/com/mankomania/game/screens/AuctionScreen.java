@@ -257,7 +257,26 @@ public class AuctionScreen extends ScreenAdapter {
     @Override
     public void render(float delta) {
         if (elapsed >= DURATION) {
-            dispose();
+            Connection.auctionEmit(itemPrice, multiplier);
+
+            Connection.emitNextTurn();
+            Connection.setYourTurn(false);
+            MankomaniaGame.getInstance().disposeCurrentScreen();
+            MankomaniaGame.getInstance().setScreen(MankomaniaGame.getInstance().getSaveScreen());
+            GameScreen gs = (GameScreen) MankomaniaGame.getInstance().getScreen();
+
+            int nextPlayerID = 1;
+            Player currentPlayer = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
+
+            if (currentPlayer.getPlayerIndex() != 4)
+                nextPlayerID = currentPlayer.getPlayerIndex() + 1;
+
+            Player nextPlayer = MankomaniaGame.getInstance().getBoard().getPlayerByIndex(nextPlayerID);
+            Connection.setCurrentPlayer(nextPlayer);
+            MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
+
+            gs.showTurnDialog(nextPlayer, false);
+            inputMultiplexer.removeProcessor(stage);
         }
         super.render(delta);
         if(itemSelected) {
@@ -269,30 +288,6 @@ public class AuctionScreen extends ScreenAdapter {
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
         stage.draw();
-    }
-
-    @Override
-    public void dispose() {
-        Connection.auctionEmit(itemPrice, multiplier);
-
-        Connection.emitNextTurn();
-        Connection.setYourTurn(false);
-        MankomaniaGame.getInstance().disposeCurrentScreen();
-        MankomaniaGame.getInstance().setScreen(MankomaniaGame.getInstance().getSaveScreen());
-        GameScreen gs = (GameScreen) MankomaniaGame.getInstance().getScreen();
-
-        int nextPlayerID = 1;
-        Player currentPlayer = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
-
-        if (currentPlayer.getPlayerIndex() != 4)
-            nextPlayerID = currentPlayer.getPlayerIndex() + 1;
-
-        Player nextPlayer = MankomaniaGame.getInstance().getBoard().getPlayerByIndex(nextPlayerID);
-        Connection.setCurrentPlayer(nextPlayer);
-        MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
-
-        gs.showTurnDialog(nextPlayer, false);
-        inputMultiplexer.removeProcessor(stage);
     }
 }
 
