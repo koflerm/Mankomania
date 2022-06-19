@@ -239,6 +239,10 @@ public class GameScreen extends ScreenAdapter {
         stage.draw();
     }
 
+    private void exitGame() {
+        Gdx.app.exit();
+    }
+
     private void renderWinnerDialog(float delta) {
         if (gotWinner && !winnerDialogShown) {
             drawWinnerDialog();
@@ -250,9 +254,7 @@ public class GameScreen extends ScreenAdapter {
                 winnerElapsed = 0;
                 gotWinner = false;
                 winningPlayer = null;
-                MankomaniaGame.getInstance().disposeCurrentScreen();
-                MankomaniaGame.getInstance().setScreen(new StartScreen());
-                inputMultiplexer.removeProcessor(stage);
+                exitGame();
             } else {
                 winnerElapsed += delta;
             }
