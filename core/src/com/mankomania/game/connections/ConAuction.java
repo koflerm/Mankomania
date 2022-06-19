@@ -2,13 +2,13 @@ package com.mankomania.game.connections;
 
 public class ConAuction {
 
-    int itemprice;
-    int multiplicator;
-    int moneyFromBank;
+    float itemprice;
+    float multiplicator;
+    float moneyFromBank;
     int difference;
     int moneyToSet;
 
-    public ConAuction(int itemprice, int multiplicator, int moneyFromBank, int difference, int moneyToSet) {
+    public ConAuction(float itemprice, float multiplicator, float moneyFromBank, int difference, int moneyToSet) {
         this.itemprice = itemprice;
         this.multiplicator = multiplicator;
         this.moneyFromBank = moneyFromBank;
@@ -16,27 +16,27 @@ public class ConAuction {
         this.moneyToSet = moneyToSet;
     }
 
-    public int getItemprice() {
+    public float getItemprice() {
         return itemprice;
     }
 
-    public void setItemprice(int itemprice) {
+    public void setItemprice(float itemprice) {
         this.itemprice = itemprice;
     }
 
-    public int getMultiplicator() {
+    public float getMultiplicator() {
         return multiplicator;
     }
 
-    public void setMultiplicator(int multiplicator) {
+    public void setMultiplicator(float multiplicator) {
         this.multiplicator = multiplicator;
     }
 
-    public int getMoneyFromBank() {
+    public float getMoneyFromBank() {
         return moneyFromBank;
     }
 
-    public void setMoneyFromBank(int moneyFromBank) {
+    public void setMoneyFromBank(float moneyFromBank) {
         this.moneyFromBank = moneyFromBank;
     }
 

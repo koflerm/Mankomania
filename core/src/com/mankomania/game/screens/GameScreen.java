@@ -246,7 +246,8 @@ public class GameScreen extends ScreenAdapter {
                         MankomaniaGame.getInstance().setScreen(new StockScreen());
 
                     }else if(currentFieldIndex == 42) {
-
+                        MankomaniaGame.getInstance().saveScreen();
+                        MankomaniaGame.getInstance().setScreen(new AuctionScreen());
                     } else {
                         fieldAction.drawFieldActionDialog(stage, board.getCurrentPlayer());
                     }
@@ -789,10 +790,10 @@ public class GameScreen extends ScreenAdapter {
             for (Player p : pl) {
                 if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
                     int amountOfStock = p.getAmountOfShare(s);
+                    System.out.println(amountOfStock);
                     if (amountOfStock > 0) {
                         if (black) {
                             p.loseMoney(20000 * amountOfStock);
-
                         } else {
                             p.addMoney(20000 * amountOfStock);
                         }
@@ -824,6 +825,7 @@ public class GameScreen extends ScreenAdapter {
             for (Player p : players) {
                 if (p.getPlayerSocketID().equals(currentPlayerSocketID)) {
                     p.setMoney(moneyToSet);
+                    System.out.println("new money: " + p.getMoney());
                 }
             }
         }

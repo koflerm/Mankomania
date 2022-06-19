@@ -354,11 +354,16 @@ public class Connection {
      */
 
     //Aufrufen
-    public static void auctionEmit(int itemprice, int multiplicator, int moneyFromBank, int currentPlayerNewMoney) {
+    public static void auctionEmit(float itemprice, float multiplicator) {
 
-        int difference = moneyFromBank - itemprice;
+        float moneyFromBank = itemprice * multiplicator;
+        int difference = (int) moneyFromBank - (int) itemprice;
 
-        ConAuction ca = new ConAuction(itemprice, multiplicator, moneyFromBank, difference, currentPlayerNewMoney);
+        MankomaniaGame.getInstance().getBoard().getCurrentPlayer().addMoney(difference);
+
+        int money = MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getMoney();
+
+        ConAuction ca = new ConAuction(itemprice, multiplicator, moneyFromBank, difference, money);
 
         String jsonInString = new Gson().toJson(ca);
         try {
@@ -372,7 +377,7 @@ public class Connection {
         }
     }
 
-    //Aufrufen
+
     public static void stockMinigameEmit(String stock, boolean black) {
 
         Player current = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
