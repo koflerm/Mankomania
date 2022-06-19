@@ -6,7 +6,7 @@ const {Server} = require("socket.io");
 const io = new Server(server, { cors: { origin: '*'} });
 const PORT = process.env.PORT || 3000;
 const { v4: uuidv4 } = require('uuid');
-//const { instrument } = require("@socket.io/admin-ui");
+const {instrument} = require("@socket.io/admin-ui");
 //sonar-scanner.bat -D"sonar.organization=koflerm" -D"sonar.projectKey=Mankomania_backend" -D"sonar.sources=." -D"sonar.host.url=https://sonarcloud.io"
 
 
@@ -17,6 +17,7 @@ const rooms = {};
 const START_MONEY = 1000000
 const MAX_LOBBY_SIZE = 4
 const moneyTransferByPlayerCollision = 10000
+const moneyMinigameStock = 20000
 
 
 
@@ -35,7 +36,6 @@ function validateRoom(socket, room){
         }
 
     }else{
-        //ToDo private Game
     }
 }
 
@@ -56,7 +56,8 @@ function  createRoom () {
             this.counterForStocks++
         },
         counterForStocks : 0,
-        counterForDice: 0
+        counterForDice: 0,
+        counterForHorseRace: 0
     };
     rooms[room.id] = room;
     // have the socket join the room they've just created.
@@ -147,7 +148,7 @@ const stocks = ()=> {
  * @param socket A connected socket.io socket
  * @param io io server instance
  */
-function leaveRooms(socket, io){
+function leaveRooms(socket){
     const roomsToDelete = [];
     // check to see if the socket is in the current room
     for(const id in rooms){
@@ -178,7 +179,7 @@ function leaveRooms(socket, io){
  * @param room room An object that represents a room from the `rooms` instance variable object
  * @param io io server instance
  */
-function increaseReadyCounterForRoom(socket, room, io){
+function increaseReadyCounterForRoom(socket, room){
     if(rooms[room] !== undefined){
         rooms[room].ready++;
         if(rooms[room].ready === rooms[room].sockets.length && rooms[room].sockets.length >= 2){
@@ -247,11 +248,13 @@ const validateHighestDice = (room) =>{
  * @param room An object that represents a room from the `rooms` instance variable object
  */
 const resetPlayersDice = (room) =>{
-    Object.values(rooms[room].players).map(a=>a.dice_1= 0);
-    Object.values(rooms[room].players).map(a=>a.dice_2 = 0);
-    Object.values(rooms[room].players).map(a=>a. dice_Count = 0);
+    let players = rooms[room].players;
+    Object.keys(players).forEach((key =>{
+        players[key].dice_1 = 0
+        players[key].dice_2 = 0
+        players[key].dice_Count = 0
+    }))
     rooms[room].counterForDice = 0
-    console.log(rooms[room])
 }
 
 /**
@@ -383,11 +386,97 @@ const playerGetMoney = (room, amount, socket) =>{
         socket.to(room).emit('PLAYER_COLLISION', socket.id, collision);
     }
 }
+/**
+ *
+ * @param room
+ * @param stock
+ * @param socket
+ */
+const stockMiniGame = (room, stock, socket)=>{
+     if(room === null || stock === null){
+         io.to(socket).emit('ERROR', "Error in stockMiniGame");
+     }else{
+         let players = rooms[room].players
+         Object.keys(players).forEach((key =>{
+             if(players[key].stocks[stock.stockName] > 0){
+                if (stock.status === true){
+                    rooms[room].players[key].money +=  players[key].stocks[stock.stockName] * moneyMinigameStock
+                }else{
+                    rooms[room].players[key].money -=  players[key].stocks[stock.stockName] * moneyMinigameStock
+                }
+             }
+         }))
+         socket.to(room).emit('STOCK', socket.id, stock)
 
+     }
+}
+/**
+ *
+ * @param room
+ * @param auctionObject
+ * @param socket
+ */
+const  auctionMiniGame = (room, auctionObject, socket)=>{
+     if(room === null || auctionObject === null){
+         io.to(socket).emit('ERROR', "Error in auctionMiniGame");
+     }else{
+        rooms[room].players[socket.id].money  =auctionObject.moneyToSet
+         socket.to(room).emit('AUCTION', socket.id, auctionObject)
+     }
+}
 
+const raceMiniGame = (room, socket) =>{
+    if(room === null){
+        io.to(socket).emit('ERROR', "Error in raceMiniGame");
+    }else{
+        rooms[room].counterForHorseRace++;
+        socket.to(room).emit('RACE', socket.id)
+    }
+}
 
+const validateRaceMiniGame = (room) =>{
+    if(room === null){
+        io.to(socket).emit('ERROR', "Error in validateRaceMiniGame");
+    }else{
+        rooms[room].counterForHorseRace++;
+        if(rooms[room].counterForHorseRace === rooms[room].sockets.length){
+            io.in(room).emit('HORSE_START')
 
-app.get('/', (req, res) =>{
+        }
+    }
+}
+
+const validateWinnerRaceMiniGame =(room, horseObject, socket)=>{
+    if(room === null || horseObject === null){
+        io.to(socket).emit('ERROR', "Error in validateRaceMiniGame");
+    }else{
+        if(horseObject.winner === true){
+            socket.to(room).emit('RACE_MOVE', horseObject)
+            let players = rooms[room].players
+            Object.keys(players).forEach((key =>{
+                if(players[key].playerIndex === horseObject.horseIndex){
+                    players[key].money += 50000
+                }else{
+                    players[key].money -= 50000
+                }
+
+            }))
+
+        }else{
+            socket.to(room).emit('RACE_MOVE', horseObject)
+        }
+    }
+}
+
+const validateWinner =(room, socket)=>{
+    if(room === null){
+        io.to(socket).emit('ERROR', "Error in validateWinner");
+    }else{
+        socket.to(room).emit('WINNER', socket.id)
+    }
+}
+
+app.get('/', (_req, res) =>{
     res.write(`<h1>Socket IO Start on Port : ${PORT}</h1>`)
     res.end();
 })
@@ -409,24 +498,22 @@ io.on('connection', (socket) => {
     })
 
     socket.on('JOIN_ROOM', (room) => {
-        validateRoom(socket, room, io);
+        validateRoom(socket, room);
     });
 
     socket.on('READY_FOR_GAME', (room) =>{
-        increaseReadyCounterForRoom(socket, room, io);
+        increaseReadyCounterForRoom(socket, room);
     });
 
     socket.on('LEAVE_ROOM', () => {
-        leaveRooms(socket,io);
+        leaveRooms(socket);
     });
 
     socket.on('disconnect', () => {
-        console.log('user disconnected');
-        leaveRooms(socket,io);
+        leaveRooms(socket);
     });
     socket.on('disconnecting', () => {
-        console.log('user disconnected');
-        leaveRooms(socket,io);
+        leaveRooms(socket);
     });
 
     socket.on('ROLE_THE_HIGHEST_DICE_AGAIN', (room, diceCount, length) =>{
@@ -457,19 +544,35 @@ io.on('connection', (socket) => {
         playerCollision(room, collision, socket)
     })
 
+    socket.on('STOCK', (room, stock) =>{
+        stockMiniGame(room, stock, socket)
+    })
 
+    socket.on('AUCTION', (room, auctionObject) =>{
+        auctionMiniGame(room, auctionObject, socket)
+    })
 
+    socket.on('RACE', (room)=>{
+        raceMiniGame(room, socket)
+    })
+
+    socket.on('RACE_READY', (room)=>{
+        validateRaceMiniGame(room)
+    })
+
+    socket.on('RACE_MOVE', (room, horseObject) =>{
+        validateWinnerRaceMiniGame(room, horseObject, socket)
+    })
+
+    socket.on('WINNER', (room)=>{
+        validateWinner(room, socket)
+    })
 
 });
 
-
-/*
 instrument(io, {
     auth: false
 });
-*/
-
-
 
 
 

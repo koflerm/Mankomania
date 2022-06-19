@@ -17,6 +17,7 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import playerLogic.Player;
+import shareLogic.Share;
 
 public class Connection {
     private static final String SERVER = "https://mankomania.herokuapp.com/";
@@ -200,21 +201,16 @@ public class Connection {
 
         cs.emit("ROLE_THE_DICE", lobbyID, diceCount);
 
-        System.out.println("Emit dices");
     }
 
-    //Keine Ahnugn wo zu Implementieren
     public static void emitPosition(Field f) {
         int position = f.getFieldIndex();
-        System.out.println("Emit position: " + position);
         cs.emit("UPDATE_PLAYER_POSITION", lobbyID, position);
     }
 
-    //Keine Ahnugn wo zu Implementieren
     public static void emitNextTurn() {
         cs.emit("NEXT_TURN", lobbyID);
         Connection.yourTurn = false;
-        System.out.println("Emit NEXT_TURN");
     }
 
     public static void updateNextTurn(Emitter.Listener el) {
@@ -229,63 +225,78 @@ public class Connection {
      * Field Actions
      */
 
-    public static void determineFieldAction(Field f) {
+    public static void determineFieldAction(Field f, Player p) {
 
         int index = f.getFieldIndex();
 
         if (index == 8 || index == 30 || index == 34 || index == 56) {
-            raceField();
+            //Race
 
         } else if (index == 23) {
-            stockField();
+            //Stock-Wheel
 
         } else if (index == 42) {
-            auctionField();
+            //Auction
 
         } else if (index == 1 || index == 11 || index == 38) {
             getMoney(5000);
+            p.addMoney(5000);
 
         } else if (index == 2) {
             loseMoney(170000);
+            p.loseMoney(17000);
 
         } else if (index == 3 || index == 7 || index == 13 || index == 14 || index == 15 || index == 18 || index == 21 || index == 25 || index == 27 || index == 29 || index == 39 || index == 40 || index == 54 || index == 59 || index == 64 || index == 65) {
             loseMoney(50000);
+            p.loseMoney(50000);
 
         } else if (index == 4 || index == 6 || index == 12 || index == 17 || index == 24 || (index <= 52 && index >= 46) || index == 61 || index == 62 || index == 68) {
             loseMoney(100000);
+            p.loseMoney(100000);
 
         } else if (index == 5 || index == 9 || index == 22 || index == 36 || index == 55 || index == 57 || index == 67) {
             getMoney(10000);
+            p.addMoney(10000);
 
         } else if (index == 10 || index == 16 || index == 20 || index == 32 || index == 37 || index == 44 || index == 45 || index == 60) {
             getMoney(50);
+            p.addMoney(50);
 
         } else if (index == 19) {
             getMoney(50000);
+            p.addMoney(50000);
 
         } else if (index == 26) {
             loseMoney(40000);
+            p.loseMoney(40000);
 
         } else if (index == 28) {
             loseMoney(70000);
+            p.loseMoney(70000);
 
         } else if (index == 31) {
             loseMoney(150000);
+            p.loseMoney(150000);
 
         } else if (index == 33 || index == 35) {
             loseMoney(30000);
+            p.loseMoney(30000);
 
         } else if (index == 41 || index == 53 || index == 63) {
             loseMoney(20000);
+            p.loseMoney(20000);
 
         } else if (index == 43) {
             loseMoney(80000);
+            p.loseMoney(80000);
 
         } else if (index == 58) {
             loseMoney(60000);
+            p.loseMoney(60000);
 
         } else if (index == 66) {
             loseMoney(10000);
+            p.loseMoney(10000);
 
         } else {
             /**
@@ -294,15 +305,13 @@ public class Connection {
         }
     }
 
-    //Aufrufen
+
     public static void loseMoney(int amount) {
         cs.emit("LOSE_MONEY", lobbyID, amount);
-        System.out.println("Emit loseMoney");
     }
 
     public static void getMoney(int amount) {
         cs.emit("GET_MONEY", lobbyID, amount);
-        System.out.println("Emit getMoney");
     }
 
     public static void raceField() {
@@ -310,15 +319,7 @@ public class Connection {
         System.out.println("Emit RACE");
     }
 
-    public static void stockField() {
-        cs.emit("STOCK", lobbyID);
-        System.out.println("Emit STOCK");
-    }
 
-    public static void auctionField() {
-        cs.emit("AUCTION", lobbyID);
-        System.out.println("Emit AUCTION");
-    }
 
 
     public static void getMoneyUpdate(Emitter.Listener el) {
@@ -338,7 +339,6 @@ public class Connection {
         cs.on("PLAYER_COLLISION", el);
     }
 
-    //Aufrufen
     public static void collisionEmit(String[] players) {
         cs.emit("PLAYER_COLLISION", lobbyID, players);
         System.out.println("Emit collision");
@@ -350,13 +350,47 @@ public class Connection {
      */
 
     //Aufrufen
-    public static void auction(int difference) {
-        cs.emit("PLAYER_COLLISION", lobbyID, difference);
-        System.out.println("Emit auction money difference");
+    public static void auctionEmit(int itemprice, int multiplicator, int moneyFromBank, int currentPlayerNewMoney) {
+
+        int difference = moneyFromBank - itemprice;
+
+        ConAuction ca = new ConAuction(itemprice, multiplicator, moneyFromBank, difference, currentPlayerNewMoney);
+
+        String jsonInString = new Gson().toJson(ca);
+        try {
+            JSONObject caJSONObject = new JSONObject(jsonInString);
+            cs.emit("AUCTION", lobbyID, caJSONObject);
+            System.out.println("Emit auction money difference");
+        } catch (JSONException e) {
+            /**
+             * Error
+             */
+        }
     }
 
     //Aufrufen
-    public static void stockMiniagmeEmit(String stock, boolean black) {
+    public static void stockMiniagmeEmit(String stock, boolean black, Player current) {
+
+        Share s;
+
+        if (stock.equals("HARD_STEEL_PLC")) {
+            s = Share.HARD_STEEL_PLC;
+        } else if (stock.equals("SHORT_CIRCUIT_PLC")) {
+            s = Share.SHORT_CIRCUIT_PLC;
+        } else {
+            s = Share.DRY_OIL_PLC;
+        }
+
+
+        int amountOfStock = current.getAmountOfShare(s);
+        if (amountOfStock > 0) {
+            if (black) {
+                current.loseMoney(20000 * amountOfStock);
+            } else {
+                current.addMoney(20000 * amountOfStock);
+            }
+        }
+
 
         StockMinigame sm = new StockMinigame(stock, black);
 
@@ -376,7 +410,21 @@ public class Connection {
         cs.on("STOCK", el);
     }
 
+    public static void auctionMinigameUpdate(Emitter.Listener el) {
+        cs.on("AUCTION", el);
+    }
 
+    /**
+     * Money check <= 0
+     */
+
+    public static void emitWinner() {
+        cs.emit("WINNER", lobbyID);
+    }
+
+    public static void winnerUpdate(Emitter.Listener el) {
+        cs.once("WINNER", el);
+    }
 
 
     /**
@@ -430,15 +478,11 @@ public class Connection {
 
         for (int i = 0; i < players.length; i++) {
 
-            String[] stock = players[i].split("ShortCircuit_PLC");
+            String[] stock = players[i].split("stocks\":");
 
             String newStock = stock[1];
 
-            String newNewStock = "{\"ShortCircuit_PLC";
-
-            newNewStock += newStock;
-
-            String finalStock = newNewStock.substring(0, newNewStock.length() - 1);
+            String finalStock = newStock.substring(0, newStock.length() - 1);
 
             stockAsString.add(finalStock);
         }
@@ -502,8 +546,6 @@ public class Connection {
         ArrayList<Player> pList = new ArrayList<>();
 
         for (ConPlayer c : cp) {
-
-            System.out.println(c.getPlayerIndex());
 
             Field f = MankomaniaGame.getInstance().getBoard().getFieldByIndex(c.getPosition());
 

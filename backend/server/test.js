@@ -63,27 +63,19 @@ let players = {
 }
 }
 
-let sockets = [];
-for (const key in players) {
-    sockets.push(key)
-}
-
-let player1 = players[sockets[0]];
-let player2 = players[sockets[1]];
-let player3 = players[sockets[2]];
-let player4 = players[sockets[3]];
 
 
+let horseGameField = []
+const horse1 = {index: 1, field : 0}
+const horse2= {index: 2, field : 0}
+const horse3 = {index: 3, field : 0}
+const horse4 = {index: 4, field : 0}
+horseGameField.push(horse1)
+horseGameField.push(horse2)
+horseGameField.push(horse3)
+horseGameField.push(horse4)
 
-
-let temp = [6,6]
-
-if(temp[0] + temp[1] === 12){
-    console.log("Pasch")
-
-}
-
-
+console.log(horseGameField[1].index)
 
 
 
