@@ -816,11 +816,16 @@ public class GameScreen extends ScreenAdapter {
 
             System.out.println("Auction Update Listener: " + args[1].toString());
 
-            String[] splitAuctionObject = args[1].toString().split("moneyToSet:");
 
-            String moneyToSetAsString = splitAuctionObject[1].substring(0, splitAuctionObject[1].length() - 1);
+            String[] splitAuctionObject = args[1].toString().split("moneyToSet\":");
+
+            String[] newAuctionObject = splitAuctionObject[1].split(",\"multiplicator");
+
+            String moneyToSetAsString = newAuctionObject[0];
 
             int moneyToSet = Integer.parseInt(moneyToSetAsString);
+
+            System.out.println("moneyToSet: " + moneyToSet);
 
             for (Player p : players) {
                 if (p.getPlayerSocketID().equals(currentPlayerSocketID)) {

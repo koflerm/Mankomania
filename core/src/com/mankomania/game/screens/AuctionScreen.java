@@ -274,7 +274,7 @@ public class AuctionScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         Connection.auctionEmit(itemPrice, multiplier);
-        inputMultiplexer.removeProcessor(stage);
+
         Connection.emitNextTurn();
         Connection.setYourTurn(false);
         MankomaniaGame.getInstance().disposeCurrentScreen();
@@ -292,6 +292,7 @@ public class AuctionScreen extends ScreenAdapter {
         MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
 
         gs.showTurnDialog(nextPlayer, false);
+        inputMultiplexer.removeProcessor(stage);
     }
 }
 
