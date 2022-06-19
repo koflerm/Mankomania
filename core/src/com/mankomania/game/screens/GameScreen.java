@@ -778,9 +778,9 @@ public class GameScreen extends ScreenAdapter {
 
             Share s;
 
-            if (stock.equals("HARD_STEEL_PLC")) {
+            if (stock.equals("Hardsteel")) {
                 s = Share.HARD_STEEL_PLC;
-            } else if (stock.equals("SHORT_CIRCUIT_PLC")) {
+            } else if (stock.equals("Shortcircuit")) {
                 s = Share.SHORT_CIRCUIT_PLC;
             } else {
                 s = Share.DRY_OIL_PLC;
