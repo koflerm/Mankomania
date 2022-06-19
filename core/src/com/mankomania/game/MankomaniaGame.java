@@ -17,12 +17,21 @@ import boardLogic.Board;
 public class MankomaniaGame extends Game {
     private static MankomaniaGame game;
     private Board board;
+    private Screen savedScreen;
 
     public static MankomaniaGame getInstance() {
         if (game == null) {
             game = new MankomaniaGame();
         }
         return game;
+    }
+
+    public void saveScreen() {
+        savedScreen = this.getScreen();
+    }
+
+    public Screen getSaveScreen() {
+        return savedScreen;
     }
 
     @Override

@@ -242,7 +242,7 @@ public class GameScreen extends ScreenAdapter {
 
                     int currentFieldIndex = board.getCurrentPlayer().getCurrentPosition().getFieldIndex();
                     if (currentFieldIndex == 23) {
-
+                        MankomaniaGame.getInstance().saveScreen();
                         MankomaniaGame.getInstance().setScreen(new StockScreen());
 
                     }else if(currentFieldIndex == 42) {

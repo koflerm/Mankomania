@@ -13,9 +13,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mankomania.game.MankomaniaGame;
 import com.mankomania.game.connections.Connection;
 
 import java.security.SecureRandom;
+
+import playerLogic.Player;
 
 public class StockScreen extends ScreenAdapter {
     private final SecureRandom random;
@@ -35,10 +38,6 @@ public class StockScreen extends ScreenAdapter {
         random = new SecureRandom();
         rotate = new RotateToAction();
 
-        InputMultiplexer inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
-        if (!inputMultiplexer.getProcessors().contains(stage, true)) {
-            inputMultiplexer.addProcessor(stage);
-        }
         stockwheel();
     }
 
@@ -100,9 +99,25 @@ public class StockScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta){
-    if(elapsed >= DURATION){
-        Connection.stockMinigameEmit(share, isRising);
-            dispose();
+        if(elapsed >= DURATION){
+            Connection.stockMinigameEmit(share, isRising);
+            Connection.emitNextTurn();
+            Connection.setYourTurn(false);
+            MankomaniaGame.getInstance().disposeCurrentScreen();
+            MankomaniaGame.getInstance().setScreen(MankomaniaGame.getInstance().getSaveScreen());
+            GameScreen gs = (GameScreen) MankomaniaGame.getInstance().getScreen();
+
+            int nextPlayerID = 1;
+            Player currentPlayer = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
+
+            if (currentPlayer.getPlayerIndex() != 4)
+                nextPlayerID = currentPlayer.getPlayerIndex() + 1;
+
+            Player nextPlayer = MankomaniaGame.getInstance().getBoard().getPlayerByIndex(nextPlayerID);
+            Connection.setCurrentPlayer(nextPlayer);
+            MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
+
+            gs.showTurnDialog(nextPlayer, false);
         }
         super.render(delta);
         elapsed+=delta;
