@@ -13,8 +13,12 @@ public class Horse extends Actor {
     private Texture horseTexture;
     private Player player;
 
-    private static float horseHeight = Gdx.graphics.getHeight() / 5.5f;
-    private static float horseWidth = horseHeight * 1.2f;
+    private static float horseHeight;
+    private static float horseWidth;
+
+    public Horse() {
+        movedSteps = 0;
+    }
 
     public Horse(float x, float y, Texture texture, Player p) {
         this.setX(x);
@@ -22,6 +26,8 @@ public class Horse extends Actor {
         movedSteps = 0;
         horseTexture = texture;
         player = p;
+        horseHeight = Gdx.graphics.getHeight() / 5.5f;
+        horseWidth = horseHeight * 1.2f;
     }
 
     public Player getPlayer() {
