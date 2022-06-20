@@ -13,8 +13,8 @@ public class Horse extends Actor {
     private Texture horseTexture;
     private Player player;
 
-    private static float horseHeight;
-    private static float horseWidth;
+    private float horseHeight;
+    private float horseWidth;
 
     public Horse() {
         movedSteps = 0;
