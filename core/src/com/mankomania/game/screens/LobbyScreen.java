@@ -78,10 +78,13 @@ public class LobbyScreen extends ScreenAdapter{
          * Create playerJoinRoom Listener
          */
 
-        Emitter.Listener joinRoomListener = new Emitter.Listener() {
+        final Emitter.Listener joinRoomListener = new Emitter.Listener() {
 
             @Override
             public void call(Object... args) {
+
+                System.out.println("Player Joins");
+
                 Connection.setLobbyID(args[0].toString());
 
                 String temp = args[1].toString().substring(1, args[1].toString().length() - 1);
@@ -102,12 +105,17 @@ public class LobbyScreen extends ScreenAdapter{
             @Override
             public void call(Object... args) {
 
+                System.out.println("StartGame Listener");
+
                 /**
                  * Convert args[1] into Player Object
                  */
                 Connection.convertJsonToPlayer("" + args[1]);
 
+                Connection.getCs().off("JOIN_ROOM", joinRoomListener);
+
                 Connection.setStart(true);
+
             }
         };
 

@@ -15,6 +15,7 @@
         android:isGame="true"
         android:appCategory="game"
         android:label="@string/app_name"
+        android:usesCleartextTraffic="true"
         tools:ignore="UnusedAttribute">
         <activity
             android:name="com.mankomania.game.AndroidLauncher"

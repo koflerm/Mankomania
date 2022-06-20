@@ -5,11 +5,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mankomania.game.MankomaniaGame;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import fieldLogic.Field;
@@ -169,10 +171,17 @@ public class Connection {
         System.out.println("Emit Dices");
 
         int[] diceCount = new int[2];
-        diceCount[0] = dice1;
-        diceCount[1] = dice2;
+        diceCount[0] = 1;
+        diceCount[1] = 1;
 
-        cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, diceCount);
+        String s = "1,1";
+
+        cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, s);
+
+     /*   JSONArray mJSONArray = new JSONArray(Arrays.asList(diceCount));
+        cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, mJSONArray);
+        System.out.println(mJSONArray);*/
+
     }
 
     public static void roleHighestDiceAgain(Emitter.Listener el) {
@@ -196,11 +205,22 @@ public class Connection {
     }
 
     public static void emitDices(int dice1, int dice2) {
+
+        System.out.println("Emit dice in method");
+
         int[] diceCount = new int[2];
+
         diceCount[0] = dice1;
         diceCount[1] = dice2;
 
+        System.out.println(dice1 + " " + dice2);
+
+        System.out.println(diceCount);
+
         cs.emit("ROLE_THE_DICE", lobbyID, diceCount);
+
+        System.out.println("Emit the Dice");
+
 
     }
 
@@ -370,7 +390,7 @@ public class Connection {
     }
 
     //Aufrufen
-    public static void stockMiniagmeEmit(String stock, boolean black, Player current) {
+    public static void stockMinigameEmit(String stock, boolean black, Player current) {
 
         Share s;
 
@@ -440,7 +460,9 @@ public class Connection {
          * Split Player-Array in multiple Player Strings
          */
 
-        String[] players = args.split("dice_Count\":0\\},");
+        System.out.println("Raw: " + args);
+
+        String[] players = args.split("dice_Count\":[0-9]+\\},");
         // PC: String[] players = args.split("},", 10);
 
         for (int i = 0; i < players.length; i++) {
@@ -504,6 +526,8 @@ public class Connection {
         Collections.addAll(allPlayersAsString, players);
 
         for (String p : allPlayersAsString) {
+
+            System.out.println("Converted Player: " + p);
 
             JsonObject jsonObject = JsonParser.parseString(p).getAsJsonObject();
 

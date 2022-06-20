@@ -1,6 +1,5 @@
 package com.mankomania.game.screens;
 
-import android.app.Activity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
@@ -144,13 +143,13 @@ public class GameScreen extends ScreenAdapter {
 
         Connection.emitStocks(cStock);
 
+        Connection.startRound(startRoundListener);
+
         Connection.updateMyPlayerPosition(updateMyPosition);
 
         Connection.updateNextTurn(nextTurnListener);
 
         Connection.updateDice(updateDice);
-
-        Connection.startRound(startRoundListener);
 
         Connection.roleHighestDice(highestDiceListener);
 
@@ -500,6 +499,8 @@ public class GameScreen extends ScreenAdapter {
         @Override
         public void call(Object... args) {
 
+            System.out.println("Role HighestDiceListener");
+
             Connection.convertJsonToPlayer("" + args[0]);
 
             Connection.setRoleHighestDice(true);
@@ -515,6 +516,8 @@ public class GameScreen extends ScreenAdapter {
             int dice1 = rand.nextInt((7 - 0 + 1) + 0);
 
             int dice2 = rand.nextInt((7 - 0 + 1) + 0);
+
+            System.out.println(dice1 + " " + dice2);
 
             Connection.emitHighestDice(dice1, dice2);
 
@@ -536,11 +539,7 @@ public class GameScreen extends ScreenAdapter {
         @Override
         public void call(final Object... args) {
 
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    System.out.println("Start");
+                    System.out.println("Start Listener");
 
                     Connection.convertJsonToPlayer("" + args[0]);
 
@@ -562,8 +561,6 @@ public class GameScreen extends ScreenAdapter {
 
                     Connection.setUpdate(true);
                 }
-                });
-        }
     };
 
     /**
@@ -574,7 +571,7 @@ public class GameScreen extends ScreenAdapter {
         @Override
         public void call(Object... args) {
 
-            System.out.println("Next");
+            System.out.println("Next Turn Listener");
 
             String nextPlayerSocket = args[0].toString();
             List<Player> pList = MankomaniaGame.getInstance().getBoard().getPlayers();
@@ -601,6 +598,11 @@ public class GameScreen extends ScreenAdapter {
         @Override
         public void call(Object... args) {
 
+            System.out.println("Role again listener:");
+
+            System.out.println(args[0].toString());
+            System.out.println(args[1].toString());
+
             String[] winners = args[1].toString().split(",");
 
             Connection.setWinners(winners);
@@ -620,6 +622,8 @@ public class GameScreen extends ScreenAdapter {
     Emitter.Listener updateDice = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
+
+            System.out.println("Update Dice");
 
             String socketID = args[0].toString();
 
@@ -642,6 +646,8 @@ public class GameScreen extends ScreenAdapter {
     Emitter.Listener updateMyPosition = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
+
+            System.out.println("moveplayer Listener");
 
             System.out.println("Update my own position (received from server)");
             GameScreen gs = (GameScreen) MankomaniaGame.getInstance().getScreen();
