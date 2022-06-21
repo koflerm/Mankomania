@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 
-import playerLogic.Player;
+import playerlogic.Player;
 
 public class Horse extends Actor {
     private int movedSteps;

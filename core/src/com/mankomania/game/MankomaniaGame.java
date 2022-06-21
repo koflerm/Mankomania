@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mankomania.game.screens.LoadingScreen;
 import com.mankomania.game.screens.StartScreen;
 
-import boardLogic.Board;
+import boardlogic.Board;
 
 public class MankomaniaGame extends Game {
     private static MankomaniaGame game;

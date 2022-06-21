@@ -45,6 +45,9 @@ public class StockSelectionScreen extends ScreenAdapter {
     private Label hardSteelLabel;
     private Label shortCircuitLabel;
     private final InputMultiplexer inputMultiplexer;
+    private final String dryOil = "DryOil";
+    private final String hardSteel = "HardSteel";
+    private final String shortCircuit = "ShortCircuit";
 
     public StockSelectionScreen(){
         skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
@@ -53,10 +56,6 @@ public class StockSelectionScreen extends ScreenAdapter {
         batch = new SpriteBatch();
         shareList = new ArrayList<>();
         dialogDrawn = false;
-
-        dryOilCount = 0;
-        hardSteelCount = 0;
-        shortCircuitCount = 0;
         shareSelectionDialog = new Dialog("",skin, "alt");
         inputMultiplexer = (InputMultiplexer) Gdx.input.getInputProcessor();
         if (!inputMultiplexer.getProcessors().contains(stage, true)) {
@@ -69,7 +68,8 @@ public class StockSelectionScreen extends ScreenAdapter {
         Table tab = new Table();
         tab.align(Align.center);
         float scale = 0.7f;
-        Label label = new Label("Select two shares", skin, "title");
+        String title = "title";
+        Label label = new Label("Select two shares", skin, title);
         shareSelectionDialog.setWidth(Gdx.graphics.getWidth() * scale);
         shareSelectionDialog.text(label).padTop(20f);
 
@@ -90,9 +90,9 @@ public class StockSelectionScreen extends ScreenAdapter {
         tab.add(shortCircuitButton).pad(20).row();
         tab.pad(30);
 
-        dryOilLabel = new Label("DryOil: " + dryOilCount + "x", skin, "title");
-        hardSteelLabel = new Label("HardSteel: " + hardSteelCount + "x", skin, "title");
-        shortCircuitLabel = new Label("ShortCircuit: " + shortCircuitCount + "x", skin, "title");
+        dryOilLabel = new Label(dryOil + ": " + dryOilCount + "x", skin, title);
+        hardSteelLabel = new Label(hardSteel + ": " + hardSteelCount + "x", skin, title);
+        shortCircuitLabel = new Label(shortCircuit + ": " + shortCircuitCount + "x", skin, title);
 
         tab.add(dryOilLabel);
         tab.add(hardSteelLabel);
@@ -141,8 +141,8 @@ public class StockSelectionScreen extends ScreenAdapter {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
-                dryOilCount++;
-                dryOilLabel.setText("DryOil: " + dryOilCount + "x");
+                shareAdd(dryOil);
+                dryOilLabel.setText(dryOil + ": " + dryOilCount + "x");
             }
         };
     }
@@ -151,8 +151,8 @@ public class StockSelectionScreen extends ScreenAdapter {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
-                hardSteelCount++;
-                hardSteelLabel.setText("HardSteel: " + hardSteelCount + "x");
+                shareAdd(hardSteel);
+                hardSteelLabel.setText(hardSteel + ": " + hardSteelCount + "x");
             }
         };
     }
@@ -161,8 +161,8 @@ public class StockSelectionScreen extends ScreenAdapter {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
-                shortCircuitCount++;
-                shortCircuitLabel.setText("ShortCircuit: " + shortCircuitCount + "x");
+                shareAdd(shortCircuit);
+                shortCircuitLabel.setText(shortCircuit + ": " + shortCircuitCount + "x");
             }
         };
     }
@@ -194,9 +194,9 @@ public class StockSelectionScreen extends ScreenAdapter {
                 hardSteelButton.setTouchable(Touchable.enabled);
                 readyButton.setTouchable(Touchable.disabled);
 
-                dryOilLabel.setText("DryOil: " + dryOilCount + "x");
-                shortCircuitLabel.setText("ShortCircuit: " + shortCircuitCount + "x");
-                hardSteelLabel.setText("HardSteel: " + hardSteelCount + "x");
+                dryOilLabel.setText(dryOil + ": " + dryOilCount + "x");
+                shortCircuitLabel.setText(shortCircuit + ": " + shortCircuitCount + "x");
+                hardSteelLabel.setText(hardSteel + ": " + hardSteelCount + "x");
             }
         };
     }
@@ -209,6 +209,22 @@ public class StockSelectionScreen extends ScreenAdapter {
                 dispose();
             }
         };
+    }
+
+    private static void shareAdd(String shareName){
+        switch (shareName){
+            case "DryOil":
+                dryOilCount++;
+                break;
+
+            case "ShortCircuit":
+                shortCircuitCount++;
+                break;
+
+            case "HardSteel":
+                hardSteelCount++;
+                break;
+        }
     }
 
     @Override

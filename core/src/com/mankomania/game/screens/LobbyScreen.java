@@ -21,7 +21,7 @@ import com.mankomania.game.MankomaniaGame;
 import java.util.ArrayList;
 
 import io.socket.emitter.Emitter;
-import playerLogic.Player;
+import playerlogic.Player;
 
 
 public class LobbyScreen extends ScreenAdapter{
@@ -86,7 +86,7 @@ public class LobbyScreen extends ScreenAdapter{
 
                 String temp = args[1].toString().substring(1, args[1].toString().length() - 1);
 
-                String temp1 = temp.replaceAll("[\"]", "");
+                String temp1 = temp.replaceAll("\"", "");
 
                 Connection.setPlayers(temp1.split(","));
 

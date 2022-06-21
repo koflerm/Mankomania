@@ -1,11 +1,11 @@
-package boardLogic;
+package boardlogic;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import fieldLogic.Field;
+import fieldlogic.Field;
 
 public class BoardFieldsTest {
     private Field[] fields;

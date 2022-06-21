@@ -1,6 +1,6 @@
-package boardLogic;
+package boardlogic;
 
-import fieldLogic.Field;
+import fieldlogic.Field;
 
 public class BoardFields {
 

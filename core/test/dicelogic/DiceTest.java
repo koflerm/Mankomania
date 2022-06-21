@@ -1,4 +1,4 @@
-package diceLogic;
+package dicelogic;
 
 import static org.junit.Assert.*;
 

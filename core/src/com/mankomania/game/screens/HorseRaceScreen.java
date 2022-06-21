@@ -14,7 +14,7 @@ import com.mankomania.game.MankomaniaGame;
 import java.security.SecureRandom;
 
 import horseRaceLogic.Horse;
-import playerLogic.Player;
+import playerlogic.Player;
 
 public class HorseRaceScreen extends ScreenAdapter {
     private final Stage stage;

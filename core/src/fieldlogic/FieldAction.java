@@ -1,6 +1,5 @@
-
-package fieldLogic;
-import playerLogic.Player;
+package fieldlogic;
+import playerlogic.Player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;

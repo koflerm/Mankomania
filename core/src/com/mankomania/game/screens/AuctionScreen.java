@@ -25,7 +25,7 @@ import com.mankomania.game.connections.Connection;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
-import playerLogic.Player;
+import playerlogic.Player;
 
 public class AuctionScreen extends ScreenAdapter {
     private final SecureRandom random;

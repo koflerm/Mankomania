@@ -1,7 +1,6 @@
 package com.mankomania.game.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,7 +17,7 @@ import com.mankomania.game.connections.Connection;
 
 import java.security.SecureRandom;
 
-import playerLogic.Player;
+import playerlogic.Player;
 
 public class StockScreen extends ScreenAdapter {
     private final SecureRandom random;
@@ -87,14 +86,6 @@ public class StockScreen extends ScreenAdapter {
         label.setFontScale(Gdx.graphics.getHeight() / 400f);
         label.setPosition(50f,100f);
         stage.addActor(label);
-    }
-
-    public boolean isRising() {
-        return isRising;
-    }
-
-    public String getShare() {
-        return share;
     }
 
     @Override
