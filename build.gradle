@@ -85,6 +85,18 @@ project(":core") {
         reports {
             xml.enabled true
         }
+
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        "com/mankomania/game/screens/*",
+                        "com/mankomania/game/connections/*",
+                        "diceLogic/DiceAnimation*",
+                        "playerLogic",
+                        "fieldLogic/FieldAction*"
+                ])
+            }))
+        }
     }
 
     test {
