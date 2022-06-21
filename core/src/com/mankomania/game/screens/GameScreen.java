@@ -163,15 +163,11 @@ public class GameScreen extends ScreenAdapter {
 
         Connection.roleHighestDice(highestDiceListener);
 
-        Connection.roleHighestDiceAgain(roleAgain);
-
         Connection.getMoneyUpdate(getMoneyUpdateListener);
 
         Connection.loseMoneyUpdate(loseMoneyUpdateListener);
 
         Connection.collision(collisionListener);
-
-        Connection.stockMinigameUpdate(stockUpdateListener);
 
         Connection.auctionMinigameUpdate(auctionUpdateListener);
 
@@ -299,7 +295,7 @@ public class GameScreen extends ScreenAdapter {
                         MankomaniaGame.getInstance().saveScreen();
                         MankomaniaGame.getInstance().setScreen(new StockScreen());
 
-                    }else if(currentFieldIndex == 42) {
+                    } else if (currentFieldIndex == 42) {
                         MankomaniaGame.getInstance().saveScreen();
                         MankomaniaGame.getInstance().setScreen(new AuctionScreen());
                     } else {
@@ -383,22 +379,6 @@ public class GameScreen extends ScreenAdapter {
             Connection.setCurrentPlayer(nextPlayer);
             MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
             triggerTurnDialog = true;
-
-            //Field f = MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getCurrentPosition();
-
-           // System.out.println("Det field");
-            //Connection.determineFieldAction(f, MankomaniaGame.getInstance().getBoard().getCurrentPlayer());
-
-            /*List<String> playerCollision = new ArrayList<>();
-
-            for (Player p : players) {
-                if (!(p.getPlayerSocketID().equals(currentPlayer.getPlayerSocketID())) && currentPlayer.getCurrentPosition().equals(p.getCurrentPosition())) {
-                    playerCollision.add(p.getPlayerSocketID());
-                }
-            }
-            if (playerCollision.size() > 0) {
-                Connection.collisionEmit(playerCollision.toArray(new String[0]));
-            }*/
 
             Connection.setYourTurn(false);
             Connection.emitNextTurn();
@@ -492,8 +472,8 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void drawPlayerMetadata(int money) {
-        for(Actor a : stage.getActors()){
-            if(a.getClass() == Label.class){
+        for (Actor a : stage.getActors()) {
+            if (a.getClass() == Label.class) {
                 a.addAction(Actions.removeActor());
             }
         }
@@ -679,25 +659,6 @@ public class GameScreen extends ScreenAdapter {
         }
     };
 
-    /**
-     * Role Highest Dice Again Listener
-     */
-
-    Emitter.Listener roleAgain = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-
-            String[] winners = args[1].toString().split(",");
-
-            Connection.setWinners(winners);
-
-            for (int i = 0; i < winners.length; i++) {
-                if (winners[i].equals(Connection.getCs().id())) {
-                    Connection.setRoleHighestDice(true);
-                }
-            }
-        }
-    };
 
     /**
      * Update dices after roll listener
@@ -708,6 +669,8 @@ public class GameScreen extends ScreenAdapter {
         public void call(Object... args) {
 
             String socketID = args[0].toString();
+
+            System.out.println(args[1].toString());
 
             String[] dices = args[1].toString().split(",");
 
@@ -753,8 +716,6 @@ public class GameScreen extends ScreenAdapter {
         @Override
         public void call(Object... args) {
 
-            System.out.println("Receive getMoney");
-
             String socketID = args[0].toString();
 
             int amount = Integer.parseInt(args[1].toString());
@@ -777,8 +738,6 @@ public class GameScreen extends ScreenAdapter {
     Emitter.Listener loseMoneyUpdateListener = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-
-            System.out.println("Receive loseMoney");
 
             String socketID = args[0].toString();
 
@@ -828,66 +787,6 @@ public class GameScreen extends ScreenAdapter {
         }
     };
 
-    /**
-     * StockMinigame Update Listener
-     */
-
-    Emitter.Listener stockUpdateListener = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-
-            System.out.println("Receive Stock Minigame Update");
-
-            String minigameActPlayer = args[0].toString();
-
-            System.out.println(args[1]);
-
-            String[] params = args[1].toString().split(",");
-
-
-            String stock = params[0].substring(12, params[0].length() - 1);
-
-            String blackAsString = params[1].substring(7, params[1].length() - 1);
-
-            boolean black;
-
-            if (blackAsString.equals("true")) {
-                black = true;
-            } else {
-                black = false;
-            }
-
-
-            List<Player> pl = MankomaniaGame.getInstance().getBoard().getPlayers();
-
-            Share s;
-
-
-            if (stock.equals("Hardsteel")) {
-                s = Share.HARD_STEEL_PLC;
-            } else if (stock.equals("Shortcircuit")) {
-                s = Share.SHORT_CIRCUIT_PLC;
-            } else {
-                s = Share.DRY_OIL_PLC;
-            }
-
-            for (Player p : pl) {
-                if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
-                    int amountOfStock = p.getAmountOfShare(s);
-
-                    System.out.println(amountOfStock);
-                    if (amountOfStock > 0) {
-                        if (black) {
-                            p.loseMoney(20000 * amountOfStock);
-                        } else {
-                            p.addMoney(20000 * amountOfStock);
-                        }
-                    }
-                }
-            }
-        }
-    };
-
 
     /**
      * Auction Minigame Update Listener
@@ -899,8 +798,9 @@ public class GameScreen extends ScreenAdapter {
 
             String currentPlayerSocketID = args[0].toString();
 
-            System.out.println("Auction Update Listener: " + args[1].toString());
+            System.out.println(args[0].toString());
 
+            System.out.println("Auction Update Listener: " + args[1].toString());
 
 
             String[] splitAuctionObject = args[1].toString().split("moneyToSet\":");
@@ -943,5 +843,4 @@ public class GameScreen extends ScreenAdapter {
 
         }
     };
-
 }

@@ -163,24 +163,9 @@ public class Connection {
 
     public static void emitHighestDice(int dice1, int dice2) {
 
-        int[] diceCount = new int[2];
-        diceCount[0] = dice1;
-        diceCount[1] = dice2;
-
-        cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, diceCount);
+        cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, dice1 + "," + dice2);
     }
 
-    public static void roleHighestDiceAgain(Emitter.Listener el) {
-        cs.on("ROLE_THE_HIGHEST_DICE_AGAIN", el);
-    }
-
-    public static void emitHighestDiceAgain(int dice1, int dice2) {
-        int[] diceCount = new int[2];
-        diceCount[0] = dice1;
-        diceCount[1] = dice2;
-
-        cs.emit("ROLE_THE_HIGHEST_DICE_AGAIN", lobbyID, diceCount, winners.length);
-    }
 
     public static void startRound(Emitter.Listener el) {
         cs.once("START_ROUND", el);
@@ -195,11 +180,8 @@ public class Connection {
     }
 
     public static void emitDices(int dice1, int dice2) {
-        int[] diceCount = new int[2];
-        diceCount[0] = dice1;
-        diceCount[1] = dice2;
 
-        cs.emit("ROLE_THE_DICE", lobbyID, diceCount);
+        cs.emit("ROLE_THE_DICE", lobbyID, dice1 + "," + dice2);
 
     }
 
@@ -417,10 +399,6 @@ public class Connection {
         }
     }
 
-    public static void stockMinigameUpdate(Emitter.Listener el) {
-        cs.on("STOCK", el);
-    }
-
     public static void auctionMinigameUpdate(Emitter.Listener el) {
         cs.on("AUCTION", el);
     }
@@ -450,8 +428,11 @@ public class Connection {
          * Split Player-Array in multiple Player Strings
          */
 
-        //String[] players = args.split("\\},", 10);
-        String[] players = args.split("},", 10);
+        //Android
+        String[] players = args.split("dice_Count\":[0-9]+\\},");
+
+        //PC:
+        // String[] players = args.split("},", 10);
 
         for (int i = 0; i < players.length; i++) {
 
@@ -462,12 +443,18 @@ public class Connection {
             if (i == 0) {
 
                 newString = temp.substring(24);
-                newString += "}";
+                //PC: newString += "}";
+                //Android
+                newString += "dice_Count\":0}";
                 players[i] = newString;
             } else if (i < (players.length - 1)) {
 
                 newString = temp.substring(23);
-                newString += "}";
+
+                //Android:
+                newString += "dice_Count\":0}";
+
+                //PC: newString += "}";
 
                 players[i] = newString;
 
@@ -494,6 +481,11 @@ public class Connection {
             String newStock = stock[1];
 
             String finalStock = newStock.substring(0, newStock.length() - 1);
+
+            //Android start
+            String[] android = finalStock.split(",\"yourTurn");
+            finalStock = android[0];
+            //Android end
 
             stockAsString.add(finalStock);
         }
@@ -540,7 +532,6 @@ public class Connection {
         for (int i = 0; i < stockAsString.size(); i++) {
 
             JsonObject jsonStock = JsonParser.parseString(stockAsString.get(i)).getAsJsonObject();
-
 
             cp.get(i).setHardSteelPlc(jsonStock.get("HardSteel_PLC").getAsInt());
             cp.get(i).setShortCircuitPlc(jsonStock.get("ShortCircuit_PLC").getAsInt());
