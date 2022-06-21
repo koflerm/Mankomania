@@ -354,7 +354,6 @@ public class GameScreen extends ScreenAdapter {
 
             Field f = MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getCurrentPosition();
 
-            System.out.println("Det field");
             Connection.determineFieldAction(f, MankomaniaGame.getInstance().getBoard().getCurrentPlayer());
             if (checkForWinner())
                 return;
@@ -670,8 +669,6 @@ public class GameScreen extends ScreenAdapter {
 
             String socketID = args[0].toString();
 
-            System.out.println(args[1].toString());
-
             String[] dices = args[1].toString().split(",");
 
             int dice1 = Integer.parseInt(dices[0].substring(1));
@@ -692,7 +689,6 @@ public class GameScreen extends ScreenAdapter {
         @Override
         public void call(Object... args) {
 
-            System.out.println("Update my own position (received from server)");
             GameScreen gs = (GameScreen) MankomaniaGame.getInstance().getScreen();
             gs.hideTurnDialog();
 

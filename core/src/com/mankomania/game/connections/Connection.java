@@ -98,10 +98,6 @@ public class Connection {
         return cs;
     }
 
-    public static void setCs(Socket cs) {
-        Connection.cs = cs;
-    }
-
     public static boolean getStart() {
         return start;
     }
@@ -166,14 +162,9 @@ public class Connection {
         cs.emit("ROLE_THE_HIGHEST_DICE", lobbyID, dice1 + "," + dice2);
     }
 
-
     public static void startRound(Emitter.Listener el) {
         cs.once("START_ROUND", el);
     }
-
-    /**
-     * new Methods
-     **/
 
     public static void updateDice(Emitter.Listener el) {
         cs.on("UPDATE_DICE", el);
@@ -211,16 +202,7 @@ public class Connection {
 
         int index = f.getFieldIndex();
 
-        if (index == 8 || index == 30 || index == 34 || index == 56) {
-            //Race
-
-        } else if (index == 23) {
-            //Stock-Wheel
-
-        } else if (index == 42) {
-            //Auction
-
-        } else if (index == 1 || index == 11 || index == 38) {
+        if (index == 1 || index == 11 || index == 38) {
             getMoney(5000);
             p.addMoney(5000);
 
@@ -289,22 +271,12 @@ public class Connection {
 
 
     public static void loseMoney(int amount) {
-        System.out.println("lose Money emit");
-
         cs.emit("LOSE_MONEY", lobbyID, amount);
     }
 
     public static void getMoney(int amount) {
-
-        System.out.println("getmoney emit");
         cs.emit("GET_MONEY", lobbyID, amount);
     }
-
-    public static void raceField() {
-        cs.emit("RACE", lobbyID);
-        System.out.println("Emit RACE");
-    }
-
 
 
 
