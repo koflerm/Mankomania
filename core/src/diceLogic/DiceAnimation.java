@@ -29,8 +29,11 @@ public class DiceAnimation extends ScreenAdapter {
     }
 
     public void showAndRollTheDice(Stage stage) {
-        int num = random.nextInt(6) + 1;
-        int num2 = random.nextInt(6) + 1;
+        //int num = random.nextInt(6) + 1;
+        //int num2 = random.nextInt(6) + 1;
+
+        int num = 6;
+        int num2 = 6;
 
         for (Image image : firstDiceList) {
             if ((firstDiceList.indexOf(image) + 1) == num) {

@@ -662,6 +662,8 @@ public class GameScreen extends ScreenAdapter {
 
             String socketID = args[0].toString();
 
+            System.out.println(args[1].toString());
+/*
             String[] dices = args[1].toString().split(",");
 
             int dice1 = Integer.parseInt(dices[0].substring(1));
@@ -669,7 +671,7 @@ public class GameScreen extends ScreenAdapter {
 
             int totalDice = dice1 + dice2;
 
-            MankomaniaGame.getInstance().getBoard().getCurrentPlayer().setDices(totalDice);
+            MankomaniaGame.getInstance().getBoard().getCurrentPlayer().setDices(totalDice);*/
         }
     };
 
@@ -829,7 +831,6 @@ public class GameScreen extends ScreenAdapter {
                     System.out.println("The winner is: " + p.getPlayerIndex());
                 }
             }
-
         }
     };
 }
