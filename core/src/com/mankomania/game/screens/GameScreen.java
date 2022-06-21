@@ -358,7 +358,7 @@ public class GameScreen extends ScreenAdapter {
             if (checkForWinner())
                 return;
 
-            List<String> playerCollision = new ArrayList<>();
+          /*  List<String> playerCollision = new ArrayList<>();
 
             for (Player p : players) {
                 if (!(p.getPlayerSocketID().equals(currentPlayer.getPlayerSocketID())) && currentPlayer.getCurrentPosition().equals(p.getCurrentPosition())) {
@@ -367,7 +367,7 @@ public class GameScreen extends ScreenAdapter {
             }
             if (playerCollision.size() > 0) {
                 Connection.collisionEmit(playerCollision.toArray(new String[0]));
-            }
+            }*/
 
             int nextPlayerID = 1;
 
@@ -587,9 +587,9 @@ public class GameScreen extends ScreenAdapter {
 
             SecureRandom rand = new SecureRandom();
 
-            int dice1 = rand.nextInt((7 - 0 + 1) + 0);
+            int dice1 = rand.nextInt(6) + 1;
 
-            int dice2 = rand.nextInt((7 - 0 + 1) + 0);
+            int dice2 = rand.nextInt(6) + 1;
 
             Connection.emitHighestDice(dice1, dice2);
         }
@@ -662,7 +662,6 @@ public class GameScreen extends ScreenAdapter {
 
             String socketID = args[0].toString();
 
-            System.out.println(args[1].toString());
 /*
             String[] dices = args[1].toString().split(",");
 
@@ -752,9 +751,6 @@ public class GameScreen extends ScreenAdapter {
         @Override
         public void call(Object... args) {
 
-            System.out.println("Received a collision");
-
-            System.out.println(args[1].toString());
 
             String[] players = args[1].toString().split(",");
 
@@ -789,10 +785,6 @@ public class GameScreen extends ScreenAdapter {
 
             String currentPlayerSocketID = args[0].toString();
 
-            System.out.println(args[0].toString());
-
-            System.out.println("Auction Update Listener: " + args[1].toString());
-
 
             String[] splitAuctionObject = args[1].toString().split("moneyToSet\":");
 
@@ -802,12 +794,10 @@ public class GameScreen extends ScreenAdapter {
 
             int moneyToSet = Integer.parseInt(moneyToSetAsString);
 
-            System.out.println("moneyToSet: " + moneyToSet);
 
             for (Player p : players) {
                 if (p.getPlayerSocketID().equals(currentPlayerSocketID)) {
                     p.setMoney(moneyToSet);
-                    System.out.println("new money: " + p.getMoney());
                 }
             }
         }
@@ -828,7 +818,6 @@ public class GameScreen extends ScreenAdapter {
                 if (p.getPlayerSocketID().equals(winnerSocket)) {
                     gotWinner = true;
                     winningPlayer = p;
-                    System.out.println("The winner is: " + p.getPlayerIndex());
                 }
             }
         }
