@@ -45,9 +45,9 @@ public class StockSelectionScreen extends ScreenAdapter {
     private Label hardSteelLabel;
     private Label shortCircuitLabel;
     private final InputMultiplexer inputMultiplexer;
-    private final String dryOil = "DryOil";
-    private final String hardSteel = "HardSteel";
-    private final String shortCircuit = "ShortCircuit";
+    private static final String DRY_OIL = "DryOil";
+    private static final String HARD_STEEL = "HardSteel";
+    private static final String SHORT_CIRCUIT = "ShortCircuit";
 
     public StockSelectionScreen(){
         skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
@@ -90,9 +90,9 @@ public class StockSelectionScreen extends ScreenAdapter {
         tab.add(shortCircuitButton).pad(20).row();
         tab.pad(30);
 
-        dryOilLabel = new Label(dryOil + ": " + dryOilCount + "x", skin, title);
-        hardSteelLabel = new Label(hardSteel + ": " + hardSteelCount + "x", skin, title);
-        shortCircuitLabel = new Label(shortCircuit + ": " + shortCircuitCount + "x", skin, title);
+        dryOilLabel = new Label(DRY_OIL + ": " + dryOilCount + "x", skin, title);
+        hardSteelLabel = new Label(HARD_STEEL + ": " + hardSteelCount + "x", skin, title);
+        shortCircuitLabel = new Label(SHORT_CIRCUIT + ": " + shortCircuitCount + "x", skin, title);
 
         tab.add(dryOilLabel);
         tab.add(hardSteelLabel);
@@ -128,21 +128,21 @@ public class StockSelectionScreen extends ScreenAdapter {
         Texture share2 = new Texture(Gdx.files.internal("shares/hardSteel.png"));
         Texture share3 = new Texture(Gdx.files.internal("shares/shortCircuit.png"));
 
-        TextureRegionDrawable dryOil = new TextureRegionDrawable(share1);
-        TextureRegionDrawable hardSteel = new TextureRegionDrawable(share2);
-        TextureRegionDrawable shortCircuit = new TextureRegionDrawable(share3);
+        TextureRegionDrawable dryOilDrawable = new TextureRegionDrawable(share1);
+        TextureRegionDrawable hardSteelDrawable = new TextureRegionDrawable(share2);
+        TextureRegionDrawable shortCircuitDrawable = new TextureRegionDrawable(share3);
 
-        shareList.add(dryOil);
-        shareList.add(hardSteel);
-        shareList.add(shortCircuit);
+        shareList.add(dryOilDrawable);
+        shareList.add(hardSteelDrawable);
+        shareList.add(shortCircuitDrawable);
     }
 
     public ClickListener dryOilListener(){
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
-                shareAdd(dryOil);
-                dryOilLabel.setText(dryOil + ": " + dryOilCount + "x");
+                shareAdd(DRY_OIL);
+                dryOilLabel.setText(DRY_OIL + ": " + dryOilCount + "x");
             }
         };
     }
@@ -151,8 +151,8 @@ public class StockSelectionScreen extends ScreenAdapter {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
-                shareAdd(hardSteel);
-                hardSteelLabel.setText(hardSteel + ": " + hardSteelCount + "x");
+                shareAdd(HARD_STEEL);
+                hardSteelLabel.setText(HARD_STEEL + ": " + hardSteelCount + "x");
             }
         };
     }
@@ -161,8 +161,8 @@ public class StockSelectionScreen extends ScreenAdapter {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
-                shareAdd(shortCircuit);
-                shortCircuitLabel.setText(shortCircuit + ": " + shortCircuitCount + "x");
+                shareAdd(SHORT_CIRCUIT);
+                shortCircuitLabel.setText(SHORT_CIRCUIT + ": " + shortCircuitCount + "x");
             }
         };
     }
@@ -185,18 +185,15 @@ public class StockSelectionScreen extends ScreenAdapter {
         return new ClickListener() {
             @Override
             public void clicked(InputEvent inputEvent, float x, float y) {
-                dryOilCount = 0;
-                hardSteelCount = 0;
-                shortCircuitCount = 0;
-
+                shareReset();
                 dryOilButton.setTouchable(Touchable.enabled);
                 shortCircuitButton.setTouchable(Touchable.enabled);
                 hardSteelButton.setTouchable(Touchable.enabled);
                 readyButton.setTouchable(Touchable.disabled);
 
-                dryOilLabel.setText(dryOil + ": " + dryOilCount + "x");
-                shortCircuitLabel.setText(shortCircuit + ": " + shortCircuitCount + "x");
-                hardSteelLabel.setText(hardSteel + ": " + hardSteelCount + "x");
+                dryOilLabel.setText(DRY_OIL + ": " + dryOilCount + "x");
+                shortCircuitLabel.setText(SHORT_CIRCUIT + ": " + shortCircuitCount + "x");
+                hardSteelLabel.setText(HARD_STEEL + ": " + hardSteelCount + "x");
             }
         };
     }
@@ -224,7 +221,16 @@ public class StockSelectionScreen extends ScreenAdapter {
             case "HardSteel":
                 hardSteelCount++;
                 break;
+
+            default:
+                throw new IllegalArgumentException("Wrong Share Name used");
         }
+    }
+
+    private static void shareReset() {
+        dryOilCount = 0;
+        shortCircuitCount = 0;
+        hardSteelCount = 0;
     }
 
     @Override

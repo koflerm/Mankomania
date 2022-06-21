@@ -4,7 +4,8 @@ import fieldlogic.Field;
 
 public class BoardFields {
 
-    public BoardFields() {
+    private BoardFields() {
+        //Empty Constructor
     }
 
     private static Field[] initFields(float boardX, float boardLength) {
