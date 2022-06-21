@@ -210,15 +210,15 @@ public class StockSelectionScreen extends ScreenAdapter {
 
     private static void shareAdd(String shareName){
         switch (shareName){
-            case "DryOil":
+            case DRY_OIL:
                 dryOilCount++;
                 break;
 
-            case "ShortCircuit":
+            case SHORT_CIRCUIT:
                 shortCircuitCount++;
                 break;
 
-            case "HardSteel":
+            case HARD_STEEL:
                 hardSteelCount++;
                 break;
 
