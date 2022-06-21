@@ -301,7 +301,6 @@ public class Connection {
 
     public static void collisionEmit(String[] players) {
         cs.emit("PLAYER_COLLISION", lobbyID, players);
-        System.out.println("Emit collision");
     }
 
 
@@ -325,7 +324,6 @@ public class Connection {
         try {
             JSONObject caJSONObject = new JSONObject(jsonInString);
             cs.emit("AUCTION", lobbyID, caJSONObject);
-            System.out.println("Emit auction money difference");
         } catch (JSONException e) {
             /**
              * Error
@@ -365,7 +363,6 @@ public class Connection {
         try {
             JSONObject mJSONObject = new JSONObject(jsonInString);
             cs.emit("STOCK", lobbyID, mJSONObject);
-            System.out.println("Emit stock minigame result");
         } catch (JSONException e) {
             /**
              * Error
