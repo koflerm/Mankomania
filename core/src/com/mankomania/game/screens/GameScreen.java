@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -42,6 +43,7 @@ public class GameScreen extends ScreenAdapter {
     private final float boxWidth;
     private final float boxHeight;
     private final Dialog turnDialog;
+    private final Dialog winnerDialog;
     private final Dialog intersectionDialog;
     private boolean triggerTurnDialog;
 
@@ -74,11 +76,15 @@ public class GameScreen extends ScreenAdapter {
     private boolean intersectionDialogIsShown;
     private boolean moveToIntersection;
     private boolean intersectionDecided;
+    private boolean gotWinner;
+    private Player winningPlayer;
+    private boolean winnerDialogShown;
 
     private Player movingPlayer;
     private int movingPlayerTargetSteps;
     private int movingPlayerCurrentSteps;
     private float movingElapsed;
+    private float winnerElapsed;
     private List<Player> players;
 
     private FieldAction fieldAction;
@@ -95,7 +101,9 @@ public class GameScreen extends ScreenAdapter {
         boxWidth = calcWidthFactor(BOARD_PLAYER_BOX_WIDTH_FACTOR);
         boxHeight = calcHeightFactor(BOARD_PLAYER_BOX_HEIGHT_FACTOR);
         turnDialogIsShown = false;
-        turnDialog = new Dialog("INFO", skin, "alt") {
+        turnDialog = new Dialog("", skin, "alt") {
+        };
+        winnerDialog = new Dialog("", skin, "alt") {
         };
         turnDialogNeeded = false;
         diceAnimation = new DiceAnimation();
@@ -120,6 +128,8 @@ public class GameScreen extends ScreenAdapter {
         moveToIntersection = false;
         intersectionDecided = false;
         triggerTurnDialog = false;
+        gotWinner = false;
+        winnerDialogShown = false;
 
         movingPlayerCurrentSteps = 0;
         movingPlayerTargetSteps = 0;
@@ -180,11 +190,6 @@ public class GameScreen extends ScreenAdapter {
         drawPlayerInformation();
         stage.getBatch().end();
 
-        renderDialogs();
-        renderFieldActionDialog(delta);
-        stage.act(delta);
-        stage.draw();
-
         /**
          * Update all Players
          */
@@ -222,11 +227,60 @@ public class GameScreen extends ScreenAdapter {
             triggerTurnDialog = false;
         }
 
-        for (Player p : players) {
-            if (p.getMoney() <= 0 && p.getPlayerSocketID().equals(Connection.getCs().id())) {
-                Connection.emitWinner();
+        if (!gotWinner) {
+            checkForWinner();
+        }
+
+        renderDialogs();
+        renderFieldActionDialog(delta);
+        renderWinnerDialog(delta);
+
+        stage.act(delta);
+        stage.draw();
+    }
+
+    private void exitGame() {
+        Gdx.app.exit();
+    }
+
+    private void renderWinnerDialog(float delta) {
+        if (gotWinner && !winnerDialogShown) {
+            drawWinnerDialog();
+            winnerDialogShown = true;
+        } else if (gotWinner) {
+            if (winnerElapsed >= DURATION) {
+                this.winnerDialog.remove();
+                this.winnerDialog.clear();
+                winnerElapsed = 0;
+                gotWinner = false;
+                winningPlayer = null;
+                exitGame();
+            } else {
+                winnerElapsed += delta;
             }
         }
+    }
+
+    private void drawWinnerDialog() {
+        float scale = Gdx.graphics.getWidth() / 1000f;
+
+        Table tab = new Table();
+        tab.align(Align.center);
+        Label nextTurnLabel = new Label("And the winner is:", skin, BOARD_TEXT_STYLE);
+        Label playerNameLabel = new Label("P" + winningPlayer.getPlayerIndex(), skin, BOARD_TEXT_STYLE);
+
+        tab.add(nextTurnLabel).row();
+        tab.add(playerNameLabel).row();
+        tab.pad(20);
+
+        winnerDialog.getContentTable().add(tab);
+        winnerDialog.setScale(scale);
+        winnerDialog.show(stage);
+
+        float dialogXPosition = (Gdx.graphics.getWidth() / 2f) - ((winnerDialog.getWidth() * scale) / 2f);
+        float dialogYPosition = (Gdx.graphics.getHeight() / 2f) - ((winnerDialog.getHeight() * scale) / 2f);
+
+        winnerDialog.setPosition(dialogXPosition, dialogYPosition);
     }
 
     private void renderMovement(float delta, Board board) {
@@ -240,7 +294,14 @@ public class GameScreen extends ScreenAdapter {
                     movingPlayerTargetSteps = 0;
 
                     int currentFieldIndex = board.getCurrentPlayer().getCurrentPosition().getFieldIndex();
-                    if (currentFieldIndex == 8 || currentFieldIndex == 23 || currentFieldIndex == 34 || currentFieldIndex == 42 || currentFieldIndex == 56) {
+
+                    if (currentFieldIndex == 23) {
+                        MankomaniaGame.getInstance().saveScreen();
+                        MankomaniaGame.getInstance().setScreen(new StockScreen());
+
+                    }else if(currentFieldIndex == 42) {
+                        MankomaniaGame.getInstance().saveScreen();
+                        MankomaniaGame.getInstance().setScreen(new AuctionScreen());
                     } else {
                         fieldAction.drawFieldActionDialog(stage, board.getCurrentPlayer());
                     }
@@ -274,6 +335,19 @@ public class GameScreen extends ScreenAdapter {
         }
     }
 
+
+    private boolean checkForWinner() {
+        for (Player p : players) {
+            if (p.getMoney() <= 0 && p.getPlayerSocketID().equals(Connection.getCs().id())) {
+                Connection.emitWinner();
+                gotWinner = true;
+                winningPlayer = p;
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void renderFieldActionDialog(float delta) {
         if (elapsedFieldAction >= FIELD_ACTION_DURATION && fieldAction.getFieldActionDialogIsShown()) {
             elapsedFieldAction = 0;
@@ -281,20 +355,13 @@ public class GameScreen extends ScreenAdapter {
             fieldAction.setFieldActionDialogIsShown(false);
 
             Player currentPlayer = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
-            int nextPlayerID = 1;
-
-            if (currentPlayer.getPlayerIndex() != 4)
-                nextPlayerID = currentPlayer.getPlayerIndex() + 1;
-
-            Player nextPlayer = MankomaniaGame.getInstance().getBoard().getPlayerByIndex(nextPlayerID);
-            Connection.setCurrentPlayer(nextPlayer);
-            MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
-            triggerTurnDialog = true;
 
             Field f = MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getCurrentPosition();
 
             System.out.println("Det field");
             Connection.determineFieldAction(f, MankomaniaGame.getInstance().getBoard().getCurrentPlayer());
+            if (checkForWinner())
+                return;
 
             List<String> playerCollision = new ArrayList<>();
 
@@ -306,6 +373,32 @@ public class GameScreen extends ScreenAdapter {
             if (playerCollision.size() > 0) {
                 Connection.collisionEmit(playerCollision.toArray(new String[0]));
             }
+
+            int nextPlayerID = 1;
+
+            if (currentPlayer.getPlayerIndex() != 4)
+                nextPlayerID = currentPlayer.getPlayerIndex() + 1;
+
+            Player nextPlayer = MankomaniaGame.getInstance().getBoard().getPlayerByIndex(nextPlayerID);
+            Connection.setCurrentPlayer(nextPlayer);
+            MankomaniaGame.getInstance().getBoard().setCurrentPlayer(nextPlayer);
+            triggerTurnDialog = true;
+
+            //Field f = MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getCurrentPosition();
+
+           // System.out.println("Det field");
+            //Connection.determineFieldAction(f, MankomaniaGame.getInstance().getBoard().getCurrentPlayer());
+
+            /*List<String> playerCollision = new ArrayList<>();
+
+            for (Player p : players) {
+                if (!(p.getPlayerSocketID().equals(currentPlayer.getPlayerSocketID())) && currentPlayer.getCurrentPosition().equals(p.getCurrentPosition())) {
+                    playerCollision.add(p.getPlayerSocketID());
+                }
+            }
+            if (playerCollision.size() > 0) {
+                Connection.collisionEmit(playerCollision.toArray(new String[0]));
+            }*/
 
             Connection.setYourTurn(false);
             Connection.emitNextTurn();
@@ -399,6 +492,11 @@ public class GameScreen extends ScreenAdapter {
     }
 
     private void drawPlayerMetadata(int money) {
+        for(Actor a : stage.getActors()){
+            if(a.getClass() == Label.class){
+                a.addAction(Actions.removeActor());
+            }
+        }
         float labelHeight = calcHeightFactor(BOARD_PLAYER_MONEY_FACTOR);
         Label label = new Label("$ " + money, skin, BOARD_TEXT_STYLE);
         label.setFontScale(labelHeight / 200f);
@@ -764,9 +862,10 @@ public class GameScreen extends ScreenAdapter {
 
             Share s;
 
-            if (stock.equals("HARD_STEEL_PLC")) {
+
+            if (stock.equals("Hardsteel")) {
                 s = Share.HARD_STEEL_PLC;
-            } else if (stock.equals("SHORT_CIRCUIT_PLC")) {
+            } else if (stock.equals("Shortcircuit")) {
                 s = Share.SHORT_CIRCUIT_PLC;
             } else {
                 s = Share.DRY_OIL_PLC;
@@ -775,10 +874,11 @@ public class GameScreen extends ScreenAdapter {
             for (Player p : pl) {
                 if (p.getPlayerSocketID().equals(Connection.getCs().id())) {
                     int amountOfStock = p.getAmountOfShare(s);
+
+                    System.out.println(amountOfStock);
                     if (amountOfStock > 0) {
                         if (black) {
                             p.loseMoney(20000 * amountOfStock);
-
                         } else {
                             p.addMoney(20000 * amountOfStock);
                         }
@@ -801,15 +901,22 @@ public class GameScreen extends ScreenAdapter {
 
             System.out.println("Auction Update Listener: " + args[1].toString());
 
-            String[] splitAuctionObject = args[1].toString().split("moneyToSet:");
 
-            String moneyToSetAsString = splitAuctionObject[1].substring(0, splitAuctionObject[1].length() - 1);
+
+            String[] splitAuctionObject = args[1].toString().split("moneyToSet\":");
+
+            String[] newAuctionObject = splitAuctionObject[1].split(",\"multiplicator");
+
+            String moneyToSetAsString = newAuctionObject[0];
 
             int moneyToSet = Integer.parseInt(moneyToSetAsString);
+
+            System.out.println("moneyToSet: " + moneyToSet);
 
             for (Player p : players) {
                 if (p.getPlayerSocketID().equals(currentPlayerSocketID)) {
                     p.setMoney(moneyToSet);
+                    System.out.println("new money: " + p.getMoney());
                 }
             }
         }
@@ -828,6 +935,8 @@ public class GameScreen extends ScreenAdapter {
 
             for (Player p : players) {
                 if (p.getPlayerSocketID().equals(winnerSocket)) {
+                    gotWinner = true;
+                    winningPlayer = p;
                     System.out.println("The winner is: " + p.getPlayerIndex());
                 }
             }

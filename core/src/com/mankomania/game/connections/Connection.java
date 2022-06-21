@@ -307,10 +307,14 @@ public class Connection {
 
 
     public static void loseMoney(int amount) {
+        System.out.println("lose Money emit");
+
         cs.emit("LOSE_MONEY", lobbyID, amount);
     }
 
     public static void getMoney(int amount) {
+
+        System.out.println("getmoney emit");
         cs.emit("GET_MONEY", lobbyID, amount);
     }
 
@@ -349,12 +353,17 @@ public class Connection {
      * Minigames
      */
 
-    //Aufrufen
-    public static void auctionEmit(int itemprice, int multiplicator, int moneyFromBank, int currentPlayerNewMoney) {
 
-        int difference = moneyFromBank - itemprice;
+    public static void auctionEmit(float itemprice, float multiplicator) {
 
-        ConAuction ca = new ConAuction(itemprice, multiplicator, moneyFromBank, difference, currentPlayerNewMoney);
+        float moneyFromBank = itemprice * multiplicator;
+        int difference = (int) moneyFromBank - (int) itemprice;
+
+        MankomaniaGame.getInstance().getBoard().getCurrentPlayer().addMoney(difference);
+
+        int money = MankomaniaGame.getInstance().getBoard().getCurrentPlayer().getMoney();
+
+        ConAuction ca = new ConAuction(itemprice, multiplicator, moneyFromBank, difference, money);
 
         String jsonInString = new Gson().toJson(ca);
         try {
@@ -368,14 +377,16 @@ public class Connection {
         }
     }
 
-    //Aufrufen
-    public static void stockMiniagmeEmit(String stock, boolean black, Player current) {
+
+    public static void stockMinigameEmit(String stock, boolean black) {
+
+        Player current = MankomaniaGame.getInstance().getBoard().getCurrentPlayer();
 
         Share s;
 
-        if (stock.equals("HARD_STEEL_PLC")) {
+        if (stock.equals("HardSteel")) {
             s = Share.HARD_STEEL_PLC;
-        } else if (stock.equals("SHORT_CIRCUIT_PLC")) {
+        } else if (stock.equals("Shortcircuit")) {
             s = Share.SHORT_CIRCUIT_PLC;
         } else {
             s = Share.DRY_OIL_PLC;

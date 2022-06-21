@@ -43,15 +43,16 @@ public class StartScreen extends ScreenAdapter {
         Image logoImage = new Image(logoTexture);
 
         TextButton startButton = new TextButton("START", skin, "default");
-        TextButton settingsButton = new TextButton("SETTINGS", skin, "default");
+        TextButton exitButton = new TextButton("EXIT GAME", skin, "default");
         startButton.getLabel().setFontScale(Gdx.graphics.getHeight() / 400f);
-        settingsButton.getLabel().setFontScale(Gdx.graphics.getHeight() / 400f);
+        exitButton.getLabel().setFontScale(Gdx.graphics.getHeight() / 400f);
         startButton.addListener(startListener());
+        exitButton.addListener(exitListener());
 
-        stage.addActor(buildTable(startButton, settingsButton, logoImage));
+        stage.addActor(buildTable(startButton, exitButton, logoImage));
     }
 
-    private Table buildTable(TextButton startButton, TextButton settingsButton, Image logoImage) {
+    private Table buildTable(TextButton startButton, TextButton exitButton, Image logoImage) {
         Table tab = new Table();
         tab.setFillParent(true);
         tab.setWidth(stage.getWidth());
@@ -61,7 +62,7 @@ public class StartScreen extends ScreenAdapter {
         tab.row();
         tab.add(startButton).padBottom(50).width(Gdx.graphics.getWidth() / 2f).height(Gdx.graphics.getHeight() / 5f);
         tab.row();
-        tab.add(settingsButton).padBottom(50).width(Gdx.graphics.getWidth() / 2f).height(Gdx.graphics.getHeight() / 5f);
+        tab.add(exitButton).padBottom(50).width(Gdx.graphics.getWidth() / 2f).height(Gdx.graphics.getHeight() / 5f);
         tab.row();
         return tab;
     }
@@ -72,6 +73,15 @@ public class StartScreen extends ScreenAdapter {
             public void clicked(InputEvent inputEvent, float x, float y) {
                 MankomaniaGame.getInstance().disposeCurrentScreen();
                 MankomaniaGame.getInstance().setScreen(new LobbyScreen());
+            }
+        };
+    }
+
+    private ClickListener exitListener() {
+        return new ClickListener() {
+            @Override
+            public void clicked(InputEvent inputEvent, float x, float y) {
+                Gdx.app.exit();
             }
         };
     }
