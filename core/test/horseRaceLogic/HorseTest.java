@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import playerLogic.Player;
-
 public class HorseTest {
 
     private Horse horse;

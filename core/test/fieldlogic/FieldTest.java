@@ -1,4 +1,4 @@
-package fieldLogic;
+package fieldlogic;
 
 import static org.junit.Assert.*;
 

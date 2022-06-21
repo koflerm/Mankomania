@@ -1,4 +1,4 @@
-package boardLogic;
+package boardlogic;
 
 import com.badlogic.gdx.Gdx;
 
@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 //import boardLogic.minigames.lotteryLogic.Lottery;  //To comment out when merged
-import fieldLogic.Field;
-import playerLogic.Player;
+import fieldlogic.Field;
+import playerlogic.Player;
 
 public class Board {
     private Field[] fields;

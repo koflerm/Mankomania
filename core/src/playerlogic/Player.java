@@ -1,4 +1,4 @@
-package playerLogic;
+package playerlogic;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import java.security.SecureRandom;
 import java.util.HashMap;
 
-import fieldLogic.Field;
+import fieldlogic.Field;
 import shareLogic.Share;
 
 public class Player extends Actor {

@@ -1,4 +1,4 @@
-package diceLogic;
+package dicelogic;
 
 import java.util.ArrayList;
 import java.security.SecureRandom;

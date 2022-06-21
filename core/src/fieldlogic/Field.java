@@ -1,8 +1,8 @@
-package fieldLogic;
+package fieldlogic;
 
 import java.util.ArrayList;
 
-import playerLogic.Player;
+import playerlogic.Player;
 
 public class Field {
     private  Field nextField;

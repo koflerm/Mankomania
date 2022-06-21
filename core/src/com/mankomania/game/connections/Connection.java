@@ -14,11 +14,11 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import fieldLogic.Field;
+import fieldlogic.Field;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
-import playerLogic.Player;
+import playerlogic.Player;
 import shareLogic.Share;
 
 public class Connection {

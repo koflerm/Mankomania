@@ -18,7 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-import diceLogic.DiceAnimation;
+import dicelogic.DiceAnimation;
 
 
 import com.mankomania.game.connections.ConStock;
@@ -29,11 +29,11 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-import boardLogic.Board;
-import fieldLogic.Field;
-import fieldLogic.FieldAction;
+import boardlogic.Board;
+import fieldlogic.Field;
+import fieldlogic.FieldAction;
 import io.socket.emitter.Emitter;
-import playerLogic.Player;
+import playerlogic.Player;
 import shareLogic.Share;
 
 public class GameScreen extends ScreenAdapter {
@@ -181,7 +181,7 @@ public class GameScreen extends ScreenAdapter {
         ScreenUtils.clear(0.9f, 0.9f, 0.9f, 1);
         Board board = MankomaniaGame.getInstance().getBoard();
         renderMovement(delta, board);
-        renderDices(delta, board);
+        renderDices(delta);
         drawGameBoard(board);
         drawPlayerInformation();
         stage.getBatch().end();
@@ -309,7 +309,7 @@ public class GameScreen extends ScreenAdapter {
         }
     }
 
-    private void renderDices(float delta, Board board) {
+    private void renderDices(float delta) {
         if (diceAnimation.getDiceShown() && elapsed < DURATION)
             elapsed += delta;
         else if (diceAnimation.getDiceShown() && elapsed >= DURATION) {
@@ -357,17 +357,6 @@ public class GameScreen extends ScreenAdapter {
             Connection.determineFieldAction(f, MankomaniaGame.getInstance().getBoard().getCurrentPlayer());
             if (checkForWinner())
                 return;
-
-          /*  List<String> playerCollision = new ArrayList<>();
-
-            for (Player p : players) {
-                if (!(p.getPlayerSocketID().equals(currentPlayer.getPlayerSocketID())) && currentPlayer.getCurrentPosition().equals(p.getCurrentPosition())) {
-                    playerCollision.add(p.getPlayerSocketID());
-                }
-            }
-            if (playerCollision.size() > 0) {
-                Connection.collisionEmit(playerCollision.toArray(new String[0]));
-            }*/
 
             int nextPlayerID = 1;
 
