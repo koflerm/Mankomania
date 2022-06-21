@@ -87,7 +87,7 @@ public class LobbyScreen extends ScreenAdapter{
                 String temp = args[1].toString().substring(1, args[1].toString().length() - 1);
 
                 String temp1 = temp.replace("\"", "");
-
+                
                 Connection.setPlayers(temp1.split(","));
 
             }
