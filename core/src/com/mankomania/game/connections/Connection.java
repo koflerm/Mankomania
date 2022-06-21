@@ -1,5 +1,7 @@
 package com.mankomania.game.connections;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -399,42 +401,51 @@ public class Connection {
         /**
          * Split Player-Array in multiple Player Strings
          */
+        
+        String[] tempPlayers;
 
-        //Android
-        String[] players = args.split("dice_Count\":[0-9]+\\},");
+        if(Gdx.app.getType().equals(Application.ApplicationType.Android)){
+            tempPlayers = args.split("dice_Count\":[0-9]+\\},");
+        }else{
+            tempPlayers = args.split("},", 10);
+        }
 
-        //PC:
-        // String[] players = args.split("},", 10);
+        for (int i = 0; i < tempPlayers.length; i++) {
 
-        for (int i = 0; i < players.length; i++) {
-
-            String temp = players[i];
+            String temp = tempPlayers[i];
 
             String newString = "";
 
             if (i == 0) {
 
                 newString = temp.substring(24);
-                //PC: newString += "}";
-                //Android
-                newString += "dice_Count\":0}";
-                players[i] = newString;
-            } else if (i < (players.length - 1)) {
+
+                if(Gdx.app.getType().equals(Application.ApplicationType.Android)){
+                    newString += "dice_Count\":0}";
+
+                }else{
+                    newString += "}";
+                }
+
+                tempPlayers[i] = newString;
+
+            } else if (i < (tempPlayers.length - 1)) {
 
                 newString = temp.substring(23);
 
-                //Android:
-                newString += "dice_Count\":0}";
+                if(Gdx.app.getType().equals(Application.ApplicationType.Android)){
+                    newString += "dice_Count\":0}";
+                }else{
+                    newString += "}";
+                }
 
-                //PC: newString += "}";
+                tempPlayers[i] = newString;
 
-                players[i] = newString;
-
-            } else if (i == (players.length - 1)) {
+            } else if (i == (tempPlayers.length - 1)) {
 
                 newString = temp.substring(23);
                 newString = newString.substring(0, newString.length() - 1);
-                players[i] = newString;
+                tempPlayers[i] = newString;
             }
 
         }
@@ -446,18 +457,19 @@ public class Connection {
         ArrayList<String> stockAsString = new ArrayList<>();
 
 
-        for (int i = 0; i < players.length; i++) {
+        for (int i = 0; i < tempPlayers.length; i++) {
 
-            String[] stock = players[i].split("stocks\":");
+            String[] stock = tempPlayers[i].split("stocks\":");
 
             String newStock = stock[1];
 
             String finalStock = newStock.substring(0, newStock.length() - 1);
 
-            //Android start
-            String[] android = finalStock.split(",\"yourTurn");
-            finalStock = android[0];
-            //Android end
+            if(Gdx.app.getType().equals(Application.ApplicationType.Android)){
+                String[] android = finalStock.split(",\"yourTurn");
+                finalStock = android[0];
+            }
+
 
             stockAsString.add(finalStock);
         }
@@ -469,7 +481,7 @@ public class Connection {
 
         ArrayList<String> allPlayersAsString = new ArrayList<>();
 
-        Collections.addAll(allPlayersAsString, players);
+        Collections.addAll(allPlayersAsString, tempPlayers);
 
         for (String p : allPlayersAsString) {
 

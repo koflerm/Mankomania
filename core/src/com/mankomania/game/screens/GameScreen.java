@@ -592,13 +592,6 @@ public class GameScreen extends ScreenAdapter {
             int dice2 = rand.nextInt((7 - 0 + 1) + 0);
 
             Connection.emitHighestDice(dice1, dice2);
-
-            /**
-             * DEBUG MODE ON
-             */
-            //Connection.emitHighestDice(6, 6);
-
-
         }
     };
 
