@@ -65,7 +65,6 @@ public class StockScreen extends ScreenAdapter {
     }
 
     private void calculateStock(float degrees){
-        Skin skin = new Skin(Gdx.files.internal("skin/comic-ui.json"));
         isRising = false;
 
         if (degrees%360f >= 0 && degrees%360 < 120){
