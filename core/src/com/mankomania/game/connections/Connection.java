@@ -204,65 +204,81 @@ public class Connection {
 
         int index = f.getFieldIndex();
 
-        if (index == 1 || index == 11 || index == 38) {
-            getMoney(5000);
-            p.addMoney(5000);
+       if (index == 10 || index == 16 || index == 20 || index == 32 || index == 37 || index == 45 || index == 60) {
+           getMoney(50);
+           p.addMoney(50);
 
-        } else if (index == 2) {
-            loseMoney(170000);
-            p.loseMoney(17000);
+       }else if (index == 44){
+           getMoney(250);
+           p.addMoney(250);
 
-        } else if (index == 3 || index == 7 || index == 13 || index == 14 || index == 15 || index == 18 || index == 21 || index == 25 || index == 27 || index == 29 || index == 39 || index == 40 || index == 54 || index == 59 || index == 64 || index == 65) {
-            loseMoney(50000);
-            p.loseMoney(50000);
+       }else if (index == 0 || index == 11) {
+           getMoney(5000);
+           p.addMoney(5000);
 
-        } else if (index == 4 || index == 6 || index == 12 || index == 17 || index == 24 || (index <= 52 && index >= 46) || index == 61 || index == 62 || index == 68) {
-            loseMoney(100000);
-            p.loseMoney(100000);
+       }else if (index == 5 || index == 9 || index == 22 || index == 36 || index == 57) {
+           getMoney(10000);
+           p.addMoney(10000);
 
-        } else if (index == 5 || index == 9 || index == 22 || index == 36 || index == 55 || index == 57 || index == 67) {
-            getMoney(10000);
-            p.addMoney(10000);
+       }else if (index == 19) {
+           getMoney(50000);
+           p.addMoney(50000);
 
-        } else if (index == 10 || index == 16 || index == 20 || index == 32 || index == 37 || index == 44 || index == 45 || index == 60) {
-            getMoney(50);
-            p.addMoney(50);
+       }else if (index == 55){
+           getMoney(70000);
+           p.loseMoney(70000);
 
-        } else if (index == 19) {
-            getMoney(50000);
-            p.addMoney(50000);
+       }else if (index == 41){
+           getMoney(200000);
+           p.addMoney(200000);
 
-        } else if (index == 26) {
-            loseMoney(40000);
-            p.loseMoney(40000);
+       }else if (index == 38) {
+           loseMoney(5000);
+           p.loseMoney(5000);
 
-        } else if (index == 28) {
-            loseMoney(70000);
-            p.loseMoney(70000);
+       }else if (index == 66 || index == 67){
+           loseMoney(10000);
+           p.loseMoney(10000);
 
-        } else if (index == 31) {
-            loseMoney(150000);
-            p.loseMoney(150000);
+       }else if (index == 33 || index == 35){
+           loseMoney(30000);
+           p.loseMoney(30000);
 
-        } else if (index == 33 || index == 35) {
-            loseMoney(30000);
-            p.loseMoney(30000);
+       }else if (index == 26 || index == 54) {
+           loseMoney(40000);
+           p.loseMoney(40000);
 
-        } else if (index == 41 || index == 53 || index == 63) {
-            loseMoney(20000);
-            p.loseMoney(20000);
+       }else if (index == 2 || index == 4 || index == 7 || index == 13 || index == 14 || index == 15 || index == 18 || index == 21 || index == 25 || index == 27 || index == 29 || index == 39 || index == 64 || index == 65) {
+           loseMoney(50000);
+           p.loseMoney(50000);
 
-        } else if (index == 43) {
-            loseMoney(80000);
-            p.loseMoney(80000);
+       }else if (index == 58 || index == 59){
+           loseMoney(60000);
+           p.loseMoney(60000);
 
-        } else if (index == 58) {
-            loseMoney(60000);
-            p.loseMoney(60000);
+       }else if (index == 28 || index == 40) {
+           loseMoney(70000);
+           p.loseMoney(70000);
 
-        } else if (index == 66) {
-            loseMoney(10000);
-            p.loseMoney(10000);
+       }else if (index == 43){
+           loseMoney(80000);
+           p.loseMoney(80000);
+
+       }else if (index == 3 || index == 6 || index == 12 || index == 17 || index == 24 || index == 46 || index == 47 || index == 48 || index == 49 || index == 50 || index == 51 || index == 52 || index == 61 || index == 62 || index == 68) {
+           loseMoney(100000);
+           p.loseMoney(100000);
+
+       }else if (index == 31){
+           loseMoney(150000);
+           p.loseMoney(150000);
+
+       }else if (index == 1) {
+           loseMoney(170000);
+           p.loseMoney(170000);
+
+       }else if (index == 53 || index == 63){
+           loseMoney(200000);
+           p.loseMoney(200000);
 
         } else {
             /**
@@ -350,9 +366,9 @@ public class Connection {
         int amountOfStock = current.getAmountOfShare(s);
         if (amountOfStock > 0) {
             if (black) {
-                current.loseMoney(20000 * amountOfStock);
+                current.addMoney(10000 * amountOfStock);
             } else {
-                current.addMoney(20000 * amountOfStock);
+                current.loseMoney(20000 * amountOfStock);
             }
         }
 
