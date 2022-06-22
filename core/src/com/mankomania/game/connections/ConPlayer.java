@@ -94,21 +94,4 @@ public class ConPlayer {
     public void setDryOilPlc(int dryOilPlc) {
         this.dryOilPlc = dryOilPlc;
     }
-
-    @Override
-    public String toString() {
-        return "ConPlayer{" +
-                "dice_2=" + dice2 +
-                ", dice_1=" + dice1 +
-                ", money=" + money +
-                ", youTurn=" + youTurn +
-                ", socket='" + socket + '\'' +
-                ", position=" + position +
-                ", dice_Count=" + diceCount +
-                ", playerIndex=" + playerIndex +
-                ", HARD_STEEL_PLC=" + hardSteelPlc +
-                ", SHORT_CIRCUIT_PLC=" + shortCircuitPlc +
-                ", DRY_OIL_PLC=" + dryOilPlc +
-                '}';
-    }
 }
