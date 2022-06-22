@@ -69,9 +69,10 @@ public class StockSelectionScreen extends ScreenAdapter {
         tab.align(Align.center);
         float scale = 0.7f;
         String title = "title";
-        Label label = new Label("Select two shares", skin, title);
+        Label titleLabel = new Label("Select two shares", skin, title);
+        titleLabel.setFontScale(Gdx.graphics.getHeight()/650f);
         shareSelectionDialog.setWidth(Gdx.graphics.getWidth() * scale);
-        shareSelectionDialog.text(label).padTop(20f);
+        shareSelectionDialog.text(titleLabel).padTop(20f);
 
         dryOilButton = new ImageButton(shareList.get(0));
         hardSteelButton = new ImageButton(shareList.get(1));
@@ -94,22 +95,28 @@ public class StockSelectionScreen extends ScreenAdapter {
         hardSteelLabel = new Label(HARD_STEEL + ": " + hardSteelCount + "x", skin, title);
         shortCircuitLabel = new Label(SHORT_CIRCUIT + ": " + shortCircuitCount + "x", skin, title);
 
+        dryOilLabel.setFontScale(Gdx.graphics.getHeight()/800f);
+        hardSteelLabel.setFontScale(Gdx.graphics.getHeight()/800f);
+        shortCircuitLabel.setFontScale(Gdx.graphics.getHeight()/800f);
+
         tab.add(dryOilLabel);
         tab.add(hardSteelLabel);
         tab.add(shortCircuitLabel).row();
 
         resetButton = new TextButton("Reset", skin);
-        resetButton.getLabel().setFontScale(Gdx.graphics.getHeight()/450f);
+        resetButton.setTransform(true);
+        resetButton.getLabel().setFontScale(Gdx.graphics.getHeight()/350f);
         resetButton.addListener(resetListener());
-        tab.add(resetButton).pad(30f);
+        tab.add(resetButton).pad(30f).padTop(80f).grow();
 
-        tab.add();
+        tab.add(); //Spacing
 
         readyButton = new TextButton("Ready", skin);
-        readyButton.getLabel().setFontScale(Gdx.graphics.getHeight()/450f);
+        readyButton.setTransform(true);
+        readyButton.getLabel().setFontScale(Gdx.graphics.getHeight()/350f);
         readyButton.setTouchable(Touchable.disabled);
         readyButton.addListener(readyListener());
-        tab.add(readyButton).pad(30f);
+        tab.add(readyButton).pad(30f).padTop(80f).grow();
 
         shareSelectionDialog.getButtonTable().add(tab);
         shareSelectionDialog.setScale(scale);
