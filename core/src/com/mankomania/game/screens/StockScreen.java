@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
@@ -81,11 +80,6 @@ public class StockScreen extends ScreenAdapter {
             share = "Shortcircuit";
             isRising = degrees%360f > 324;
         }
-
-        Label label = new Label(share +" "+ isRising, skin); //Label to check correct results
-        label.setFontScale(Gdx.graphics.getHeight() / 400f);
-        label.setPosition(50f,100f);
-        stage.addActor(label);
     }
 
     @Override
