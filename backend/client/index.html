@@ -495,9 +495,9 @@
 
     updateStockButton.addEventListener("click", (event) =>{
         const stock = {
+            DryOil_PLC : 0,
             HardSteel_PLC: 2,
             ShortCircuit_PLC: 0,
-            DryOil_PLC : 0
         }
         socket.emit("CHOSE_STOCKS", lobby, stock)
     })

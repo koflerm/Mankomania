@@ -1,0 +1,133 @@
+
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+const Client = require("socket.io-client");
+import * as backend from '../server.js'
+
+
+
+
+describe('Test auctionMiniGame function', function(){
+    let io, serverSocket, clientSocket;
+    let rooms = {};
+    let roomID = "TEST_ROOM"
+    let auctionObject = {
+        itemprice: 0,
+        multiplicator: 0,
+        moneyFromTheBank: 0,
+        difference: 0,
+        moneyToSet:  0
+    }
+
+    beforeAll((done) => {
+        const httpServer = createServer();
+        io = new Server(httpServer);
+        httpServer.listen(() => {
+            const port = httpServer.address().port;
+            clientSocket = new Client(`http://localhost:${port}`);
+            io.on("connection", (socket) => {
+                serverSocket = socket;
+                clientSocket.join(roomID)
+
+            });
+            clientSocket.on("connect", done);
+        });
+    });
+
+    afterAll(() => {
+        io.close();
+        clientSocket.close();
+    });
+
+
+    test('test function auctionMiniGame with invalid auctionObject parameter', ()=>{
+        clientSocket.on('ERROR', (arg) =>{
+            expect(arg).toMatch("Error in auctionMiniGame")
+        });
+        backend.auctionMiniGame(rooms[roomID], roomID, null, serverSocket)
+    });
+
+
+    test('test function auctionMiniGame with invalid room parameter', ()=>{
+        clientSocket.on('ERROR', (arg) =>{
+            expect(arg).toMatch("Error in auctionMiniGame")
+        });
+        backend.auctionMiniGame(rooms[roomID], null, auctionObject, serverSocket)
+    });
+
+    test('test function auctionMiniGame with invalid rooms parameter', ()=>{
+        clientSocket.on('ERROR', (arg) =>{
+            expect(arg).toMatch("Error in auctionMiniGame")
+        });
+        backend.auctionMiniGame(null, roomID, auctionObject, serverSocket)
+    });
+
+    test('test socket.on(AUCTION)', (done)=>{
+        serverSocket.on('AUCTION', (cb) =>{
+            cb(roomID)
+
+        });
+        clientSocket.emit('AUCTION', (arg)=>{
+            expect(arg).toBe(roomID);
+            done()
+        })
+    });
+
+    test('test socket.on(AUCTION)  but with wrong arg', (done)=>{
+        serverSocket.on('AUCTION', (cb) =>{
+            cb(roomID)
+
+        });
+        clientSocket.emit('AUCTION', (arg)=>{
+            expect(arg).not.toBe("TEST");
+            done()
+        })
+    });
+
+    const setup = () =>{
+        const room = {
+            id: roomID, // generate a unique id for the new room, that way we don't need to deal with duplicates.
+            status: false,
+            sockets: [],
+            ready: 0,
+            players: {},
+            stockCounterFunction : function (room, socket, stock){
+                rooms[room].players[socket.id].stocks = stock
+                this.counterForStocks++
+            },
+            counterForStocks : 0,
+            counterForDice: 0,
+            counterForHorseRace: 0
+        };
+        rooms[room.id] = room;
+
+        const stocks = {
+            HardSteel_PLC: 0,
+            ShortCircuit_PLC: 0,
+            DryOil_PLC : 0
+        }
+
+        const player ={
+            socket: clientSocket,
+            playerIndex: room.sockets.length,
+            money: 1000000,
+            position: room.sockets.length - 1,
+            stocks: stocks,
+            yourTurn: false,
+            dice_1: 0,
+            dice_2: 0,
+            dice_Count: 0,
+            calculateDiceCount : function (diceCount){
+                this.dice_1 = diceCount[0]
+                this.dice_2 = diceCount[1]
+                this.dice_Count = this.dice_1 +  this.dice_2
+            }
+        }
+        return rooms[room.id].players[clientSocket.id] = player
+    }
+
+
+
+
+});
+
