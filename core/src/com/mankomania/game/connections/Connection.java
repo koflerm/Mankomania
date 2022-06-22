@@ -54,21 +54,9 @@ public class Connection {
         Connection.roleHighestDice = roleHighestDice;
     }
 
-    public static Player getCurrentPlayer() {
-        return currentPlayer;
-    }
-
     public static void setCurrentPlayer(Player currentPlayer) {
         Connection.currentPlayer = currentPlayer;
         MankomaniaGame.getInstance().getBoard().setCurrentPlayer(currentPlayer);
-    }
-
-    public static String[] getWinners() {
-        return winners;
-    }
-
-    public static void setWinners(String[] winners) {
-        Connection.winners = winners;
     }
 
     public static boolean isUpdate() {
@@ -106,10 +94,6 @@ public class Connection {
 
     public static void setStart(boolean start) {
         Connection.start = start;
-    }
-
-    public static String getLobbyID() {
-        return lobbyID;
     }
 
     public static void setLobbyID(String lobbyID) {
