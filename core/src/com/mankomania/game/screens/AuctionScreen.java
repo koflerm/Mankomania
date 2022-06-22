@@ -98,16 +98,6 @@ public class AuctionScreen extends ScreenAdapter {
         } else {
             multiplier = 2f;
         }
-        Label label = new Label(Float.toString(multiplier), skin); //Label to check correct results
-        label.setFontScale(Gdx.graphics.getHeight() / 200f);
-        label.setPosition(50f, 100f);
-
-        Label priceLabel = new Label(Float.toString(itemPrice), skin);
-        priceLabel.setFontScale(Gdx.graphics.getHeight() / 200f);
-        priceLabel.setPosition(50f, 200f);
-
-        stage.addActor(label);
-        stage.addActor(priceLabel);
     }
 
     private void createDialog() {
