@@ -35,7 +35,13 @@ describe('Test increaseReadyCounterForRoom function', function(){
     afterAll(() => {
         io.close();
         clientSocket.close();
+    });
 
+    beforeEach(() => {
+        setup()
+    });
+    afterEach(() => {
+        rooms = {}
     });
 
     test('test function increaseReadyCounterForRoom with invalid _rooms parameter', ()=>{
@@ -46,7 +52,6 @@ describe('Test increaseReadyCounterForRoom function', function(){
     });
 
     test('test function increaseReadyCounterForRoom with invalid rooms parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toStrictEqual("Error in increaseReadyCounterForRoom")
         });
@@ -55,42 +60,34 @@ describe('Test increaseReadyCounterForRoom function', function(){
 
 
     test('test function increaseReadyCounterForRoom with valid parameters one player ready', ()=>{
-        setup()
         let temp = backend.increaseReadyCounterForRoom(rooms[roomID],serverSocket, roomID)
         expect(temp).toBe(1)
     });
 
     test('test function increaseReadyCounterForRoom with valid parameters one player ready', ()=>{
-        setup()
         let temp = backend.increaseReadyCounterForRoom(rooms[roomID],serverSocket, roomID)
         expect(temp).not.toBe(0)
     });
 
     test('test function increaseReadyCounterForRoom with valid parameters one player ready', ()=>{
-        setup()
         backend.increaseReadyCounterForRoom(rooms[roomID],serverSocket, roomID)
         let temp = backend.increaseReadyCounterForRoom(rooms[roomID],serverSocket, roomID)
         expect(temp).toBe(true)
     });
 
     test('test function increaseReadyCounterForRoom with valid parameters two player ready', ()=>{
-        setup()
         backend.increaseReadyCounterForRoom(rooms[roomID],serverSocket, roomID)
         let temp = backend.increaseReadyCounterForRoom(rooms[roomID],serverSocket, roomID)
         expect(temp).not.toBe(false)
     });
 
     test('test function increaseReadyCounterForRoom with valid rooms parameter', ()=>{
-        setup()
         clientSocket.on('START_GAME', (arg) =>{
             expect(arg).toBe(roomID,rooms[roomID]  )
         });
         backend.increaseReadyCounterForRoom(rooms[roomID], serverSocket, roomID)
         backend.increaseReadyCounterForRoom(rooms[roomID], serverSocket, roomID)
     });
-
-
-
 
 
     const setup = () =>{

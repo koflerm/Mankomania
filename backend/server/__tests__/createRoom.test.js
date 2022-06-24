@@ -33,12 +33,10 @@ describe('Test createRoom function', function(){
     afterAll(() => {
         io.close();
         clientSocket.close();
-
     });
 
     test("Test to see if the function return the right room object", () => {
         const id = "11bf5b37-e0b8-42e0-8dcf-dc8c4aefc000"
-        const rooms = {}
         const room = {
             id: id, // generate a unique id for the new room, that way we don't need to deal with duplicates.
             status: false,

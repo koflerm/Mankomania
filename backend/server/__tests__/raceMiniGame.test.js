@@ -1,19 +1,14 @@
+
+import * as backend from "../server";
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const Client = require("socket.io-client");
-import * as backend from '../server.js'
 
-
-
-
-describe('Test stockMiniGame function', function(){
+describe("Test for raceMiniGame function", ()=>{
     let io, serverSocket, clientSocket;
-    let rooms = {};
     let roomID = "TEST_ROOM"
-    let stock = {
-        stockName: "ShortCircuit_PLC",
-        status: true
-    }
+    let rooms = {};
+
 
     beforeAll((done) => {
         const httpServer = createServer();
@@ -23,10 +18,9 @@ describe('Test stockMiniGame function', function(){
             clientSocket = new Client(`http://localhost:${port}`);
             io.on("connection", (socket) => {
                 serverSocket = socket;
-                clientSocket.join(roomID)
-
             });
             clientSocket.on("connect", done);
+            console.log(clientSocket)
         });
     });
 
@@ -42,54 +36,43 @@ describe('Test stockMiniGame function', function(){
         rooms = {}
     });
 
-    test('test function stockMiniGame with invalid stock parameter', ()=>{
+    test('test function raceMiniGame with invalid room parameter', ()=>{
         clientSocket.on('ERROR', (arg) =>{
-            expect(arg).toMatch("Error in stockMiniGame")
+            expect(arg).toStrictEqual("Error in raceMiniGame")
         });
-        backend.stockMiniGame(rooms[roomID], roomID, null, serverSocket)
+        backend.raceMiniGame(rooms[roomID],null, serverSocket)
     });
 
-    test('test function stockMiniGame with invalid room parameter', ()=>{
+    test('test function raceMiniGame with invalid rooms parameter', ()=>{
         clientSocket.on('ERROR', (arg) =>{
-            expect(arg).toMatch("Error in stockMiniGame")
+            expect(arg).toStrictEqual("Error in raceMiniGame")
         });
-        backend.stockMiniGame(rooms[roomID], null, stock, serverSocket)
+        backend.raceMiniGame(null,roomID, serverSocket)
     });
 
-    test('test function stockMiniGame with invalid rooms parameter', ()=>{
-        clientSocket.on('ERROR', (arg) =>{
-            expect(arg).toMatch("Error in stockMiniGame")
+    test('test function "Error in raceMiniGame" with valid parameters', ()=>{
+        clientSocket.on('RACE', (arg) =>{
+            expect(arg).toBe(serverSocket.id)
         });
-        backend.stockMiniGame(null, roomID, stock, serverSocket)
+        backend.raceMiniGame(rooms[roomID],roomID, serverSocket)
     });
 
-    test('test function stockMiniGame with valid parameters stock status === true', ()=>{
-        clientSocket.on('STOCK', (arg) =>{
-            expect(arg).toBe(serverSocket.id, stock)
-        });
-
-        backend.stockMiniGame(rooms[roomID], roomID, stock, serverSocket)
+    test('test function in raceMiniGame with valid parameters', ()=>{
+        let temp = backend.raceMiniGame(rooms[roomID],roomID, serverSocket)
+        expect(temp).toBe(1)
     });
 
-    test('test function stockMiniGame with valid parameters stock status === false', ()=>{
-        let stock2 = {
-            stockName: "ShortCircuit_PLC",
-            status: false
-        }
-        clientSocket.on('STOCK', (arg) =>{
-            expect(arg).toBe(serverSocket.id, stock2)
-        });
-
-        backend.stockMiniGame(rooms[roomID], roomID, stock2, serverSocket)
+    test('test function raceMiniGame with valid parameters', ()=>{
+        let temp = backend.raceMiniGame(rooms[roomID],roomID, serverSocket)
+        expect(temp).not.toBe(0)
     });
-
 
 
     const setup = () =>{
         const room = {
             id: roomID, // generate a unique id for the new room, that way we don't need to deal with duplicates.
             status: false,
-            sockets: [],
+            sockets: [clientSocket.id, serverSocket.id],
             ready: 0,
             players: {},
             stockCounterFunction : function (room, socket, stock){
@@ -109,10 +92,10 @@ describe('Test stockMiniGame function', function(){
         }
 
         const player ={
-            socket: clientSocket,
-            playerIndex: room.sockets.length,
+            socket: clientSocket.id,
+            playerIndex: 1,
             money: 1000000,
-            position: room.sockets.length - 1,
+            position: 2,
             stocks: stocks,
             yourTurn: false,
             dice_1: 0,
@@ -125,9 +108,25 @@ describe('Test stockMiniGame function', function(){
             }
         }
         rooms[room.id].players[clientSocket.id] = player
+
+        const player2 ={
+            socket: serverSocket.id,
+            playerIndex: 1,
+            money: 1000000,
+            position: 2,
+            stocks: stocks,
+            yourTurn: false,
+            dice_1: 0,
+            dice_2: 0,
+            dice_Count: 0,
+            calculateDiceCount : function (diceCount){
+                this.dice_1 = diceCount[0]
+                this.dice_2 = diceCount[1]
+                this.dice_Count = this.dice_1 +  this.dice_2
+            }
+        }
+        rooms[room.id].players[serverSocket.id] = player2
+
     }
 
-
-});
-
-
+})

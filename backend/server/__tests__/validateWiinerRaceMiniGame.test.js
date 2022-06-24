@@ -1,14 +1,18 @@
 
 import * as backend from "../server";
-import SocketMock from "socket.io-mock";
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const Client = require("socket.io-client");
 
-describe("Test for leaveRooms function", ()=>{
+describe("Test for validateWinnerRaceMiniGame function", ()=>{
     let io, serverSocket, clientSocket;
     let roomID = "TEST_ROOM"
     let rooms = {};
+    let horseObject = {
+        horseIndex: 1,
+        movedSteps: 2,
+        winner: false
+    }
 
 
     beforeAll((done) => {
@@ -37,19 +41,59 @@ describe("Test for leaveRooms function", ()=>{
         rooms = {}
     });
 
-    test('test function leaveRooms with invalid _rooms object', ()=>{
+    test('test function validateWinnerRaceMiniGame with invalid room parameter', ()=>{
         clientSocket.on('ERROR', (arg) =>{
-            expect(arg).toStrictEqual("Error in leaveRooms")
+            expect(arg).toStrictEqual("Error in validateWinnerRaceMiniGame")
         });
-        backend.leaveRooms(serverSocket, null)
+        backend.validateWinnerRaceMiniGame(rooms[roomID],null, horseObject, serverSocket)
     });
 
-    test('test function leaveRooms with valid parameters one player remaining', ()=>{
-        clientSocket.on('JOIN_ROOM', (arg) =>{
-            expect(arg).toContain(roomID, clientSocket.id)
+    test('test function validateWinnerRaceMiniGame with invalid rooms parameter', ()=>{
+        clientSocket.on('ERROR', (arg) =>{
+            expect(arg).toStrictEqual("Error in validateWinnerRaceMiniGame")
         });
-        backend.leaveRooms(serverSocket, rooms)
+        backend.validateWinnerRaceMiniGame(null,roomID, horseObject, serverSocket)
     });
+
+    test('test function validateWinnerRaceMiniGame with invalid horseObject parameter', ()=>{
+        clientSocket.on('ERROR', (arg) =>{
+            expect(arg).toStrictEqual("Error in validateWinnerRaceMiniGame")
+        });
+        backend.validateWinnerRaceMiniGame(rooms[roomID],roomID, null, serverSocket)
+    });
+
+
+
+    test('test function validateWinnerRaceMiniGame with valid parameters winner = false', ()=>{
+        clientSocket.on('RACE_MOVE', (arg) =>{
+            expect(arg).toMatchObject(horseObject)
+        });
+        backend.validateWinnerRaceMiniGame(rooms[roomID],roomID, horseObject, serverSocket)
+    });
+
+    test('test function validateWinnerRaceMiniGame with valid parameters winner = false', ()=>{
+        horseObject.winner = true
+        clientSocket.on('RACE_MOVE', (arg) =>{
+            expect(arg).toMatchObject(horseObject)
+        });
+        backend.validateWinnerRaceMiniGame(rooms[roomID],roomID, horseObject, serverSocket)
+    });
+
+    test('test function validateWinnerRaceMiniGame with valid parameters winner = false', ()=>{
+        horseObject.winner = true
+        horseObject.horseIndex = 4
+        clientSocket.on('RACE_MOVE', (arg) =>{
+            expect(arg).toMatchObject(horseObject)
+        });
+        backend.validateWinnerRaceMiniGame(rooms[roomID],roomID, horseObject, serverSocket)
+    });
+
+
+
+
+
+
+
 
 
     const setup = () =>{

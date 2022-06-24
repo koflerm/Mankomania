@@ -43,6 +43,13 @@ describe('Test updateStock function', function(){
 
     });
 
+    beforeEach(() => {
+        setup()
+    });
+    afterEach(() => {
+        rooms = {}
+    });
+
     test('test function updateStock with invalid _rooms parameter', ()=>{
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in updateStock")
@@ -51,7 +58,6 @@ describe('Test updateStock function', function(){
     });
 
     test('test function updateStock with invalid room parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in updateStock")
         });
@@ -59,7 +65,6 @@ describe('Test updateStock function', function(){
     });
 
     test('test function updateStock with invalid diceCount parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in updateStock")
         });
@@ -69,7 +74,7 @@ describe('Test updateStock function', function(){
 
 
     test('test function updateStock with valid parameters ', ()=>{
-        setup()
+
         clientSocket.on('ROLE_THE_HIGHEST_DICE', (arg) =>{
             expect(arg).toMatchObject(rooms[roomID].players)
         });
@@ -77,7 +82,7 @@ describe('Test updateStock function', function(){
     });
 
     test('test function updateStock with valid parameters ', ()=>{
-        setup()
+
         clientSocket.on('ROLE_THE_HIGHEST_DICE', (arg) =>{
             expect(arg).toMatchObject(rooms[roomID].players)
         });

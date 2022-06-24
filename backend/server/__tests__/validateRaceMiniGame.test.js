@@ -1,14 +1,14 @@
 
 import * as backend from "../server";
-import SocketMock from "socket.io-mock";
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const Client = require("socket.io-client");
 
-describe("Test for leaveRooms function", ()=>{
+describe("Test for validateRaceMiniGame function", ()=>{
     let io, serverSocket, clientSocket;
     let roomID = "TEST_ROOM"
     let rooms = {};
+
 
 
     beforeAll((done) => {
@@ -37,18 +37,48 @@ describe("Test for leaveRooms function", ()=>{
         rooms = {}
     });
 
-    test('test function leaveRooms with invalid _rooms object', ()=>{
+    test('test function validateRaceMiniGame with invalid room parameter', ()=>{
         clientSocket.on('ERROR', (arg) =>{
-            expect(arg).toStrictEqual("Error in leaveRooms")
+            expect(arg).toStrictEqual("Error in validateRaceMiniGame")
         });
-        backend.leaveRooms(serverSocket, null)
+        backend.validateRaceMiniGame(rooms[roomID],null, serverSocket)
     });
 
-    test('test function leaveRooms with valid parameters one player remaining', ()=>{
-        clientSocket.on('JOIN_ROOM', (arg) =>{
-            expect(arg).toContain(roomID, clientSocket.id)
+    test('test function validateRaceMiniGame with invalid rooms parameter', ()=>{
+        clientSocket.on('ERROR', (arg) =>{
+            expect(arg).toStrictEqual("Error in validateRaceMiniGame")
         });
-        backend.leaveRooms(serverSocket, rooms)
+        backend.validateRaceMiniGame(null,roomID, serverSocket)
+    });
+
+    test('test function validateRaceMiniGame with valid parameters', ()=>{
+        clientSocket.on('HORSE_START', (arg) =>{
+            expect(arg).toBeCalled()
+        });
+        backend.validateRaceMiniGame(rooms[roomID],roomID, serverSocket)
+        backend.validateRaceMiniGame(rooms[roomID],roomID, serverSocket)
+    });
+
+    test('test function raceMiniGame with valid parameters', ()=>{
+        backend.validateRaceMiniGame(rooms[roomID],roomID, serverSocket)
+        let temp = backend.validateRaceMiniGame(rooms[roomID],roomID, serverSocket)
+        expect(temp).toBe(2)
+    });
+
+    test('test function raceMiniGame with valid parameters', ()=>{
+        backend.validateRaceMiniGame(rooms[roomID],roomID, serverSocket)
+        let temp = backend.validateRaceMiniGame(rooms[roomID],roomID, serverSocket)
+        expect(temp).not.toBe(1)
+    });
+
+    test('test function raceMiniGame with valid parameters', ()=>{
+        let temp = backend.validateRaceMiniGame(rooms[roomID],roomID, serverSocket)
+        expect(temp).toBe(1)
+    });
+
+    test('test function raceMiniGame with valid parameters', ()=>{
+        let temp = backend.validateRaceMiniGame(rooms[roomID],roomID, serverSocket)
+        expect(temp).not.toBe(0)
     });
 
 

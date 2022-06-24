@@ -38,6 +38,13 @@ describe('Test updateDice function', function(){
 
     });
 
+    beforeEach(() => {
+        setup()
+    });
+    afterEach(() => {
+        rooms = {}
+    });
+
     test('test function updateDice with invalid _rooms parameter', ()=>{
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in updateDice")
@@ -54,7 +61,6 @@ describe('Test updateDice function', function(){
     });
 
     test('test function updateDice with invalid diceCount parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in updateDice")
         });
@@ -63,7 +69,6 @@ describe('Test updateDice function', function(){
 
 
     test('test function updateDice with valid parameters diceCountPasch', ()=>{
-        setup()
         clientSocket.on('UPDATE_DICE', (arg) =>{
             expect(arg).toBe(serverSocket.id, diceCountPasch)
         });
@@ -71,7 +76,6 @@ describe('Test updateDice function', function(){
     });
 
     test('test function updateDice with valid parameters diceCount', ()=>{
-        setup()
         clientSocket.on('UPDATE_DICE', (arg) =>{
             expect(arg).toBe(serverSocket.id, diceCount)
         });

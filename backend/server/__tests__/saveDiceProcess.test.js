@@ -5,11 +5,12 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const Client = require("socket.io-client");
 
-describe("Test for leaveRooms function", ()=>{
+describe("Test for saveDiceProcess function", ()=>{
     let io, serverSocket, clientSocket;
     let roomID = "TEST_ROOM"
     let rooms = {};
-
+    let diceCount = [1,1]
+    let mockSocket = new SocketMock();
 
     beforeAll((done) => {
         const httpServer = createServer();
@@ -32,23 +33,51 @@ describe("Test for leaveRooms function", ()=>{
 
     beforeEach(() => {
         setup()
+
     });
+
     afterEach(() => {
         rooms = {}
     });
 
-    test('test function leaveRooms with invalid _rooms object', ()=>{
+    test('test function saveDiceProcess with invalid _rooms object', ()=>{
         clientSocket.on('ERROR', (arg) =>{
-            expect(arg).toStrictEqual("Error in leaveRooms")
+            expect(arg).toStrictEqual("Error in saveDiceProcess")
         });
-        backend.leaveRooms(serverSocket, null)
+        backend.saveDiceProcess(null, roomID, serverSocket,  diceCount, 1)
     });
 
-    test('test function leaveRooms with valid parameters one player remaining', ()=>{
-        clientSocket.on('JOIN_ROOM', (arg) =>{
-            expect(arg).toContain(roomID, clientSocket.id)
+    test('test function saveDiceProcess with invalid room parameter', ()=>{
+        clientSocket.on('ERROR', (arg) =>{
+            expect(arg).toStrictEqual("Error in saveDiceProcess")
         });
-        backend.leaveRooms(serverSocket, rooms)
+        backend.saveDiceProcess(rooms[roomID], null, serverSocket,  diceCount, 1)
+    });
+
+    test('test function saveDiceProcess with invalid diceCount object', ()=>{
+        clientSocket.on('ERROR', (arg) =>{
+            expect(arg).toStrictEqual("Error in saveDiceProcess")
+        });
+        backend.saveDiceProcess(rooms[roomID], roomID, serverSocket, null,1)
+    });
+
+
+
+    test('test function saveDiceProcess with valid parameters only one client rolled the dice', ()=>{
+        let temp = backend.saveDiceProcess(rooms[roomID], roomID, serverSocket, diceCount,null)
+        expect(temp).toBe(1)
+    });
+
+    test('test function saveDiceProcess with valid parameters all clients rolled the dice', ()=>{
+        backend.saveDiceProcess(rooms[roomID], roomID, serverSocket, diceCount,null)
+        let temp = backend.saveDiceProcess(rooms[roomID], roomID, serverSocket, diceCount,null)
+        expect(temp).toBe(0)
+    });
+
+    test('test function saveDiceProcess with valid parameters two winner', ()=>{
+        backend.saveDiceProcess(rooms[roomID], roomID, serverSocket, diceCount,2)
+        let temp = backend.saveDiceProcess(rooms[roomID], roomID, serverSocket, diceCount,2)
+        expect(temp).toBe(0)
     });
 
 
@@ -56,7 +85,7 @@ describe("Test for leaveRooms function", ()=>{
         const room = {
             id: roomID, // generate a unique id for the new room, that way we don't need to deal with duplicates.
             status: false,
-            sockets: [clientSocket.id, serverSocket.id],
+            sockets: [clientSocket.id, mockSocket.id],
             ready: 0,
             players: {},
             stockCounterFunction : function (room, socket, stock){
@@ -82,8 +111,8 @@ describe("Test for leaveRooms function", ()=>{
             position: 2,
             stocks: stocks,
             yourTurn: false,
-            dice_1: 0,
-            dice_2: 0,
+            dice_1: 1,
+            dice_2: 1,
             dice_Count: 0,
             calculateDiceCount : function (diceCount){
                 this.dice_1 = diceCount[0]
@@ -94,14 +123,14 @@ describe("Test for leaveRooms function", ()=>{
         rooms[room.id].players[clientSocket.id] = player
 
         const player2 ={
-            socket: serverSocket.id,
+            socket: mockSocket.id,
             playerIndex: 1,
             money: 1000000,
             position: 2,
             stocks: stocks,
             yourTurn: false,
-            dice_1: 0,
-            dice_2: 0,
+            dice_1: 1,
+            dice_2: 1,
             dice_Count: 0,
             calculateDiceCount : function (diceCount){
                 this.dice_1 = diceCount[0]
@@ -109,8 +138,20 @@ describe("Test for leaveRooms function", ()=>{
                 this.dice_Count = this.dice_1 +  this.dice_2
             }
         }
-        rooms[room.id].players[serverSocket.id] = player2
+        rooms[room.id].players[mockSocket.id] = player2
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 })
