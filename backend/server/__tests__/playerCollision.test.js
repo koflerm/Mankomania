@@ -35,6 +35,13 @@ describe('Test playerCollision function', function(){
         clientSocket.close();
     });
 
+    beforeEach(() => {
+        setup()
+    });
+    afterEach(() => {
+        rooms  ={}
+    });
+
     test('test function playerCollision with invalid collision parameter', ()=>{
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in playerCollision")
@@ -43,7 +50,6 @@ describe('Test playerCollision function', function(){
     });
 
     test('test function playerCollision with invalid room parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in playerCollision")
         });
@@ -51,7 +57,6 @@ describe('Test playerCollision function', function(){
     });
 
     test('test function playerCollision with invalid rooms parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in playerCollision")
         });
@@ -59,8 +64,6 @@ describe('Test playerCollision function', function(){
     });
 
     test('test function playerCollision with valid parameters', ()=>{
-        setup()
-
         clientSocket.on('STOCK', (arg) =>{
             expect(arg).toBe(serverSocket.id, colArr)
         });
@@ -69,28 +72,6 @@ describe('Test playerCollision function', function(){
     });
 
 
-
-    test('test socket.on(PLAYER_COLLISION)', (done)=>{
-        serverSocket.on('PLAYER_COLLISION', (cb) =>{
-            cb(roomID)
-
-        });
-        clientSocket.emit('PLAYER_COLLISION', (arg)=>{
-            expect(arg).toBe(roomID);
-            done()
-        })
-    });
-
-    test('test socket.on(PLAYER_COLLISION)  but with wrong arg', (done)=>{
-        serverSocket.on('PLAYER_COLLISION', (cb) =>{
-            cb(roomID)
-
-        });
-        clientSocket.emit('PLAYER_COLLISION', (arg)=>{
-            expect(arg).not.toBe("TEST");
-            done()
-        })
-    });
 
     const setup = () =>{
         const room = {

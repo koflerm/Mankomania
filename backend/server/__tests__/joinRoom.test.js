@@ -29,6 +29,13 @@ describe("Test for joinRoom function", ()=>{
         clientSocket.close();
     });
 
+    beforeEach(() => {
+        setup()
+    });
+    afterEach(() => {
+        rooms = {}
+    });
+
     test('test function joinRoom with invalid _rooms parameter', ()=>{
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toStrictEqual("Error in joinRoom")
@@ -44,7 +51,6 @@ describe("Test for joinRoom function", ()=>{
     });
 
     test('test function joinRoom with valid  parameters lobby is not full', ()=>{
-        setup()
         clientSocket.on('JOIN_ROOM', (arg) =>{
             expect(arg).toStrictEqual(roomID, room.sockets)
         });
@@ -52,13 +58,11 @@ describe("Test for joinRoom function", ()=>{
     });
 
     test('test function joinRoom with valid  parameters lobby is not full', ()=>{
-        setup()
         let temp = backend.joinRoom(serverSocket, room, rooms)
         expect(temp).toBe(room.id)
     });
 
     test('test function joinRoom with valid  parameters lobby is not full', ()=>{
-        setup()
         clientSocket.on('START_GAME', (arg) =>{
             expect(arg).toStrictEqual(roomID, room.players)
         });

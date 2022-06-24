@@ -39,6 +39,14 @@ describe('Test auctionMiniGame function', function(){
         clientSocket.close();
     });
 
+    beforeEach(() => {
+        setup()
+    });
+
+    afterEach(() => {
+        rooms = {}
+    });
+
 
     test('test function auctionMiniGame with invalid auctionObject parameter', ()=>{
         clientSocket.on('ERROR', (arg) =>{
@@ -62,27 +70,14 @@ describe('Test auctionMiniGame function', function(){
         backend.auctionMiniGame(null, roomID, auctionObject, serverSocket)
     });
 
-    test('test socket.on(AUCTION)', (done)=>{
-        serverSocket.on('AUCTION', (cb) =>{
-            cb(roomID)
-
+    test('test function auctionMiniGame with invalid rooms parameter', ()=>{
+        clientSocket.on('AUCTION', (arg) =>{
+            expect(arg).toBe(serverSocket.id, auctionObject)
         });
-        clientSocket.emit('AUCTION', (arg)=>{
-            expect(arg).toBe(roomID);
-            done()
-        })
+        backend.auctionMiniGame(rooms[roomID], roomID, auctionObject, serverSocket)
     });
 
-    test('test socket.on(AUCTION)  but with wrong arg', (done)=>{
-        serverSocket.on('AUCTION', (cb) =>{
-            cb(roomID)
 
-        });
-        clientSocket.emit('AUCTION', (arg)=>{
-            expect(arg).not.toBe("TEST");
-            done()
-        })
-    });
 
     const setup = () =>{
         const room = {

@@ -27,6 +27,13 @@ describe("Test for createPlayer function", ()=>{
         clientSocket.close();
     });
 
+    beforeEach(() => {
+        setup()
+    });
+    afterEach(() => {
+        room = {}
+    });
+
     test("connecting to server", (done) => {
         clientSocket.on("hello", (arg) => {
             expect(arg).toBe("world");
@@ -37,13 +44,12 @@ describe("Test for createPlayer function", ()=>{
 
 
     test("Test to see if the function return the right player object", () => {
-        setup()
-        expect(server.createPlayer(room, clientSocket, stocks)).toMatchObject(player);
+        expect(server.createPlayer(room, serverSocket.id, stocks)).toMatchObject(player);
     });
 
     test("Test to see if the function return not the right player object (playerIndex changed)" , () => {
-        setup()
-        expect(server.createPlayer(room, clientSocket, stocks)).not.toMatchObject(player);
+
+        expect(server.createPlayer(room, serverSocket, stocks)).not.toMatchObject(player);
     });
 
 
@@ -53,7 +59,7 @@ describe("Test for createPlayer function", ()=>{
          room = {
             id: id,
             status: false,
-            sockets: [clientSocket.id],
+            sockets: [serverSocket.id],
             ready: 0,
             players: {},
             stockCounterFunction : function (room, socket, stock){
@@ -73,8 +79,8 @@ describe("Test for createPlayer function", ()=>{
             DryOil_PLC : 0
         }
          player =   {
-            socket: clientSocket,
-            playerIndex: room.sockets.length-1,
+            socket: serverSocket.id,
+            playerIndex: room.sockets.length,
             money: START_MONEY,
             position: room.sockets.length - 1,
             stocks: stocks,

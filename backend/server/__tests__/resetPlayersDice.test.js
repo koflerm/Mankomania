@@ -39,14 +39,19 @@ describe('Test resetPlayersDice function', function(){
 
     });
 
-    test('test function resetPlayersDice with invalid _rooms parameter', ()=>{
+    beforeEach(() => {
         setup()
+    });
+    afterEach(() => {
+        rooms = {}
+    });
+
+    test('test function resetPlayersDice with invalid _rooms parameter', ()=>{
         let temp = backend.resetPlayersDice(null)
         expect(temp).toBeNull()
     });
 
     test('test function resetPlayersDice with valid parameter', ()=>{
-        setup()
         let temp = backend.resetPlayersDice(rooms[roomID])
         rooms[roomID].players.dice_Count = 0
         rooms[roomID].players.dice_1 = 0
@@ -55,9 +60,6 @@ describe('Test resetPlayersDice function', function(){
 
         expect(temp).toStrictEqual(rooms[roomID])
     });
-
-
-
 
 
 

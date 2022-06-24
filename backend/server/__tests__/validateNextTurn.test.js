@@ -33,7 +33,13 @@ describe('Test validateNextTurn function', function(){
     afterAll(() => {
         io.close();
         clientSocket.close();
+    });
 
+    beforeEach(() => {
+        setup()
+    });
+    afterEach(() => {
+        rooms = {}
     });
 
     test('test function validateNextTurn with invalid _rooms parameter', ()=>{
@@ -44,7 +50,6 @@ describe('Test validateNextTurn function', function(){
     });
 
     test('test function validateNextTurn with invalid room parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in validateNextTurn")
         });
@@ -53,7 +58,6 @@ describe('Test validateNextTurn function', function(){
 
 
     test('test function validateNextTurn with valid parameters', ()=>{
-        setup()
         clientSocket.on('NEXT_TURN', (arg) =>{
             expect(arg).toBe(mockSocket.id)
         });

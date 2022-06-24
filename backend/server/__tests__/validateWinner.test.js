@@ -43,24 +43,5 @@ describe('Test validateWinner function', function(){
         backend.validateWinner(null, serverSocket)
     });
 
-    test('test socket.on(WINNER)', (done)=>{
-      serverSocket.on('WINNER', (cb) =>{
-          cb("TEST_ROOM")
-      });
-      clientSocket.emit('WINNER', (arg)=>{
-          expect(arg).toBe("TEST_ROOM");
-          done()
-      })
-    });
-
-    test('test socket.on(WINNER) but with wrong arg', (done)=>{
-        serverSocket.on('WINNER', (cb) =>{
-            cb("TEST_ROOM")
-        });
-        clientSocket.emit('WINNER', (arg)=>{
-            expect(arg).not.toBe("TEST_ROO");
-            done()
-        })
-    });
 
 });

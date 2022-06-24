@@ -36,6 +36,13 @@ describe('Test updatePlayerPosition function', function(){
 
     });
 
+    beforeEach(() => {
+        setup()
+    });
+    afterEach(() => {
+        rooms = {}
+    });
+
     test('test function updatePlayerPosition with invalid _rooms parameter', ()=>{
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in updatePlayerPosition")
@@ -44,7 +51,6 @@ describe('Test updatePlayerPosition function', function(){
     });
 
     test('test function updatePlayerPosition with invalid room parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in updatePlayerPosition")
         });
@@ -52,7 +58,6 @@ describe('Test updatePlayerPosition function', function(){
     });
 
     test('test function updatePlayerPosition with invalid position parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in updatePlayerPosition")
         });
@@ -61,7 +66,6 @@ describe('Test updatePlayerPosition function', function(){
 
 
     test('test function updatePlayerPosition with valid parameters', ()=>{
-        setup()
         clientSocket.on('UPDATE_PLAYER_POSITION', (arg) =>{
             expect(arg).toBe(serverSocket.id,1 )
         });

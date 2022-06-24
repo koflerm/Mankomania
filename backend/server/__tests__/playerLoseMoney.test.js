@@ -35,6 +35,13 @@ describe('Test playerLoseMoney function', function(){
         clientSocket.close();
     });
 
+    beforeEach(() => {
+        setup()
+    });
+    afterEach(() => {
+        rooms = {}
+    });
+
     test('test function playerLoseMoney with invalid rooms parameter', ()=>{
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in playerLoseMoney")
@@ -43,7 +50,6 @@ describe('Test playerLoseMoney function', function(){
     });
 
     test('test function playerLoseMoney with invalid room parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in playerLoseMoney")
         });
@@ -51,7 +57,6 @@ describe('Test playerLoseMoney function', function(){
     });
 
     test('test function playerLoseMoney with invalid amount parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in playerLoseMoney")
         });
@@ -59,7 +64,6 @@ describe('Test playerLoseMoney function', function(){
     });
 
     test('test function playerLoseMoney with valid parameters', ()=>{
-        setup()
         clientSocket.on('LOSE_MONEY', (arg) =>{
             expect(arg).toBe(serverSocket.id, amount)
         });
@@ -68,13 +72,11 @@ describe('Test playerLoseMoney function', function(){
     });
 
     test('test function playerLoseMoney with valid parameters', ()=>{
-        setup()
         let temp = backend.playerLoseMoney(rooms[roomID], roomID, amount, serverSocket)
         expect(temp).toBe(990000)
     });
 
     test('test function playerLoseMoney with valid parameters', ()=>{
-        setup()
         let temp = backend.playerLoseMoney(rooms[roomID], roomID, amount, serverSocket)
         expect(temp).not.toBe(0)
     });

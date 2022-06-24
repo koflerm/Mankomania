@@ -37,43 +37,43 @@ describe('Test navObj function', function(){
 
     });
 
-    test('test function navObj with invalid obj parameter', ()=>{
+    beforeEach(() => {
         setup()
+    });
+    afterEach(() => {
+        players = {}
+    });
+
+    test('test function navObj with invalid obj parameter', ()=>{
         let temp = backend.navObj(null, clientSocket, 1)
         expect(temp).toBeNull()
     });
 
     test('test function navObj with invalid currentKey parameter', ()=>{
-        setup()
         let temp = backend.navObj(players, null, 1)
         expect(temp).toBeNull()
     });
 
     test('test function navObj with invalid direction', ()=>{
-        setup()
         let temp = backend.navObj(players, clientSocket, null)
         expect(temp).toBeNull()
     });
 
     test('test function navObj with invalid direction greater 1', ()=>{
-        setup()
         let temp = backend.navObj(null, clientSocket, 2)
         expect(temp).toBeNull()
     });
     test('test function navObj with valid parameters first player index in players object', ()=>{
-        setup()
         let temp = backend.navObj(players, players["pTXmcVIA2UV_r7hJAAAJ"], 1)
         expect(temp).toMatch("dCwQokTNxDT7YCC6AAAL")
     });
 
     test('test function navObj with valid parameters first player index in players object', ()=>{
-        setup()
         let temp = backend.navObj(players, players["pTXmcVIA2UV_r7hJAAAJ"], 1)
         expect(temp).not.toEqual("")
     });
 
     test('test function navObj with valid parameters first player index in players object', ()=>{
-        setup()
         let temp = backend.navObj(players, players["y94JPlkimCvbTaE1AAAP"], 1)
         expect(temp).toMatch("pTXmcVIA2UV_r7hJAAAJ")
     });

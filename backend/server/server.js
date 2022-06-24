@@ -24,8 +24,8 @@ const moneyMinigameStock = 20000
 /**
  * Check if a private Room was send or a new room should be created or join to an room
  * @param socket A connected socket.io socket
- * @param room Name of the room
- * @param _rooms
+ * @param room A string that represents the roomID
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
  */
 function validateRoom(socket, room, _rooms){
     if(room === ''){
@@ -42,7 +42,8 @@ function validateRoom(socket, room, _rooms){
 
 /**
  * Will search for Empty Rooms and returns a roomID if an empty room is available, if not return undefined
- * @returns {room} id of an room
+ *  * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @returns {room} A string that represents the roomID
  */
 function searchEmptyRooms(_rooms){
     for (const id in _rooms) {
@@ -55,7 +56,8 @@ function searchEmptyRooms(_rooms){
 
 /**
  * Will create a new Room and returns the room
- * @returns {{ready: number, id: (*|string), sockets: *[], status: boolean}}
+ * @param uuid
+ * @returns {{counterForStocks: number, stockCounterFunction: function(*, *, *): void, ready: number, players: {}, counterForHorseRace: number, counterForDice: number, id: *, sockets: [], status: boolean}}
  */
  function  createRoom (uuid) {
     const room = {
@@ -82,7 +84,7 @@ function searchEmptyRooms(_rooms){
  * Will connect an socket to an specified room
  * @param socket A connected socket.io socket
  * @param room An object that represents a room from the `rooms` instance variable object
- * @param _rooms
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
  */
  function joinRoom(socket, room,  _rooms) {
      if(room === null || _rooms === null){
@@ -107,7 +109,6 @@ function searchEmptyRooms(_rooms){
          }
          return room.id
      }
-
 }
 
 
@@ -156,7 +157,7 @@ function searchEmptyRooms(_rooms){
 /**
  * Will make the socket leave any rooms that it is a part of
  * @param socket A connected socket.io socket
- * @param _rooms
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
  */
  function leaveRooms(socket, _rooms){
      if(_rooms === null){
@@ -171,7 +172,9 @@ function searchEmptyRooms(_rooms){
                  socket.leave(id)
                  // remove the socket from the room object
                  room.sockets = room.sockets.filter((item) => item !== socket.id);
-                 console.log(room.sockets)
+                 delete room.players[socket.id]
+
+                 console.log(room)
                  io.in(room.id).emit('JOIN_ROOM', room.id, room.sockets);
 
              }
@@ -180,20 +183,19 @@ function searchEmptyRooms(_rooms){
                  roomsToDelete.push(room);
              }
          }
-         // Delete all the empty rooms that we found earlier
+         // Delete all the empty rooms that found earlier
          for (const room of roomsToDelete) {
              delete _rooms[room.id];
          }
      }
-
 }
 
 
 /**
  * Increase the ready counter for thr room object
- * @param _rooms
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
  * @param socket A connected socket.io socket
- * @param room room An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
  */
  function increaseReadyCounterForRoom(_rooms, socket, room){
      if(_rooms === null || room === null){
@@ -211,83 +213,110 @@ function searchEmptyRooms(_rooms){
          }
      }
 
-
-
-
-
 }
 
 
 
 /**
  * Will save dice1,dice2 and calculate the total dice count
- * @param room  An object that represents a room from the `rooms` instance variable object
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room  A string that represents the roomID
  * @param socket A connected socket.io socket
  * @param diceCount A counter to check how many clients have rolled their dice
  * @param winnerLength The length of the winner array
  */
-const saveDice = (room, socket, diceCount, winnerLength) =>{
-    if(typeof diceCount === 'string' || diceCount instanceof String){
-        let diceCountArray = diceCount.split(',').map(Number)
-        console.log(diceCountArray[0] + diceCountArray[1])
-        saveDiceProcess(room, socket, diceCountArray, winnerLength)
+const saveDice = (_rooms, room, socket, diceCount, winnerLength) =>{
+    if(_rooms === null || room === null || diceCount === null){
+        io.to(socket).emit('ERROR', "Error in saveDice");
     }else{
-        saveDiceProcess(room, socket, diceCount, winnerLength)
+        if(typeof diceCount === 'string' || diceCount instanceof String){
+            let diceCountArray = diceCount.split(',').map(Number)
+            console.log(diceCountArray[0] + diceCountArray[1])
+            return saveDiceProcess(_rooms,room, socket, diceCountArray, winnerLength)
+
+        }else{
+            return saveDiceProcess(_rooms, room, socket, diceCount, winnerLength)
+        }
 
     }
+
 }
 
-const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
-    rooms[room].players[socket.id].calculateDiceCount(diceCount)
-    rooms[room].counterForDice++
-
-    if (winnerLength != null){//if we have one or more winner
-        if (rooms[room].counterForDice === winnerLength){
-            //console.log(rooms[room].players[socket.id])
-            validateHighestDice(room)
-        }
+/**
+ * Check if if all clients have rolled their dices and check if we have winners to role again
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
+ * @param socket socket A connected socket.io socket
+ * @param diceCount A counter to check how many clients have rolled their dice
+ * @param winnerLength The length of the winner array
+ */
+const saveDiceProcess = (_rooms, room, socket, diceCount, winnerLength) =>{
+    if(_rooms === null || room === null || diceCount === null){
+        io.to(socket).emit('ERROR', "Error in saveDiceProcess");
     }else{
-        //if all clients have rolled their dice
-        if (rooms[room].counterForDice === rooms[room].sockets.length){
-            validateHighestDice(room)
+        console.log(_rooms)
+        _rooms.players[socket.id].calculateDiceCount(diceCount)
+        _rooms.counterForDice++
+
+        if (winnerLength != null){//if we have one or more winner
+            if (_rooms.counterForDice === winnerLength){
+                validateHighestDice(_rooms, room)
+                return _rooms.counterForDice
+            }
+        }else{
+            //if all clients have rolled their dice
+            if (_rooms.counterForDice === _rooms.sockets.length){
+                validateHighestDice(_rooms, room)
+                return _rooms.counterForDice
+            }else{
+                return _rooms.counterForDice
+            }
         }
     }
+
 }
 
 /**
  * Will validate the highest Dice count and send the winner/s
- * @param _rooms
- * @param room An object that represents a room from the `rooms` instance variable object
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
  */
  const validateHighestDice = (_rooms,room) =>{
-    //convert players object into an array
-    let data = Object.values(rooms[room].players)
+     if (_rooms === null || room === null){
+         io.in(room).emit('ERROR', "Error in validateHighestDice");
+     }else{
+         //convert players object into an array
+         let data = Object.values(_rooms.players)
 
-    //returns the highest dice count of all players
-    let highestDice = Math.max.apply(Math, data.map(function(o) {
-        return o.dice_Count;
-    }))
+         //returns the highest dice count of all players
+         let highestDice = Math.max.apply(Math, data.map(function(o) {
+             return o.dice_Count;
+         }))
 
-    //returns the winner player/s
-    let winner = data.filter(x => [x.dice_Count] == highestDice)
-    console.log(winner)
-    //if we have one winner
-    if(winner.length === 1){
-        rooms[room].players[winner[0].socket].yourTurn = true;
-        io.in(room).emit('START_ROUND', rooms[room].players, winner[0].socket);
-        resetPlayersDice(room)
-    }
-    //if we have to ore more winners
-    else{
-        io.in(room).emit('ROLE_THE_HIGHEST_DICE_AGAIN', rooms[room].players, winner);
-        resetPlayersDice(_rooms)
-    }
+         //returns the winner player/s
+         let winner = data.filter(x => [x.dice_Count] == highestDice)
+         console.log(winner)
+         //if we have one winner
+         if(winner.length === 1){
+             _rooms.players[winner[0].socket].yourTurn = true;
+             io.in(room).emit('START_ROUND', _rooms.players, winner[0].socket);
+             resetPlayersDice(_rooms)
+             return winner[0].socket;
+         }
+         //if we have to ore more winners
+         else{
+             io.in(room).emit('ROLE_THE_HIGHEST_DICE_AGAIN', _rooms.players, winner);
+             resetPlayersDice(_rooms)
+             return winner
+         }
+     }
+
 }
 
 
 /**
  * Will reset dice_1, dice_2, dice_Count and counterForDice
- * @param _rooms
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
  */
  const resetPlayersDice = (_rooms) =>{
      if(_rooms === null){
@@ -301,15 +330,13 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
          _rooms.counterForDice = 0
          return _rooms
      }
-
-
 }
 
 
 
 /**
  * Will update the player object with the new stock object
- * @param _rooms
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
  * @param room An object that represents a room from the `rooms` instance variable object
  * @param socket An connected socket.io socket
  * @param stock An object that represents stocks and their default values
@@ -329,11 +356,11 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
 
 
 /**
- *
- * @param _rooms
- * @param room
- * @param diceCount
- * @param socket
+ * Update dices and emit it to the other players in room
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
+ * @param diceCount A counter to check how many clients have rolled their dice
+ * @param socket  A connected socket.io socket
  */
  const updateDice = (_rooms, room, diceCount, socket) =>{
     if(room === null || diceCount === null || _rooms === null){
@@ -354,11 +381,11 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
 
 
 /**
- *
- * @param _rooms
- * @param room
- * @param position
- * @param socket
+ * Update player position and emit it to the other players in room
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room  A string that represents the roomID
+ * @param position position the current player
+ * @param socket socket A connected socket.io socket
  */
  const updatePlayerPosition = (_rooms,room, position, socket) =>{
      if(_rooms === null || room === null || position === null){
@@ -367,14 +394,13 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
          _rooms.players[socket.id].position = position;
          socket.to(room).emit('UPDATE_PLAYER_POSITION', socket.id, position);
      }
-
 }
 
 /**
- *
- * @param _rooms
- * @param room
- * @param socket
+ * validate the next player in the game and emit it to the other players in room
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
+ * @param socket socket A connected socket.io socket
  */
  const validateNextTurn = (_rooms, room, socket) =>{
     if (_rooms === null || room === null){
@@ -387,16 +413,14 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
         socket.to(room).emit('NEXT_TURN', nextPlayer)
     }
 
-
-
 }
 
 
 /**
- *
- * @param obj
- * @param currentKey
- * @param direction
+ * Return the next socketID in the players object
+ * @param obj  An object that represents a room from the `rooms` instance variable object
+ * @param currentKey currentKey = socket.id
+ * @param direction move one key forward in the object
  * @returns {*}
  */
  const navObj = (obj, currentKey, direction) => {
@@ -415,11 +439,11 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
 
 
 /**
- *
- * @param _rooms
- * @param room
- * @param amount
- * @param socket
+ * Reduce money from player and emit it to the other players in room
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
+ * @param amount amount of money
+ * @param socket socket A connected socket.io socket
  */
  const playerLoseMoney = (_rooms, room, amount, socket) =>{
     if(room === null || amount === null || _rooms === null){
@@ -427,17 +451,17 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
     }else{
         console.log("LOSE_MONEY: Room: " + room + " Amount: " + amount + " Socket: " + socket.id);
         socket.to(room).emit('LOSE_MONEY', socket.id, amount);
-        return  _rooms.players[socket.id].money -= amount;
-
+        _rooms.players[socket.id].money -= amount;
+        return  _rooms.players[socket.id].money
     }
 }
 
 /**
- *
- * @param _rooms
- * @param room
- * @param amount
- * @param socket
+ * Add money to player and emit it to the other players in room
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
+ * @param amount amount of money
+ * @param socket socket A connected socket.io socket
  */
  const playerGetMoney = (_rooms, room, amount, socket) =>{
         if(room === null || amount === null || _rooms === null){
@@ -451,11 +475,11 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
 
 
 /**
- *
- * @param _rooms
- * @param room
- * @param collision
- * @param socket
+ * Check if we have an player collision and emit it to the other players in room
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
+ * @param collision collision object
+ * @param socket socket A connected socket.io socket
  */
   const playerCollision =(_rooms, room, collision, socket)=> {
     if (room === null || collision === null || _rooms === null) {
@@ -471,11 +495,11 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
 }
 
 /**
- *
- * @param _rooms
- * @param room
- * @param stock
- * @param socket
+ * Function for stockMiniGame
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
+ * @param stock stock object for minigame
+ * @param socket socket A connected socket.io socket
  */
  const stockMiniGame = (_rooms, room, stock, socket)=>{
      if(room === null || stock === null || _rooms === null){
@@ -492,61 +516,79 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
              }
          }))
          socket.to(room).emit('STOCK', socket.id, stock)
-
      }
 }
 
 /**
- *
- * @param _rooms
- * @param room
- * @param auctionObject
- * @param socket
+ * Function for auctionMiniGame
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
+ * @param auctionObject auctionObject for minigame
+ * @param socket A connected socket.io socket
  */
  const  auctionMiniGame = (_rooms, room, auctionObject, socket)=>{
      if(room === null || auctionObject === null || _rooms === null){
          io.to(socket).emit('ERROR', "Error in auctionMiniGame");
      }else{
-         //rooms[room].players[socket.id].money = auctionObject.moneyToSet
          _rooms.players[socket.id].money = auctionObject.moneyToSet
          socket.to(room).emit('AUCTION', socket.id, auctionObject)
      }
 }
 
 
-
- const raceMiniGame = (room, socket) =>{
-    if(room === null){
+/**
+ * initialize horseGame
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
+ * @param socket A connected socket.io socket
+ * @returns {*} counterForHorseRace
+ */
+ const raceMiniGame = (_rooms, room, socket) =>{
+    if(room === null || _rooms === null){
         io.to(socket).emit('ERROR', "Error in raceMiniGame");
     }else{
-        rooms[room].counterForHorseRace++;
+        _rooms.counterForHorseRace++;
         socket.to(room).emit('RACE', socket.id)
+        return _rooms.counterForHorseRace
     }
 }
 
 
-
- const validateRaceMiniGame = (room) =>{
-    if(room === null){
+/**
+ * Check if the counterForHorseRace is ready for the minigame to start
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
+ * @param socket A connected socket.io socket
+ * @returns {*} counterForHorseRace
+ */
+ const validateRaceMiniGame = (_rooms,room, socket) =>{
+    if(room === null || _rooms === null){
         io.to(socket).emit('ERROR', "Error in validateRaceMiniGame");
     }else{
-        rooms[room].counterForHorseRace++;
-        if(rooms[room].counterForHorseRace === rooms[room].sockets.length){
+        _rooms.counterForHorseRace++;
+        if(_rooms.counterForHorseRace === _rooms.sockets.length){
             io.in(room).emit('HORSE_START')
-
+            return _rooms.counterForHorseRace
+        }else{
+            return _rooms.counterForHorseRace
         }
     }
 }
 
 
-
- const validateWinnerRaceMiniGame =(room, horseObject, socket)=>{
-    if(room === null || horseObject === null){
-        io.to(socket).emit('ERROR', "Error in validateRaceMiniGame");
+/**
+ * Validate the winner of the horseGame
+ * @param _rooms An object that represents a room from the `rooms` instance variable object
+ * @param room A string that represents the roomID
+ * @param horseObject auctionObject auctionObject for minigame
+ * @param socket A connected socket.io socket
+ */
+ const validateWinnerRaceMiniGame =(_rooms, room, horseObject, socket)=>{
+    if(room === null || horseObject === null || _rooms === null){
+        io.to(socket).emit('ERROR', "Error in validateWinnerRaceMiniGame");
     }else{
         if(horseObject.winner === true){
-            socket.to(room).emit('RACE_MOVE', horseObject)
-            let players = rooms[room].players
+            let players = _rooms.players
             Object.keys(players).forEach((key =>{
                 if(players[key].playerIndex === horseObject.horseIndex){
                     players[key].money += 50000
@@ -554,6 +596,7 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
                     players[key].money -= 50000
                 }
             }))
+            socket.to(room).emit('RACE_MOVE', horseObject)
         }else{
             socket.to(room).emit('RACE_MOVE', horseObject)
         }
@@ -561,7 +604,11 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
 }
 
 
-
+/**
+ * Validate the winner
+ * @param room A string that represents the roomID
+ * @param socket A connected socket.io socket
+ */
  const validateWinner =(room, socket)=>{
     if(room === null){
         io.to(socket).emit('ERROR', "Error in validateWinner");
@@ -569,13 +616,6 @@ const saveDiceProcess = (room, socket, diceCount, winnerLength) =>{
         socket.to(room).emit('WINNER', socket.id)
     }
 }
-
-
-
-
-
-
-
 
 
 app.get('/', (_req, res) =>{
@@ -595,7 +635,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('ROLE_THE_HIGHEST_DICE', (room, diceCount) =>{
-        saveDice(room, socket, diceCount)
+        saveDice(rooms[room], room, socket, diceCount)
     })
 
     socket.on('CHOSE_STOCKS', (room, stock) =>{
@@ -654,15 +694,15 @@ io.on('connection', (socket) => {
     })
 
     socket.on('RACE', (room)=>{
-        raceMiniGame(room, socket)
+        raceMiniGame(rooms[room],room, socket)
     })
 
     socket.on('RACE_READY', (room)=>{
-        validateRaceMiniGame(room)
+        validateRaceMiniGame(rooms[room],room)
     })
 
     socket.on('RACE_MOVE', (room, horseObject) =>{
-        validateWinnerRaceMiniGame(room, horseObject, socket)
+        validateWinnerRaceMiniGame(rooms[room],room, horseObject, socket)
     })
 
     socket.on('WINNER', (room)=>{
@@ -701,6 +741,7 @@ module.exports ={
     validateRaceMiniGame,
     validateWinnerRaceMiniGame,
     validateWinner,
+    saveDiceProcess
 
 
 }

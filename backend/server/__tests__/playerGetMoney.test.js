@@ -34,6 +34,12 @@ describe('Test playerGetMoney function', function(){
         io.close();
         clientSocket.close();
     });
+    beforeEach(() => {
+        setup()
+    });
+    afterEach(() => {
+        rooms = {}
+    });
 
     test('test function playerGetMoney with invalid rooms parameter', ()=>{
         clientSocket.on('ERROR', (arg) =>{
@@ -43,7 +49,6 @@ describe('Test playerGetMoney function', function(){
     });
 
     test('test function playerGetMoney with invalid room parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in playerGetMoney")
         });
@@ -51,7 +56,6 @@ describe('Test playerGetMoney function', function(){
     });
 
     test('test function playerGetMoney with invalid amount parameter', ()=>{
-        setup()
         clientSocket.on('ERROR', (arg) =>{
             expect(arg).toMatch("Error in playerGetMoney")
         });
@@ -59,7 +63,6 @@ describe('Test playerGetMoney function', function(){
     });
 
     test('test function playerGetMoney with valid parameters', ()=>{
-        setup()
         clientSocket.on('GET_MONEY', (arg) =>{
             expect(arg).toBe(serverSocket.id, amount)
         });
@@ -68,13 +71,11 @@ describe('Test playerGetMoney function', function(){
     });
 
     test('test function playerGetMoney with valid parameters', ()=>{
-        setup()
         let temp = backend.playerGetMoney(rooms[roomID], roomID, amount, serverSocket)
         expect(temp).toBe(1010000)
     });
 
     test('test function playerGetMoney with valid parameters', ()=>{
-        setup()
         let temp = backend.playerGetMoney(rooms[roomID], roomID, amount, serverSocket)
         expect(temp).not.toBe(0)
     });

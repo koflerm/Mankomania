@@ -185,6 +185,7 @@
                 }else{
                     players[key].money -=  players[key].stocks[stock.stockName] * 20000
                     checkMoneyWithoutCallback()
+
                 }
             }
 
@@ -507,8 +508,7 @@
     })
 
     disconnectButton.addEventListener("click", e =>{
-        socket.disconnect();
-
+        socket.disconnect(lobby);
     })
 
 
